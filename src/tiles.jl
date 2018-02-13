@@ -1,3 +1,15 @@
+VALID_FG_TILES = Char[
+    '0', '1', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd', 'e',
+    'f', 'g', 'G', 'h', 'i', 'j', 'k',
+    'l'
+]
+
+VALID_BG_TILES = Char[
+    '0', '1', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd'
+]
+
 mutable struct Tiles
     data::Array{Char, 2}
 
@@ -20,6 +32,21 @@ mutable struct Tiles
 
         return new(res)
     end
+end
+
+# Removes illegal characters from the tileset
+# Makes it possible to put simple entity map and fg in same string
+function FgTiles(s::String, valid::Array{Char, 1}=VALID_FG_TILES)
+    tiles = Tiles(s)
+    tiles.data = [c in valid? c : '0' for c in tiles.data]
+
+    return tiles
+end
+function BgTiles(s::String)
+    tiles = Tiles(s)
+    tiles.data = [c in valid? c : '0' for c in tiles.data]
+
+    return tiles
 end
 
 function Base.string(t::Tiles)

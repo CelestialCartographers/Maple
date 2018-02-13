@@ -3,11 +3,16 @@
 This is Maple, a thin wrapper for generating map files for the game Celeste which can be loaded in the stock game or using [Everest](https://github.com/EverestAPI/Everest).
 For usage without Everest you can replace a map in `Content/Maps` (remember backups), otherwise, you can place it in `MapContent/Maps` with Everest and use the custom chapter loading. 
 
+Improvements to user-friendliness is under development. Coding experience is required, but the tool should be rather easy to learn even if you know just the basics.
+
+This project is an unofficial level editor, it is merly a fan project aiming to aid map development until something official is available. None of this code is developed by or connected to the Celeste development team.
+
 ## Installation
 Maple can be installed using julia's `Pkg` system.
 ```julia
-Pkg.clone("https://github.com/CelestialCartographers/Maple.git")
+julia> Pkg.clone("https://github.com/CelestialCartographers/Maple.git")
 ```
+Maple can be updated using `Pkg.update()`.
 
 ## Usage
 

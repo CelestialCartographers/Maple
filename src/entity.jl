@@ -1,5 +1,3 @@
-using Parameters
-
 @with_kw mutable struct Entity
     __name::String = "" # Entity Type
 
@@ -138,6 +136,8 @@ TrackSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, speed::String="
 JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity(__name="jumpThru", x=x, y=y, width=width, texture=texture)
 
 Booster(x::Integer, y::Integer, red::Bool=false) = Entity(__name="booster", x=x, y=y, red=red)
+GreenBooster(x::Integer, y::Integer) = Booster(x, y, false) # Helper
+RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
 WallBooster(x::Integer, y::Integer, height::Integer, left::Bool=false) = Entity(__name="wallBooster", x=x, y=y, height=height, left=left)
 
 Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Integer=0) = Entity(__name="lightbeam", x=x, y=y, width=width, height=height, rotation=rotation)
@@ -196,6 +196,8 @@ IntroCar(x::Integer, y::Integer) = Entity(__name="introCar", x=x, y=y)
 Cloud(x::Integer, y::Integer, fragile::Bool=false) = Entity(__name="cloud", x=x, y=y, fragile=fragile)
 
 Spring(x::Integer, y::Integer, playerCanUse::Bool=true) = Entity(__name="spring", x=x, y=y, playerCanUse=playerCanUse)
+SpringRight(x::Integer, y::Integer) = Entity(__name="wallSpringRight", x=x, y=y)
+SpringLeft(x::Integer, y::Integer) = Entity(__name="wallSpringLeft", x=x, y=y)
 
 ColorSwitch(x::Integer, y::Integer, variant::String) = Entity(__name="colorSwitch", x=x, y=y, variant=variant)
 YellowBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity(__name="yellowBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
@@ -208,6 +210,8 @@ DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::B
 DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=true, sprite::String="default") = Entity(__name="dashSwitchV", x=x, y=y, ceiling=ceiling, persistent=persistent, sprite=sprite)
 TempleGate(x::Integer, y::Integer, height::Integer=48, variant::String="NearestSwitch", sprite::String="default") = Entity(__name="templeGate", x=x, y=y, height=height, variant=variant, sprite=sprite)
 TheoCrystal(x::Integer, y::Integer) = Entity(__name="theoCrystal", x=x, y=y)
+
+Bumper(x::Integer, y::Integer) = Entity(__name="bigSpinner", x=x, y=y)
 
 entityIdSerial = 0
 blacklistedEntityAttrs = String["nodes"]

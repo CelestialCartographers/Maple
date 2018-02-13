@@ -1,4 +1,4 @@
-# Temporarily add this repo's Maple module to the module path.
+# Temporarily add this repo's Maple to the module path.
 # Do not use this if you installed Maple using Pkg.add.
 push!(LOAD_PATH, "$(pwd())/src")
 
@@ -38,7 +38,7 @@ println("Map type")
         Level(
             name = "lvl_1",
 
-            fgTiles = Tiles(lvl_1_fg),
+            fgTiles = FgTiles(lvl_1_fg),
 
             position = (0, 0),
             size = (384, 200),
@@ -53,7 +53,7 @@ println("Map type")
                 DashSwitchHorizontal(176, 144, false),
                 DashSwitchHorizontal(192, 144, true),
 
-                
+
                 DashSwitchVertical(208, 144, false),
                 DashSwitchVertical(224, 144, true),
             ],

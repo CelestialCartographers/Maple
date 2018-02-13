@@ -1,3 +1,5 @@
+using Parameters
+
 include("level.jl")
 
 mutable struct Map

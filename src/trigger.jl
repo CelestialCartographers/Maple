@@ -1,5 +1,3 @@
-using Parameters
-
 @with_kw mutable struct Trigger
     __name::String = ""
     id::Integer = 0
