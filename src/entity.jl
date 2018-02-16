@@ -46,7 +46,7 @@ function Seeker(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integ
     return Entity("seeker", Dict{String, Any}("x"=>x, "y"=>y, "nodes"=>nodes))
 end
 
-Cassette(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("cassette", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(0, 0), (x2, y2)]))
+Cassette(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("cassette", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(0, 0), (x2, y2)]))
 
 Towerviewer(x::Integer, y::Integer) = Entity("towerviewer", Dict{String, Any}("x"=>x, "y"=>y))
 
@@ -71,9 +71,9 @@ TriggerSpikesDown(x::Integer, y::Integer, width::Integer) = Entity("triggerSpike
 TriggerSpikesLeft(x::Integer, y::Integer, height::Integer) = Entity("triggerSpikesLeft", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height))
 TriggerSpikesRight(x::Integer, y::Integer, height::Integer) = Entity("triggerSpikesRight", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height))
 
-RotateSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, clockwise::Bool=false) = Entity("rotateSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "clockwise"=>clockwise))
+RotateSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, clockwise::Bool=false) = Entity("rotateSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "clockwise"=>clockwise))
 Spinner(x::Integer, y::Integer, attached::Bool=false) = Entity("spinner", Dict{String, Any}("x"=>x, "y"=>y, "attached"=>attached))
-TrackSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "speed"=>speed, "startCenter"=>startCenter))
+TrackSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "speed"=>speed, "startCenter"=>startCenter))
 
 JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity("jumpThru", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "texture"=>texture))
 
@@ -86,18 +86,18 @@ Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Int
 
 Torch(x::Integer, y::Integer, startLit::Bool=false) = Entity("torch", Dict{String, Any}("x"=>x, "y"=>y, "startLit"=>startLit))
 
-Wire(x1::Integer, y1::Integer, x2::Integer, y2::Integer, above::Bool=false) = Entity("wire", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "above"=>above))
-ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("clothesline", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)]))
+Wire(x1::Integer, y1::Integer, x2::Integer, y2::Integer, above::Bool=false) = Entity("wire", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "above"=>above))
+ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("clothesline", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)]))
 
-SwapBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("swapBlock", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, nodes=>[(x2, y2)]))
+SwapBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("swapBlock", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, "nodes"=>[(x2, y2)]))
 
-SwitchGate(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, persistent::Bool=false, sprite::String="block") = Entity("switchGate", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, nodes=>[(x2, y2)], "persistent"=>persistent, "sprite"=>sprite))
+SwitchGate(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, persistent::Bool=false, sprite::String="block") = Entity("switchGate", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, "nodes"=>[(x2, y2)], "persistent"=>persistent, "sprite"=>sprite))
 TouchSwitch(x::Integer, y::Integer) = Entity("touchSwitch", Dict{String, Any}("x"=>x, "y"=>y))
 
 SinkingPlatform(x::Integer, y::Integer, width::Integer) = Entity("sinkingPlatform", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
-MovingPlatform(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer) = Entity("movingPlatform", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width))
+MovingPlatform(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer) = Entity("movingPlatform", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "width"=>width))
 
-ZipMover(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("zipMover", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width, "height"=>height))
+ZipMover(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("zipMover", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "width"=>width, "height"=>height))
 
 CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", Dict{String, Any}("x"=>x, "y"=>y, "onlyIce"=>onlyIce, "onlyFire"=>onlyFire, "persistent"=>persistent))
 
@@ -117,7 +117,7 @@ MoveBlock(x::Integer, y::Integer, width::Integer, height::Integer, direction::St
 
 
 DreamBlock(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("dreamBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
-DreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, fastMoving::Bool=false) = Entity("dreamBlock", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width, "height"=>height, "fastMoving"=>fastMoving))
+DreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, fastMoving::Bool=false) = Entity("dreamBlock", Dict{String, Any}("x"=>x1, "y"=>y1, "nodes"=>[(x2, y2)], "width"=>width, "height"=>height, "fastMoving"=>fastMoving))
 SpaceJam = DreamBlock
 
 StarJumpController(x::Integer, y::Integer) = Entity("starClimbController", Dict{String, Any}("x"=>x, "y"=>y))
