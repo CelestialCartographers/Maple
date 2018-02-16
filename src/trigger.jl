@@ -1,43 +1,35 @@
-@with_kw mutable struct Trigger
-    __name::String = ""
-    id::Integer = 0
+triggerIdSerial = 0
 
-    x::Integer = 0
-    y::Integer = 0
-
-    originX::Integer = 0
-    originY::Integer = 0
-
-    width::Integer = 16
-    height::Integer = 16
-
-    onlyOnce::Bool = true
-    mode::String = "" # OnLevelStart
-
-    dialog_id = "" # Textboxes
+function nextTriggerId()
+    return global triggerIdSerial += 1
 end
 
-MiniTextBox(x::Integer, y::Integer, width::Integer, height::Integer, dialog_id::String, mode::String, onlyOnce::Bool=true) = Trigger(__name="minitextboxTrigger", x=x, y=y, width=width, height=height, dialog_id=dialog_id, mode=mode, onlyOnce=onlyOnce)
+@with_kw mutable struct Trigger
+    name::String = ""
+    id::Integer = nextTriggerId()
 
-triggerIdSerial = 0
+    data::Dict{String, Any} = Dict{String, Any}()
+end
+
+function Trigger(name::String, data)
+    return Trigger(name=name, data=data)
+end
+
+MiniTextBox(x::Integer, y::Integer, width::Integer, height::Integer, dialog_id::String, mode::String, onlyOnce::Bool=true) = Trigger("minitextboxTrigger", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "dialog_id"=>dialog_id, "mode"=>mode, "onlyOnce"=>onlyOnce))
+
 blacklistedTriggerAttrs = String[]
-noTriggerDedup = String["x", "y"]
-baseTrigger = Trigger()
 
 function Base.Dict(t::Trigger)
     res = Dict{String, Any}()
 
-    for f in fieldnames(t)
-        fs = string(f)
-        value = getfield(t, f)
-
-        if !(fs in blacklistedTriggerAttrs) && (value != getfield(baseTrigger, f) || fs in noTriggerDedup)
-            res[fs] = value
+    res["__name"] = t.name
+    res["id"] = t.id
+    
+    for (key, value) in t.data
+        if !(key in blacklistedTriggerAttrs)
+            res[key] = value
         end
     end
-
-    res["id"] = triggerIdSerial
-    global triggerIdSerial += 1
 
     return res
 end

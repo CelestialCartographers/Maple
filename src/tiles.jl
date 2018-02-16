@@ -1,3 +1,49 @@
+TILE_NAMES = Dict{Any, Any}(
+    '1' => "Dirt",
+    '3' => "Snow",
+    '4' => "Girder",
+    '5' => "Tower",
+    '6' => "Stone",
+    '7' => "Cement",
+    '8' => "Rock",
+    '9' => "Wood",
+    'a' => "WoodStone",
+    'b' => "Cliffside",
+    'c' => "PoolEdges",
+    'd' => "TempleA",
+    'e' => "TempleB",
+    'f' => "CliffsideAlt",
+    'g' => "Reflection",
+    'G' => "ReflectionAlt",
+    'h' => "Grass",
+    'i' => "Summit",
+    'j' => "SummitNoSnow",
+    'k' => "Core",
+    'l' => "Deadgrass",
+
+    "Dirt" => '1',
+    "Snow" => '3',
+    "Girder" => '4',
+    "Tower" => '5',
+    "Stone" => '6',
+    "Cement" => '7',
+    "Rock" => '8',
+    "Wood" => '9',
+    "WoodStone" => 'a',
+    "Cliffside" => 'b',
+    "PoolEdges" => 'c',
+    "TempleA" => 'd',
+    "TempleB" => 'e',
+    "CliffsideAlt" => 'f',
+    "Reflection" => 'g',
+    "ReflectionAlt" => 'G',
+    "Grass" => 'h',
+    "Summit" => 'i',
+    "SummitNoSnow" => 'j',
+    "Core" => 'k',
+    "Deadgrass" => 'l',
+)
+
 VALID_FG_TILES = Char[
     '0', '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd', 'e',
@@ -42,7 +88,8 @@ function FgTiles(s::String, valid::Array{Char, 1}=VALID_FG_TILES)
 
     return tiles
 end
-function BgTiles(s::String)
+
+function BgTiles(s::String, valid::Array{Char, 1}=VALID_BG_TILES)
     tiles = Tiles(s)
     tiles.data = [c in valid? c : '0' for c in tiles.data]
 

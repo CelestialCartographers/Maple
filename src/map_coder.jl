@@ -194,7 +194,7 @@ function decodeMap(fn, checkHeader=true)
 
   res = Dict{String, Any}()
   decodeElement(fh, res, lookup)
-  # element["_package"] = package
+  res["_package"] = package
   return res
 end
 

@@ -1,247 +1,217 @@
-@with_kw mutable struct Entity
-    __name::String = "" # Entity Type
+entityIdSerial = 0
 
-    x::Integer = 0
-    y::Integer = 0
-
-    originX::Integer = 0
-    originY::Integer = 0
-
-    width::Integer = 8
-    height::Integer = 8
-
-    texture::String = ""
-    variant::String = "" # Use this for "type" field (used for spikes)
-    sprite::String = "default"
-
-    winged::Bool = false# Strawberries
-    attached::Bool = false# Spinners
-
-    red::Bool = false # Green/red orb
-
-    requires::Integer = 0 # Core heart door
-
-    startLit::Bool = false # Torches
-
-    nodes::Array{Tuple{Integer, Integer}, 1} = Tuple{Integer, Integer}[] # Wires, dash activated blocks etc
-
-    tiletype::String = "3" # Hidden walls etc
-
-    steamy::Bool = false # Water
-
-    fragile::Bool = false # Clouds
-
-    blendin::Bool = true # Dashblock
-    canDash::Bool = true # Dashblock
-    permanent::Bool = true # Dashblock
-
-    inverted::Bool = false # The toggleable blocks in Celestial Resort, doesn't seem to work
-
-    speed::String = "Normal" # Moving Spinners
-    startCenter::Bool = false # Moving Spinners
-
-    clockwise::Bool = false # Circular Spinners
-
-    playerCanUse::Bool = true # Springs
-
-    persistent::Bool = false # Switch Gates¨
-
-    left::Bool = false # Slippery slopes
-    leftSide::Bool = false # Dash switches
-    ceiling::Bool = false # Dash switches
-
-    onlyIce::Bool = false # Core switches
-    onlyFire::Bool = false # Core switches
-
-    lockCamera::Bool = true # Badeline boost
-
-    index::Integer = 0 # Casette blocks
-
-    number::Integer = 0 # Summit Checkpoints
-
-    singleUse::Bool = false # Feathers
-    shielded::Bool = false # Feathers
-
-    startHit::Bool = false # Badeline Boss
-    patternIndex::Integer = 1 # Badeline Boss
-
-    slide_until::Integer = 0 # Tentacles
-    fear_distance::String = "close" # Tentacles
-
-    rotation::Integer = 0 # Lightbeam
-
-    climbFall::Bool = true # Falling blocks
-
-    fastMoving::Bool = false # DreamBlock
+function nextEntityId()
+    return global entityIdSerial += 1
 end
 
-#  *** Temple gate types ***
-# CloseBehindPlayer
-# NearestSwitch
-# HoldingTheo
-# TouchSwitches
+@with_kw mutable struct Entity
+    name::String = "" # Entity Type
+    id::Integer = nextEntityId()
 
-Player(x::Integer, y::Integer) = Entity(__name="player", x=x, y=y, width=8)
-DarkChaser(x::Integer, y::Integer) = Entity(__name="darkChaser", x=x, y=y)
+    data::Dict{String, Any} = Dict{String, Any}()
+end
+
+function Entity(name::String, data)
+    return Entity(name=name, data=data)
+end
+
+Player(x::Integer, y::Integer) = Entity("player", Dict{String, Any}("x"=>x, "y"=>y, "width"=>8))
+DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", Dict{String, Any}("x"=>x, "y"=>y))
 
 function Strawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity(__name="strawberry", x=x, y=y, winged=winged, nodes=nodes)
+    return Entity("strawberry", Dict{String, Any}("x"=>x, "y"=>y, "winged"=>winged, "nodes"=>nodes))
 end
 
 function GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity(__name="goldenBerry", x=x, y=y, winged=winged, nodes=nodes)
+    return Entity("goldenBerry", Dict{String, Any}("x"=>x, "y"=>y, "winged"=>winged, "nodes"=>nodes))
 end
 
 function BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true) where {T <: Integer}
-    return Entity(__name="badelineBoost", x=x, y=y, lockCamera=lockCamera, nodes=nodes)
+    return Entity("badelineBoost", Dict{String, Any}("x"=>x, "y"=>y, "lockCamera"=>lockCamera, "nodes"=>nodes))
 end
 
 function BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false) where {T <: Integer}
-    return Entity(__name="finalBoss", x=x, y=y, startHit=startHit, nodes=nodes, patternIndex=patternIndex)
+    return Entity("finalBoss", Dict{String, Any}("x"=>x, "y"=>y, "startHit"=>startHit, "nodes"=>nodes, "patternIndex"=>patternIndex))
 end
 
 function Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], fear_distance::String="close", slide_until::Integer=0) where {T <: Integer}
-    return Entity(__name="tentacles", x=x, y=y, slide_until=slide_until, nodes=nodes, fear_distance=fear_distance)
+    return Entity("tentacles", Dict{String, Any}("x"=>x, "y"=>y, "slide_until"=>slide_until, "nodes"=>nodes, "fear_distance"=>fear_distance))
 end
 
-Cassette(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity(__name="cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
+function Cobweb(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
+    return Entity("cobweb", Dict{String, Any}("x"=>x, "y"=>y, "nodes"=>nodes))
+end
 
-Towerviewer(x::Integer, y::Integer) = Entity(__name="towerviewer", x=x, y=y)
+function Seeker(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
+    return Entity("seeker", Dict{String, Any}("x"=>x, "y"=>y, "nodes"=>nodes))
+end
 
-FloatingDebris(x::Integer, y::Integer) = Entity(__name="floatingDebris", x=x, y=y)
-ForegroundDebris(x::Integer, y::Integer) = Entity(__name="foregroundDebris", x=x, y=y)
+Cassette(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("cassette", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(0, 0), (x2, y2)]))
 
-DreamMirror(x::Integer, y::Integer) = Entity(__name="dreammirror", x=x, y=y)
+Towerviewer(x::Integer, y::Integer) = Entity("towerviewer", Dict{String, Any}("x"=>x, "y"=>y))
 
-Refill(x::Integer, y::Integer) = Entity(__name="refill", x=x, y=y)
-Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity(__name="infiniteStar", x=x, y=y, shielded=shielded, singleUse=singleUse)
+FloatingDebris(x::Integer, y::Integer) = Entity("floatingDebris", Dict{String, Any}("x"=>x, "y"=>y))
+ForegroundDebris(x::Integer, y::Integer) = Entity("foregroundDebris", Dict{String, Any}("x"=>x, "y"=>y))
 
-Checkpoint(x::Integer, y::Integer) = Entity(__name="summitcheckpoint", x=x, y=y)
-ChapterCheckpoint(x::Integer, y::Integer) = Entity(__name="checkpoint", x=x, y=y)
+DreamMirror(x::Integer, y::Integer) = Entity("dreammirror", Dict{String, Any}("x"=>x, "y"=>y))
 
-SpikesUp(x::Integer, y::Integer, width::Integer, variant::String="default") = Entity(__name="spikesUp", x=x, y=y, width=width, variant=variant)
-SpikesDown(x::Integer, y::Integer, width::Integer, variant::String="default") = Entity(__name="spikesDown", x=x, y=y, width=width, variant=variant)
-SpikesLeft(x::Integer, y::Integer, height::Integer, variant::String="default") = Entity(__name="spikesLeft", x=x, y=y, height=height, variant=variant)
-SpikesRight(x::Integer, y::Integer, height::Integer, variant::String="default") = Entity(__name="spikesRight", x=x, y=y, height=height, variant=variant)
+Refill(x::Integer, y::Integer) = Entity("refill", Dict{String, Any}("x"=>x, "y"=>y))
+Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity("infiniteStar", Dict{String, Any}("x"=>x, "y"=>y, "shielded"=>shielded, "singleUse"=>singleUse))
 
-TriggerSpikesUp(x::Integer, y::Integer, width::Integer) = Entity(__name="triggerSpikesUp", x=x, y=y, width=width)
-TriggerSpikesDown(x::Integer, y::Integer, width::Integer) = Entity(__name="triggerSpikesDown", x=x, y=y, width=width)
-TriggerSpikesLeft(x::Integer, y::Integer, height::Integer) = Entity(__name="triggerSpikesLeft", x=x, y=y, height=height)
-TriggerSpikesRight(x::Integer, y::Integer, height::Integer) = Entity(__name="triggerSpikesRight", x=x, y=y, height=height)
+Checkpoint(x::Integer, y::Integer) = Entity("summitcheckpoint", Dict{String, Any}("x"=>x, "y"=>y))
+ChapterCheckpoint(x::Integer, y::Integer) = Entity("checkpoint", Dict{String, Any}("x"=>x, "y"=>y))
 
-RotateSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, clockwise::Bool=false) = Entity(__name="rotateSpinner", x=x1, y=y1, nodes=[(x2, y2)], clockwise=clockwise)
-Spinner(x::Integer, y::Integer, attached::Bool=false) = Entity(__name="spinner", x=x, y=y, attached=attached)
-TrackSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, speed::String="Normal", startCenter::Bool=false) = Entity(__name="trackSpinner", x=x1, y=y1, nodes=[(x2, y2)], speed=speed, startCenter=startCenter)
+SpikesUp(x::Integer, y::Integer, width::Integer, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "variant"=>variant))
+SpikesDown(x::Integer, y::Integer, width::Integer, variant::String="default") = Entity("spikesDown", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "variant"=>variant))
+SpikesLeft(x::Integer, y::Integer, height::Integer, variant::String="default") = Entity("spikesLeft", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "variant"=>variant))
+SpikesRight(x::Integer, y::Integer, height::Integer, variant::String="default") = Entity("spikesRight", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "variant"=>variant))
 
-JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity(__name="jumpThru", x=x, y=y, width=width, texture=texture)
+TriggerSpikesUp(x::Integer, y::Integer, width::Integer) = Entity("triggerSpikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
+TriggerSpikesDown(x::Integer, y::Integer, width::Integer) = Entity("triggerSpikesDown", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
+TriggerSpikesLeft(x::Integer, y::Integer, height::Integer) = Entity("triggerSpikesLeft", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height))
+TriggerSpikesRight(x::Integer, y::Integer, height::Integer) = Entity("triggerSpikesRight", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height))
 
-Booster(x::Integer, y::Integer, red::Bool=false) = Entity(__name="booster", x=x, y=y, red=red)
+RotateSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, clockwise::Bool=false) = Entity("rotateSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "clockwise"=>clockwise))
+Spinner(x::Integer, y::Integer, attached::Bool=false) = Entity("spinner", Dict{String, Any}("x"=>x, "y"=>y, "attached"=>attached))
+TrackSpinner(x1::Integer, y1::Integer, x2::Integer, y2::Integer, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "speed"=>speed, "startCenter"=>startCenter))
+
+JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity("jumpThru", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "texture"=>texture))
+
+Booster(x::Integer, y::Integer, red::Bool=false) = Entity("booster", Dict{String, Any}("x"=>x, "y"=>y, "red"=>red))
 GreenBooster(x::Integer, y::Integer) = Booster(x, y, false) # Helper
 RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
-WallBooster(x::Integer, y::Integer, height::Integer, left::Bool=false) = Entity(__name="wallBooster", x=x, y=y, height=height, left=left)
+WallBooster(x::Integer, y::Integer, height::Integer, left::Bool=false) = Entity("wallBooster", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "left"=>left))
 
-Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Integer=0) = Entity(__name="lightbeam", x=x, y=y, width=width, height=height, rotation=rotation)
+Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Integer=0) = Entity("lightbeam", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "rotation"=>rotation))
 
-Torch(x::Integer, y::Integer, startLit::Bool=false) = Entity(__name="torch", x=x, y=y, startLit=startLit)
+Torch(x::Integer, y::Integer, startLit::Bool=false) = Entity("torch", Dict{String, Any}("x"=>x, "y"=>y, "startLit"=>startLit))
 
-Wire(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity(__name="wire", x=x1, y=y1, nodes=[(x2, y2)])
-ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity(__name="clothesline", x=x1, y=y1, nodes=[(x2, y2)])
+Wire(x1::Integer, y1::Integer, x2::Integer, y2::Integer, above::Bool=false) = Entity("wire", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "above"=>above))
+ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("clothesline", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)]))
 
-SwapBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity(__name="swapBlock", x=x1, y=y1, width=width, height=height, nodes=[(x2, y2)])
+SwapBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("swapBlock", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, nodes=>[(x2, y2)]))
 
-SwitchGate(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, persistent::Bool=false, sprite::String="block") = Entity(__name="switchGate", x=x1, y=y1, width=width, height=height, nodes=[(x2, y2)], persistent=persistent, sprite=sprite)
-TouchSwitch(x::Integer, y::Integer) = Entity(__name="touchSwitch", x=x, y=y)
+SwitchGate(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, persistent::Bool=false, sprite::String="block") = Entity("switchGate", Dict{String, Any}("x"=>x1, "y"=>y1, "width"=>width, "height"=>height, nodes=>[(x2, y2)], "persistent"=>persistent, "sprite"=>sprite))
+TouchSwitch(x::Integer, y::Integer) = Entity("touchSwitch", Dict{String, Any}("x"=>x, "y"=>y))
 
-SinkingPlatform(x::Integer, y::Integer, width::Integer) = Entity(__name="sinkingPlatform", x=x, y=y, width=width)
-MovingPlatform(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer) = Entity(__name="movingPlatform", x=x1, y=y1, nodes=[(x2, y2)], width=width)
+SinkingPlatform(x::Integer, y::Integer, width::Integer) = Entity("sinkingPlatform", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
+MovingPlatform(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer) = Entity("movingPlatform", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width))
 
-ZipMover(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity(__name="zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
+ZipMover(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer) = Entity("zipMover", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width, "height"=>height))
 
-CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity(__name="coreModeToggle", x=x, y=y, onlyIce=onlyIce, onlyFire=onlyFire, persistent=persistent)
+CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", Dict{String, Any}("x"=>x, "y"=>y, "onlyIce"=>onlyIce, "onlyFire"=>onlyFire, "persistent"=>persistent))
 
-Checkpoint(x::Integer, y::Integer, number::Integer)  = Entity(__name="summitcheckpoint", x=x, y=y, number=number)
+Checkpoint(x::Integer, y::Integer, number::Integer)  = Entity("summitcheckpoint", Dict{String, Any}("x"=>x, "y"=>y, "number"=>number))
 
-CrystalHeart(x::Integer, y::Integer)  = Entity(__name="blackGem", x=x, y=y)
-HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Integer)  = Entity(__name="heartGemDoor", x=x, y=y, width=width, height=height, requires=requires)
+CrystalHeart(x::Integer, y::Integer)  = Entity("blackGem", Dict{String, Any}("x"=>x, "y"=>y))
+HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Integer)  = Entity("heartGemDoor", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "requires"=>requires))
 
-CrumbleBlock(x::Integer, y::Integer, width::Integer)  = Entity(__name="crumbleBlock", x=x, y=y, width=width)
-FakeWall(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String)  = Entity(__name="fakeWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
-FallingBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3", climbFall::Bool=true)  = Entity(__name="fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype)
-CassetteBlock(x::Integer, y::Integer, width::Integer, height::Integer, index::Integer)  = Entity(__name="cassetteBlock", x=x, y=y, width=width, height=height, index=index)
-DashBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true)  = Entity(__name="dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
-ExitBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3")  = Entity(__name="exitBlock", x=x, y=y, width=width, height=height, tiletype=tiletype)
+CrumbleBlock(x::Integer, y::Integer, width::Integer)  = Entity("crumbleBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
+FakeWall(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String)  = Entity("fakeWall", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "tiletype"=>tiletype))
+FallingBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3", climbFall::Bool=true)  = Entity("fallingBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "climbFall"=>climbFall, "tiletype"=>tiletype))
+CassetteBlock(x::Integer, y::Integer, width::Integer, height::Integer, index::Integer)  = Entity("cassetteBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "index"=>index))
+DashBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true)  = Entity("dashBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "tiletype"=>tiletype, "blendin"=>blendin, "canDash"=>canDash, "permanent"=>permanent))
+ExitBlock(x::Integer, y::Integer, width::Integer, height::Integer, tiletype::String="3")  = Entity("exitBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "tiletype"=>tiletype))
+NegaBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("negaBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
+MoveBlock(x::Integer, y::Integer, width::Integer, height::Integer, direction::String="Up", canSteer::Bool=false, fast::Bool=false)  = Entity("moveBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "direction"=>direction, "canSteer"=>canSteer, "fast"=>fast))
 
-DreamBlock(x::Integer, y::Integer, width::Integer, height::Integer, fastMoving::Bool=false) = Entity(__name="dreamBlock", x=x, y=y, width=width, height=height, fastMoving=fastMoving)
-DreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, fastMoving::Bool=false) = Entity(__name="dreamBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, fastMoving=fastMoving)
 
-BlockField(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity(__name="blockField", x=x, y=y, width=width, height=height)
+DreamBlock(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("dreamBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
+DreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer, height::Integer, fastMoving::Bool=false) = Entity("dreamBlock", Dict{String, Any}("x"=>x1, "y"=>y1, nodes=>[(x2, y2)], "width"=>width, "height"=>height, "fastMoving"=>fastMoving))
+SpaceJam = DreamBlock
 
-BounceBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity(__name="bounceBlock", x=x, y=y, width=width, height=height)
+StarJumpController(x::Integer, y::Integer) = Entity("starClimbController", Dict{String, Any}("x"=>x, "y"=>y))
+StarJumpBlock(x::Integer, y::Integer, width::Integer, height::Integer, sinks::Bool=true) = Entity("starJumpBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "sinks"=>sinks))
 
-WhiteBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity(__name="whiteblock", x=x, y=y, width=width, height=height)
+BlockField(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("blockField", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
+StrawberryBlockField = BlockField
 
-Barrier(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity(__name="invisibleBarrier", x=x, y=y, width=width, height=height)
+BounceBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("bounceBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
 
-BadelineBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity(__name="finalBossFallingBlock", x=x, y=y, width=width, height=height)
+WhiteBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("whiteblock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
 
-Killbox(x::Integer, y::Integer, width::Integer)  = Entity(__name="killbox", x=x, y=y, width=width)
+Barrier(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("invisibleBarrier", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
+SeekerBarrier(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("seekerBarrier", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
 
-Water(x::Integer, y::Integer, width::Integer, height::Integer, steamy::Bool=false)  = Entity(__name="water", x=x, y=y, width=width, height=height, steamy=steamy)
+TempleCrackedBlock(x::Integer, y::Integer, width::Integer, height::Integer, persistent::Bool=false)  = Entity("templeCrackedBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "persistent"=>persistent))
 
-HangingLamp(x::Integer, y::Integer, height::Integer=16) = Entity(__name="hanginglamp", x=x, y=y, height=height)
-ResortLantern(x::Integer, y::Integer) = Entity(__name="resortLantern", x=x, y=y)
+BadelineBlock(x::Integer, y::Integer, width::Integer, height::Integer)  = Entity("finalBossFallingBlock", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height))
 
-IntroCar(x::Integer, y::Integer) = Entity(__name="introCar", x=x, y=y)
+Killbox(x::Integer, y::Integer, width::Integer)  = Entity("killbox", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width))
 
-Cloud(x::Integer, y::Integer, fragile::Bool=false) = Entity(__name="cloud", x=x, y=y, fragile=fragile)
+Water(x::Integer, y::Integer, width::Integer, height::Integer, steamy::Bool=false)  = Entity("water", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "steamy"=>steamy))
+Waterfall(x::Integer, y::Integer) = Entity("waterfall", Dict{String, Any}("x"=>x, "y"=>y))
+BigWaterfall(x::Integer, y::Integer, height::Integer, layer::String="FG") = Entity("bigWaterfall", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "layer"=>layer))
 
-Spring(x::Integer, y::Integer, playerCanUse::Bool=true) = Entity(__name="spring", x=x, y=y, playerCanUse=playerCanUse)
-SpringRight(x::Integer, y::Integer) = Entity(__name="wallSpringRight", x=x, y=y)
-SpringLeft(x::Integer, y::Integer) = Entity(__name="wallSpringLeft", x=x, y=y)
+HangingLamp(x::Integer, y::Integer, height::Integer=16) = Entity("hanginglamp", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height))
+ResortLantern(x::Integer, y::Integer) = Entity("resortLantern", Dict{String, Any}("x"=>x, "y"=>y))
 
-ColorSwitch(x::Integer, y::Integer, variant::String) = Entity(__name="colorSwitch", x=x, y=y, variant=variant)
-YellowBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity(__name="yellowBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-GreenBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity(__name="greenBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-RedBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity(__name="redBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-ClutterCabinet(x::Integer, y::Integer) = Entity(__name="clutterCabinet", x=x, y=y)
-ClutterDoor(x::Integer, y::Integer, width::Integer, height::Integer, variant::String) = Entity(__name="clutterDoor", x=x, y=y, width=width, height=height, variant=variant)
+Door(x::Integer, y::Integer, variant::String="wood") = Entity("door", Dict{String, Any}("x"=>x, "y"=>y, "variant"=>variant))
+OshiroDoor(x::Integer, y::Integer) = Entity("oshirodoor", Dict{String, Any}("x"=>x, "y"=>y))
+TrapDoor(x::Integer, y::Integer) = Entity("trapdoor", Dict{String, Any}("x"=>x, "y"=>y))
 
-DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=true, sprite::String="default") = Entity(__name="dashSwitchH", x=x, y=y, leftSide=leftSide, persistent=persistent, sprite=sprite)
-DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=true, sprite::String="default") = Entity(__name="dashSwitchV", x=x, y=y, ceiling=ceiling, persistent=persistent, sprite=sprite)
-TempleGate(x::Integer, y::Integer, height::Integer=48, variant::String="NearestSwitch", sprite::String="default") = Entity(__name="templeGate", x=x, y=y, height=height, variant=variant, sprite=sprite)
-TheoCrystal(x::Integer, y::Integer) = Entity(__name="theoCrystal", x=x, y=y)
+PicoConsole(x::Integer, y::Integer) = Entity("picoconsole", Dict{String, Any}("x"=>x, "y"=>y))
 
-Bumper(x::Integer, y::Integer) = Entity(__name="bigSpinner", x=x, y=y)
+SoundSource(x::Integer, y::Integer, sound::String) = Entity("soundsource", Dict{String, Any}("x"=>x, "y"=>y, "sound"=>sound))
 
-entityIdSerial = 0
-blacklistedEntityAttrs = String["nodes"]
-noEntityDedup = String["x", "y"]
-baseEntity = Entity()
+IntroCar(x::Integer, y::Integer) = Entity("introCar", Dict{String, Any}("x"=>x, "y"=>y))
+
+Cloud(x::Integer, y::Integer, fragile::Bool=false) = Entity("cloud", Dict{String, Any}("x"=>x, "y"=>y, "fragile"=>fragile))
+
+Spring(x::Integer, y::Integer, playerCanUse::Bool=true) = Entity("spring", Dict{String, Any}("x"=>x, "y"=>y, "playerCanUse"=>playerCanUse))
+SpringRight(x::Integer, y::Integer) = Entity("wallSpringRight", Dict{String, Any}("x"=>x, "y"=>y))
+SpringLeft(x::Integer, y::Integer) = Entity("wallSpringLeft", Dict{String, Any}("x"=>x, "y"=>y))
+
+ColorSwitch(x::Integer, y::Integer, variant::String) = Entity("colorSwitch", Dict{String, Any}("x"=>x, "y"=>y, "variant"=>variant))
+YellowBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("yellowBlocks", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "inverted"=>inverted))
+GreenBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("greenBlocks", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "inverted"=>inverted))
+RedBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("redBlocks", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "inverted"=>inverted))
+ClutterCabinet(x::Integer, y::Integer) = Entity("clutterCabinet", Dict{String, Any}("x"=>x, "y"=>y))
+ClutterDoor(x::Integer, y::Integer, width::Integer, height::Integer, variant::String) = Entity("clutterDoor", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "variant"=>variant))
+
+DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=true, sprite::String="default") = Entity("dashSwitchH", Dict{String, Any}("x"=>x, "y"=>y, "leftSide"=>leftSide, "persistent"=>persistent, "sprite"=>sprite))
+DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=true, sprite::String="default") = Entity("dashSwitchV", Dict{String, Any}("x"=>x, "y"=>y, "ceiling"=>ceiling, "persistent"=>persistent, "sprite"=>sprite))
+TempleGate(x::Integer, y::Integer, height::Integer=48, variant::String="NearestSwitch", sprite::String="default") = Entity("templeGate", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "variant"=>variant, "sprite"=>sprite))
+TheoCrystal(x::Integer, y::Integer) = Entity("theoCrystal", Dict{String, Any}("x"=>x, "y"=>y))
+
+Bumper(x::Integer, y::Integer) = Entity("bigSpinner", Dict{String, Any}("x"=>x, "y"=>y))
+
+Bonfire(x::Integer, y::Integer, mode::String="lit") = Entity("bonfire", Dict{String, Any}("x"=>x, "y"=>y, "mode"=>mode))
+FriendlyGhost(x::Integer, y::Integer) = Entity("friendlyGhost", Dict{String, Any}("x"=>x, "y"=>y))
+OshiroBoss = FriendlyGhost
+
+Key(x::Integer, y::Integer) = Entity("key", Dict{String, Any}("x"=>x, "y"=>y))
+LockBlock(x::Integer, y::Integer, sprite::String="wood") = Entity("lockBlock", Dict{String, Any}("x"=>x, "y"=>y, "sprite"=>sprite))
+
+Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", Dict{String, Any}("x"=>x, "y"=>y))
+Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", Dict{String, Any}("x"=>x, "y"=>y, "mode"=>mode))
+
+CoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("coreMessage", Dict{String, Any}("x"=>x, "y"=>y, "line"=>line, "dialog"=>dialog))
+
+blacklistedEntityAttrs = String["nodes", "name"]
 
 function Base.Dict(e::Entity)
     res = Dict{String, Any}()
+    res["__name"] = e.name
+    res["id"] = e.id
 
-    for f in fieldnames(e)
-        fs = string(f)
-        value = getfield(e, f)
-
-        if !(fs in blacklistedEntityAttrs) && (value != getfield(baseEntity, f) || fs in noEntityDedup)
-            res[fs] = value
+    for (key, value) in e.data
+        if !(key in blacklistedEntityAttrs)
+            res[key] = value
         end
     end
 
-    res["id"] = entityIdSerial
-    global entityIdSerial += 1
+    if haskey(e.data, "nodes")
+        if length(e.data["nodes"]) > 0
+            res["__children"] = []
 
-    if length(e.nodes) > 0
-        res["__children"] = []
-
-        for node in e.nodes
-            push!(res["__children"], Dict(
-                "__name" => "node",
-                "x" => node[1],
-                "y" => node[2]
-            ))
+            for node in e.data["nodes"]
+                push!(res["__children"], Dict{String, Any}(
+                    "__name" => "node",
+                    "x" => node[1],
+                    "y" => node[2]
+                ))
+            end
         end
     end
 
