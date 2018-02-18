@@ -64,7 +64,7 @@ mutable struct Tiles
     Tiles(d::Array{Char, 2}) = new(d)
 
     function Tiles(s::String)
-        s = replace(s, "\r\n", "\n")
+        s = chomp(replace(s, "\r\n", "\n"))
         lines = split(s, "\n")
 
         cols = maximum(length.(lines))
