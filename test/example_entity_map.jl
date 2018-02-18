@@ -51,5 +51,4 @@ map = Map(
     ]
 )
 
-dMap = Dict(map)
-encodeMap(dMap, "Testing-EntityMap.bin")
+encodeMap(map, "Testing-EntityMap.bin")

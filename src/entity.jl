@@ -4,16 +4,14 @@ function nextEntityId()
     return global entityIdSerial += 1
 end
 
-@with_kw mutable struct Entity
-    name::String = "" # Entity Type
-    id::Integer = nextEntityId()
+mutable struct Entity
+    name::String
+    id::Integer
 
-    data::Dict{String, Any} = Dict{String, Any}()
+    data::Dict{String, Any}
 end
 
-function Entity(name::String, data)
-    return Entity(name=name, data=data)
-end
+Entity(name::String, data::Dict{String, Any}) = Entity(name, nextEntityId(), data)
 
 Player(x::Integer, y::Integer) = Entity("player", Dict{String, Any}("x"=>x, "y"=>y, "width"=>8))
 DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", Dict{String, Any}("x"=>x, "y"=>y))
@@ -188,7 +186,7 @@ Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", Dict{String, Any}
 
 CoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("coreMessage", Dict{String, Any}("x"=>x, "y"=>y, "line"=>line, "dialog"=>dialog))
 
-blacklistedEntityAttrs = String["nodes", "name"]
+blacklistedEntityAttrs = String["nodes"]
 
 function Base.Dict(e::Entity)
     res = Dict{String, Any}()
@@ -203,7 +201,7 @@ function Base.Dict(e::Entity)
 
     if haskey(e.data, "nodes")
         if length(e.data["nodes"]) > 0
-            res["__children"] = []
+            res["__children"] = Dict{String, Any}[]
 
             for node in e.data["nodes"]
                 push!(res["__children"], Dict{String, Any}(

@@ -1,7 +1,7 @@
 # Maple
 
 This is Maple, a thin wrapper for generating map files for the game Celeste which can be loaded in the stock game or using [Everest](https://github.com/EverestAPI/Everest).
-For usage without Everest you can replace a map in `Content/Maps` (remember backups), otherwise, you can place it in `MapContent/Maps` with Everest and use the custom chapter loading. 
+For usage without Everest you can replace a map in `Content/Maps` (remember backups), otherwise, you can place it in `ModContent/Maps` with Everest and use the custom chapter loading. 
 
 Improvements to user-friendliness are under development. Coding experience is required, but the tool should be rather easy to learn even if you know just the basics.
 

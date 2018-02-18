@@ -1,11 +1,15 @@
 mutable struct Decal
     texture::String
 
-    x::Integer
-    y::Integer
+    x::Number
+    y::Number
 
     scaleX::Integer
     scaleY::Integer
+end
+
+function Decal(texture::String, x::Number, y::Number)
+    return Decal(texture, x, y, 1, 1)
 end
 
 function Base.Dict(d::Decal)

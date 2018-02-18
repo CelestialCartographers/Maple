@@ -105,45 +105,48 @@ numTypes = [
   Int32
 ]
 
-function encodeValue(fh, key, value, lookup)
-  if isa(value, Bool)
-    write(fh, 0x0)
-    write(fh, value)
+function encodeValue(buffer::IOBuffer, key::String, value::Bool, lookup::Array{String, 1})
+  write(buffer, 0x0)
+  write(buffer, value)
+end
 
-  elseif isa(value, Integer)
-    for (i, t) in enumerate(numTypes)
-      if typemin(t) <= value <= typemax(t)
-        write(fh, UInt8(i))
-        write(fh, t(value))
-        return
-      end
+
+function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Array{String, 1})
+  for (i, t) in enumerate(numTypes)
+    if typemin(t) <= value <= typemax(t)
+      write(buffer, UInt8(i))
+      write(buffer, t(value))
+     
+      break
     end
-
-  elseif isa(value, Float32)
-    write(fh, 0x4)
-    write(fh, value)
-
-  elseif isa(value, String)
-    index = findfirst(lookup, value) - 1
-
-    if index < 0
-      if key == "innerText"
-        value = encodeRunLength(value)
-
-        write(fh, 0x7)
-        write(fh, UInt16(length(value)))
-        write(fh, value)
-
-      else
-        write(fh, 0x6)
-        writeString(fh, value)
-      end
-
-    else
-      write(fh, 0x5)
-      write(fh, Int16(index))
   end
 end
+
+function encodeValue(buffer::IOBuffer, key::String, value::AbstractFloat, lookup::Array{String, 1})
+  write(buffer, 0x4)
+  write(buffer, Float32(value))
+end
+
+function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Array{String, 1})
+  index = findfirst(lookup, value) - 1
+
+  if index < 0
+    if key == "innerText"
+      value = encodeRunLength(value)
+
+      write(buffer, 0x7)
+      write(buffer, UInt16(length(value)))
+      write(buffer, value)
+
+    else
+      write(buffer, 0x6)
+      writeString(buffer, value)
+    end
+
+  else
+    write(buffer, 0x5)
+    write(buffer, Int16(index))
+  end
 end
 
 function decodeElement(fh, parent, lookup)
@@ -177,7 +180,7 @@ function decodeElement(fh, parent, lookup)
   end
 end
 
-function decodeMap(fn, checkHeader=true)
+function decodeMap(fn::String, checkHeader::Bool=true)
   fh = open(fn, "r")
   if checkHeader
     if readString(fh) != "CELESTE MAP"
@@ -198,7 +201,7 @@ function decodeMap(fn, checkHeader=true)
   return res
 end
 
-function decodeAllMaps(maps, output)
+function decodeAllMaps(maps::String, output::String)
   mapBins = [f for f in readdir(maps) if isfile(joinpath(maps, f)) && endswith(f, ".bin")]
   for fn in mapBins
     map = decodeMap(joinpath(maps, fn))
@@ -207,7 +210,7 @@ function decodeAllMaps(maps, output)
   end
 end
 
-function populateEncodeKeyNames!(d, seen)
+function populateEncodeKeyNames!(d, seen::Dict{String, Bool})
   seen[d["__name"]] = true
   children = get(d, "__children", [])
 
@@ -225,39 +228,43 @@ function populateEncodeKeyNames!(d, seen)
   end
 end
 
-function getAttributeNames(d)
-  attr = String[]
+function getAttributeNames(d::Dict{String, Any})
+  attr = Dict{String, Any}()
 
   for (k, v) in d
     if !startswith(k, "_")
-      push!(attr, k)
+      attr[k] = v
     end
   end
 
   return attr
 end
 
-function encodeElement(buffer, element, lookup)
+function encodeValue(buffer::IOBuffer, elements::Array{Dict{String, Any}}, lookup::Array{String})
+  for element in elements
+    encodeValue(buffer, element, lookup)
+  end
+end
+
+function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Array{String})
   attributes = getAttributeNames(element)
   children = get(element, "__children", Dict{String, Any}[])
 
   write(buffer, UInt16(findfirst(lookup, element["__name"]) - 1))
-  write(buffer, UInt8(length(attributes)))
+  write(buffer, UInt8(length(keys(attributes))))
 
-  for (attr, value) in element
+  for (attr, value) in attributes
     if !startswith(attr, "_")
       write(buffer, UInt16(findfirst(lookup, attr) - 1))
       encodeValue(buffer, attr, value, lookup)
     end
   end
-  write(buffer, UInt16(length(children)))
 
-  for child in children
-     encodeElement(buffer, child, lookup)
-  end
+  write(buffer, UInt16(length(children)))
+  encodeValue(buffer, children, lookup)
 end
 
-function encodeMap(map, outfile)
+function encodeMap(map::Dict{String, Any}, outfile::String)
   seen = Dict{String, Bool}()
   populateEncodeKeyNames!(map, seen)
   lookup = collect(keys(seen))
@@ -271,7 +278,7 @@ function encodeMap(map, outfile)
     writeString(buffer, s)
   end
 
-  encodeElement(buffer, map, lookup)
+  encodeValue(buffer, map, lookup)
 
   fh = open(outfile, "w")
   write(fh, buffer.data)

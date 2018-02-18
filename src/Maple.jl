@@ -11,6 +11,6 @@ include("map_coder.jl")
 @exportalltypes
 
 # export functions manually
-export encodeMap, decodeMap, entityMap
+export encodeMap, loadMap, entityMap
 
 end
