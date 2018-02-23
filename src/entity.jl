@@ -184,7 +184,10 @@ LockBlock(x::Integer, y::Integer, sprite::String="wood") = Entity("lockBlock", D
 Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", Dict{String, Any}("x"=>x, "y"=>y))
 Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", Dict{String, Any}("x"=>x, "y"=>y, "mode"=>mode))
 
-CoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("coreMessage", Dict{String, Any}("x"=>x, "y"=>y, "line"=>line, "dialog"=>dialog))
+CoreMessage(x::Integer, y::Integer, line::Integer) = Entity("coreMessage", Dict{String, Any}("x"=>x, "y"=>y, "line"=>line))
+CustomCoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("customCoreMessage", Dict{String, Any}("x"=>x, "y"=>y, "line"=>line, "dialog"=>dialog))
+Memorial(x::Integer, y::Integer, dreaming::Bool=false) = Entity("memorial", Dict{String, Any}("x"=>x, "y"=>y, "dreaming"=>dreaming))
+CustomMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("customMemorial", Dict{String, Any}("x"=>x, "y"=>y, "dreaming"=>dreaming, "dialog"=>dialog, "sprite"=>sprite))
 
 blacklistedEntityAttrs = String["nodes"]
 

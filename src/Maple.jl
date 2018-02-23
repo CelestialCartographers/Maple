@@ -5,12 +5,12 @@ macro exportalltypes()
     return Expr(:export, filter(val -> match(r"#|@|(^[a-z])", string(val)) == nothing, names(Maple, true))...)
 end
 
-include("map.jl")
+include("metadata.jl")
 include("map_coder.jl")
 
 @exportalltypes
 
 # export functions manually
-export encodeMap, loadMap, entityMap
+export encodeMap, loadMap, entityMap, yaml
 
 end

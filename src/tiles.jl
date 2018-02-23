@@ -99,3 +99,5 @@ end
 function Base.string(t::Tiles)
     return join(String.([t.data[i, :] for i in 1:size(t.data, 1)]), "\n")
 end
+
+Base.size(t::Tiles) = reverse(size(t.data)) .* 8

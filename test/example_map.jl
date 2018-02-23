@@ -32,6 +32,8 @@ lvl_1_fg = """
 333333333333333333333333333333333333333333333333
 """
 
+fgTiles = FgTiles(lvl_1_fg)
+
 println("Map type")
 @time map = Map(
     "Testing",
@@ -39,24 +41,16 @@ println("Map type")
         Level(
             name = "lvl_1",
 
-            fgTiles = FgTiles(lvl_1_fg),
+            fgTiles = fgTiles,
 
             position = (0, 0),
-            size = (384, 200),
+            size = size(fgTiles),
 
             entities = Entity[
                 Player(16, 144),
                 ChapterCheckpoint(16, 144),
 
-                TheoCrystal(80, 80),
-                TempleGate(160, 144, 48, "HoldingTheo", "theo"),
-
-                DashSwitchHorizontal(176, 144, false),
-                DashSwitchHorizontal(192, 144, true),
-
-
-                DashSwitchVertical(208, 144, false),
-                DashSwitchVertical(224, 144, true),
+                CustomMemorial(160, 160, true, "memorial_test", "decals/playerR"),
             ],
         )
     ]

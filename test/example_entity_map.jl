@@ -33,7 +33,6 @@ lvl_1_fg = """
 """
 
 fgTiles = FgTiles(lvl_1_fg)
-height, width = size(fgTiles.data) .* 8
 
 map = Map(
     "EntityMapExample",
@@ -44,7 +43,7 @@ map = Map(
             fgTiles = fgTiles,
 
             position = (0, 0),
-            size = (width, height),
+            size = size(fgTiles),
 
             entities = entityMap(lvl_1_fg)
         )
