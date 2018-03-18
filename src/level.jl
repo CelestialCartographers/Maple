@@ -1,9 +1,10 @@
 include("entity.jl")
-include("entity_map.jl")
 include("decal.jl")
 include("trigger.jl")
 include("tiles.jl")
 include("nodes.jl")
+include("entity_map.jl")
+include("songs.jl")
 
 @with_kw mutable struct Level
     fgDecals::Array{Decal, 1} = Decal[]

@@ -88,23 +88,6 @@ module ColorGrades
 @enum ColorGrade oldsite reflection
 end
 
-module Songs
-songNames = String[
-    "event:/music/cassette/01_forsaken_city",
-    "event:/music/cassette/02_old_site",
-    "event:/music/cassette/03_resort",
-    "event:/music/cassette/04_cliffside",
-    "event:/music/cassette/05_mirror_temple",
-    "event:/music/cassette/06_reflection",
-    "event:/music/cassette/07_summit",
-    "event:/music/cassette/09_core"
-]
-@enum Song ForsakenCity=1 OldSite=2 Resort=3 Cliffside=4 MirrorTemple=5 Reflection=6 Summit=7 Core=8
-Base.getindex(a::Array{String, 1}, s::Songs.Song) = getindex(a, convert(Int32, s))
-end
-
-yaml(buf::IOBuffer, k::String, v::Songs.Song, indent::Integer = 0) = yaml(buf, "$k: $(safe_string(Songs.songNames[v]))\n", indent)
-
 module Inventories
 @enum Inventory Default CH6End Core OldSite Prologue TheSummit
 end
@@ -139,7 +122,7 @@ struct Chapter
         introType::Union{IntroTypes.IntroType, Void} = nothing,
         colorGrade::Union{ColorGrades.ColorGrade, Void} = nothing,
         cassetteNoteColor::Union{UInt32, Void} = nothing,
-        cassetteSong::Union{Songs.Song, Void} = nothing,
+        cassetteSong::String = "event:/music/lvl2/awake",
         sideA::Union{Side, Void} = nothing,
         sideB::Union{Side, Void} = nothing,
         sideC::Union{Side, Void} = nothing,

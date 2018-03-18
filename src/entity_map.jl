@@ -1,5 +1,5 @@
 # TODO - Add more
-DEFAULT_ENTITY_MAP = Dict{Char, Function}(
+default_entity_map = Dict{Char, Function}(
     '^' => SpikesUp,
     '<' => SpikesLeft,
     'v' => SpikesDown,
@@ -25,7 +25,7 @@ DEFAULT_ENTITY_MAP = Dict{Char, Function}(
     'F' => Feather
 )
 
-ENTITY_OFFETS = Dict{Function, Tuple{Integer, Integer}}(
+entity_offsets = Dict{Function, Tuple{Integer, Integer}}(
     SpikesUp => (0, 8),
     SpikesLeft => (8, 0),
     SpikesDown => (0, 0),
@@ -57,7 +57,7 @@ ENTITY_OFFETS = Dict{Function, Tuple{Integer, Integer}}(
     # TODO - Add more
 )
 # Function => (searchWidth, searchHeight)
-SEARCH_FOR_SIZE = Dict{Function, Tuple{Bool, Bool}}(
+search_for_size = Dict{Function, Tuple{Bool, Bool}}(
     SpikesUp => (true, false),
     SpikesDown => (true, false),
     SpikesLeft => (false, true),
@@ -65,6 +65,8 @@ SEARCH_FOR_SIZE = Dict{Function, Tuple{Bool, Bool}}(
 
     DreamBlock => (true, true),
     CrumbleBlock => (true, false),
+    DashBlock => (true, true),
+    NegaBlock => (true, true),
 
     JumpThru => (true, false),
 
@@ -85,7 +87,6 @@ SEARCH_FOR_SIZE = Dict{Function, Tuple{Bool, Bool}}(
     SpringRight => (false,  false),
 
     Bumper => (false, false),
-
 )
 
 function searchSize(tiles::Array{Char, 2}, x::Integer, y::Integer, searchWidth::Bool=true, searchHeight::Bool=true)
@@ -109,8 +110,10 @@ function searchSize(tiles::Array{Char, 2}, x::Integer, y::Integer, searchWidth::
     return stopX - x + 1, stopY - y + 1
 end
 
-function entityMap(s::String, lookup::Dict{Char, Function}=DEFAULT_ENTITY_MAP)
-    tiles = Tiles(s).data
+entityMap(s::String, lookup::Dict{Char, Function}=default_entity_map) = entityMap(Tiles(s).data, lookup)
+entityMap(t::Tiles, lookup::Dict{Char, Function}=default_entity_map) = entityMap(t.data, lookup)
+
+function entityMap(tiles::Array{Char, 2}, lookup::Dict{Char, Function}=default_entity_map)
     height, width = size(tiles)
 
     complete = fill(false, (height, width))
@@ -123,9 +126,9 @@ function entityMap(s::String, lookup::Dict{Char, Function}=DEFAULT_ENTITY_MAP)
 
             if !complete[y, x] && haskey(lookup, v)
                 func = lookup[v]
-                offset = haskey(ENTITY_OFFETS, func)? ENTITY_OFFETS[func] : (0, 0)
+                offset = haskey(entity_offsets, func)? entity_offsets[func] : (0, 0)
 
-                searchWidth, searchHeight = haskey(SEARCH_FOR_SIZE, func)? SEARCH_FOR_SIZE[func] : (false, false)
+                searchWidth, searchHeight = haskey(search_for_size, func)? search_for_size[func] : (false, false)
                 tileWidth, tileHeight = searchSize(tiles, x, y, searchWidth, searchHeight)
 
                 complete[y:y + tileHeight - 1, x:x + tileWidth - 1] = true

@@ -1,4 +1,4 @@
-TILE_NAMES = Dict{Any, Any}(
+tile_names = Dict{Any, Any}(
     '1' => "Dirt",
     '3' => "Snow",
     '4' => "Girder",
@@ -44,14 +44,14 @@ TILE_NAMES = Dict{Any, Any}(
     "Deadgrass" => 'l',
 )
 
-VALID_FG_TILES = Char[
+valid_fg_tiles = Char[
     '0', '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd', 'e',
     'f', 'g', 'G', 'h', 'i', 'j', 'k',
     'l'
 ]
 
-VALID_BG_TILES = Char[
+valid_bg_tiles = Char[
     '0', '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd'
 ]
@@ -82,19 +82,18 @@ end
 
 # Removes illegal characters from the tileset
 # Makes it possible to put simple entity map and fg in same string
-function FgTiles(s::String, valid::Array{Char, 1}=VALID_FG_TILES)
-    tiles = Tiles(s)
+function FgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_fg_tiles)
     tiles.data = [c in valid? c : '0' for c in tiles.data]
 
     return tiles
 end
 
-function BgTiles(s::String, valid::Array{Char, 1}=VALID_BG_TILES)
-    tiles = Tiles(s)
-    tiles.data = [c in valid? c : '0' for c in tiles.data]
+FgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(tiles), valid)
+FgTiles(s::String, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(s), valid)
 
-    return tiles
-end
+BgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(tiles, valid)
+BgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(tiles), valid)
+BgTiles(s::String, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(s), valid)
 
 function Base.string(t::Tiles)
     return join(String.([t.data[i, :] for i in 1:size(t.data, 1)]), "\n")
