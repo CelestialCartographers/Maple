@@ -1,5 +1,5 @@
 # Temporarily add this repo's Maple to the module path.
-# Do not use this if you installed Maple using Pkg.add.
+# Do not use this if you installed Maple using Pkg.clone.
 push!(LOAD_PATH, "$(pwd())/src")
 
 using Maple
@@ -36,8 +36,8 @@ fgTiles = FgTiles(lvl_1_fg)
 
 map = Map(
     "EntityMapExample",
-    Level[
-        Level(
+    Room[
+        Room(
             name = "lvl_1",
 
             fgTiles = fgTiles,

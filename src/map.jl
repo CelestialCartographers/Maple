@@ -1,19 +1,20 @@
 using Parameters
 
-include("level.jl")
+include("room.jl")
 include("style.jl")
 
+# Quirk with the "fancy" JSON converting, make sure we always have an array to work with
 packIfDict(data) = isa(data, Dict) ? Dict{String, Any}[data] : data
 
 struct Map
     package::String
-    levels::Array{Level, 1}
+    rooms::Array{Room, 1}
     style::Style
 
-    Map(package::String, levels::Array{Level, 1}) = new(package, levels, Style())
-    Map(package::String, levels::Level...) = new(package, levels, Style())
-
-    Map(package::String, levels::Array{Level, 1}, style::Style) = new(package, levels, style)
+    Map(package::String) = new(package, Room[], Style())
+    Map(package::String, rooms::Array{Room, 1}) = new(package, rooms, Style())
+    Map(package::String, rooms::Room...) = new(package, rooms, Style())
+    Map(package::String, rooms::Array{Room, 1}, style::Style) = new(package, rooms, style)
 end
 
 function Base.Dict(m::Map)
@@ -21,10 +22,10 @@ function Base.Dict(m::Map)
         "_package" => m.package,
         "__name" => "Map",
         "__children" => [
-            # Levels
+            # Rooms
             Dict{String, Any}(
                 "__name" => "levels",
-                "__children" => Dict.(m.levels)
+                "__children" => Dict.(m.rooms)
             ),
 
             # Style
@@ -36,6 +37,29 @@ function Base.Dict(m::Map)
             # TODO - Filler rects?
         ]
     )
+end
+
+function getRoomByName(map::Map, name::String) 
+    for room in map.rooms
+        if room.name == name
+            return room
+        end
+    end
+
+    return false
+end
+
+function getRoomByCoords(map::Map, x::Number, y::Number) 
+    for room in map.rooms
+        roomX, roomY = Int.(room.position)
+        width, height = Int.(room.size)
+        
+        if x > roomX && x < roomX + width && y > roomY && y < roomY + height
+            return room
+        end
+    end
+
+    return false
 end
 
 encodeMap(map::Map, outfile::String) = encodeMap(Dict(map), outfile)
@@ -83,24 +107,25 @@ function loadStyleground(styleData::Dict{String, Any})
     return style
 end
 
+# TODO Consider splitting this up like styleground
 function loadMap(map::Dict{String, Any})
     mapData = map["Map"]
     package = map["_package"]
-    levelsData = mapData["levels"]["level"]
+    roomsData = mapData["levels"]["level"]
 
-    levels = Level[]
+    rooms = Room[]
 
     style = get(mapData, "Style", Dict{Any, String}())
     
     fgStyle = loadStyleground(get(style, "Foregrounds", Dict{String, Any}()))
     bgStyle = loadStyleground(get(style, "Backgrounds", Dict{String, Any}()))
 
-    # Add levels
-    for level in packIfDict(levelsData)
+    # Add rooms
+    for room in packIfDict(roomsData)
         # Add fg decals
         fgDecals = Decal[]
-        if haskey(level, "fgdecals")
-            for (decalName, decalData) in level["fgdecals"]
+        if haskey(room, "fgdecals")
+            for (decalName, decalData) in room["fgdecals"]
                 if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
                     for data in packIfDict(decalData)
                         push!(fgDecals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
@@ -111,8 +136,8 @@ function loadMap(map::Dict{String, Any})
 
         # Add bg decals
         bgDecals = Decal[]
-        if haskey(level, "bgdecals")
-            for (decalName, decalData) in level["bgdecals"]
+        if haskey(room, "bgdecals")
+            for (decalName, decalData) in room["bgdecals"]
                 if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
                     for data in packIfDict(decalData)
                         push!(bgDecals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
@@ -121,10 +146,10 @@ function loadMap(map::Dict{String, Any})
             end
         end
 
-        # Add level entities
+        # Add room entities
         entities = Entity[]
-        if haskey(level, "entities")
-            for (entityName, entityData) in level["entities"]
+        if haskey(room, "entities")
+            for (entityName, entityData) in room["entities"]
                 # Special cases
                 if entityName == "offsetX" || entityName == "offsetY"
                     continue
@@ -149,10 +174,10 @@ function loadMap(map::Dict{String, Any})
             end
         end
 
-        # Add level entities
+        # Add room entities
         triggers = Trigger[]
-        if haskey(level, "triggers")
-            for (triggerName, triggerData) in level["triggers"]
+        if haskey(room, "triggers")
+            for (triggerName, triggerData) in room["triggers"]
                 # Special cases
                 if triggerName == "offsetX" || triggerName == "offsetY"
                     continue
@@ -176,16 +201,16 @@ function loadMap(map::Dict{String, Any})
 
 
         # fgtiles
-        fgTiles = FgTiles(get(level["solids"], "innerText", ""))
+        fgTiles = FgTiles(get(room["solids"], "innerText", ""))
 
         # bgtiles
-        bgTiles = BgTiles(get(level["bg"], "innerText", ""))
+        bgTiles = BgTiles(get(room["bg"], "innerText", ""))
 
-        push!(levels, Level(
-            name = get(level, "name", "lvl_1"),
+        push!(rooms, Room(
+            name = get(room, "name", "lvl_1"),
             
-            position = (level["x"], level["y"]),
-            size = (level["width"], level["height"]),
+            position = (room["x"], room["y"]),
+            size = (room["width"], room["height"]),
 
             entities = entities,
             triggers = triggers,
@@ -196,23 +221,23 @@ function loadMap(map::Dict{String, Any})
             fgTiles = fgTiles,
             bgTiles = bgTiles,
 
-            musicLayer1 = get(level, "musicLayer1", true),
-            musicLayer2 = get(level, "musicLayer2", true),
-            musicLayer3 = get(level, "musicLayer3", true),
-            musicLayer4 = get(level, "musicLayer4", true),
+            musicLayer1 = get(room, "musicLayer1", true),
+            musicLayer2 = get(room, "musicLayer2", true),
+            musicLayer3 = get(room, "musicLayer3", true),
+            musicLayer4 = get(room, "musicLayer4", true),
 
-            dark = get(level, "dark", false),
-            space = get(level, "space", false),
-            underwater = get(level, "underwater", false),
-            whisper = get(level, "whisper", false),
-            disableDownTransition = get(level, "disableDownTransition", false),
+            dark = get(room, "dark", false),
+            space = get(room, "space", false),
+            underwater = get(room, "underwater", false),
+            whisper = get(room, "whisper", false),
+            disableDownTransition = get(room, "disableDownTransition", false),
 
-            music = get(level, "music", "music_oldsite_awake"),
-            alt_music = get(level, "alt_music", ""),
+            music = get(room, "music", "music_oldsite_awake"),
+            alt_music = get(room, "alt_music", ""),
             
-            windPattern = get(level, "windPattern", "None")
+            windPattern = get(room, "windPattern", "None")
         ))
     end
 
-    return Map(package, levels, Style(fgStyle, bgStyle))
+    return Map(package, rooms, Style(fgStyle, bgStyle))
 end

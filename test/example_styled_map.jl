@@ -1,5 +1,5 @@
 # Temporarily add this repo's Maple to the module path.
-# Do not use this if you installed Maple using Pkg.add.
+# Do not use this if you installed Maple using Pkg.clone.
 push!(LOAD_PATH, "$(pwd())/src")
 
 using Maple
@@ -37,8 +37,8 @@ height, width = size(fgTiles.data) .* 8
 println("Map type")
 @time map = Map(
     "Cruor-Testing",
-    Level[
-        Level(
+    Room[
+        Room(
             name = "lvl_3",
 
             fgTiles = fgTiles,

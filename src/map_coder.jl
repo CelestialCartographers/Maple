@@ -198,6 +198,7 @@ function decodeMap(fn::String, checkHeader::Bool=true)
   res = Dict{String, Any}()
   decodeElement(fh, res, lookup)
   res["_package"] = package
+  close(fh)
   return res
 end
 
@@ -205,8 +206,9 @@ function decodeAllMaps(maps::String, output::String)
   mapBins = [f for f in readdir(maps) if isfile(joinpath(maps, f)) && endswith(f, ".bin")]
   for fn in mapBins
     map = decodeMap(joinpath(maps, fn))
-    fh = open(joinpath(output, basename(fn) * ".json"), "w")
-    write(fh, JSON.json(map, 4))
+    open(joinpath(output, basename(fn) * ".json"), "w") do fh
+      write(fh, JSON.json(map, 4))
+    end
   end
 end
 
@@ -280,7 +282,7 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
 
   encodeValue(buffer, map, lookup)
 
-  fh = open(outfile, "w")
-  write(fh, buffer.data)
-  close(fh)
+  open(outfile, "w") do fh
+    write(fh, buffer.data)
+  end
 end

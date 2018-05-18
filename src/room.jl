@@ -4,9 +4,9 @@ include("trigger.jl")
 include("tiles.jl")
 include("nodes.jl")
 include("entity_map.jl")
-include("songs.jl")
+include("enums.jl")
 
-@with_kw mutable struct Level
+@with_kw mutable struct Room
     fgDecals::Array{Decal, 1} = Decal[]
     bgDecals::Array{Decal, 1} = Decal[]
 
@@ -41,39 +41,50 @@ include("songs.jl")
     windPattern::String = "None"
 end
 
-blacklistedLevelAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "entities", "triggers"]
+# Set the fg and bg tiles to the size of the room
+function initTiles(room::Room, center::Char='0', border::Char='0')
+    tw, th = ceil.(Int, room.size ./ 8)
 
-function Base.Dict(l::Level)
+    tiles = fill(border, (th, tw))
+    tiles[2:end - 1, 2:end - 1] = center
+
+    room.fgTiles = Tiles(copy(tiles))
+    room.bgTiles = Tiles(copy(tiles))
+end
+
+blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "entities", "triggers"]
+
+function Base.Dict(r::Room)
     res = Dict{String, Any}()
 
-    for f in fieldnames(l)
+    for f in fieldnames(r)
         fs = String(f)
-        value = getfield(l, f)
+        value = getfield(r, f)
 
-        if !(fs in blacklistedLevelAttrs)
+        if !(fs in blacklistedRoomAttrs)
             res[fs] = value
         end
     end
 
     res["__name"] = "level"
 
-    res["x"] = l.position[1]
-    res["y"] = l.position[2]
+    res["x"] = r.position[1]
+    res["y"] = r.position[2]
 
-    res["c"] = l.color
+    res["c"] = r.color
 
-    res["width"] = l.size[1]
-    res["height"] = l.size[2]
+    res["width"] = r.size[1]
+    res["height"] = r.size[2]
 
     res["__children"] = Dict{String, Any}[
         Dict{String, Any}(
             "__name" => "solids",
-            "innerText" => string(l.fgTiles)
+            "innerText" => string(r.fgTiles)
         ),
 
         Dict{String, Any}(
             "__name" => "bg",
-            "innerText" => string(l.bgTiles),
+            "innerText" => string(r.bgTiles),
         ),
 
         Dict{String, Any}(
@@ -88,25 +99,25 @@ function Base.Dict(l::Level)
 
         Dict{String, Any}(
             "__name" => "entities",
-            "__children" => Dict.(l.entities)
+            "__children" => Dict.(r.entities)
         ),
 
         Dict{String, Any}(
             "__name" => "triggers",
-            "__children" => Dict.(l.triggers)
+            "__children" => Dict.(r.triggers)
         ),
 
 
         Dict{String, Any}(
             "__name" => "fgdecals",
             "tileset" => "Scenery",
-            "__children" => Dict.(l.fgDecals)
+            "__children" => Dict.(r.fgDecals)
         ),
 
         Dict{String, Any}(
             "__name" => "bgdecals",
             "tileset" => "Scenery",
-            "__children" => Dict.(l.bgDecals)
+            "__children" => Dict.(r.bgDecals)
         )
     ]
 

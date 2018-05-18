@@ -76,3 +76,21 @@ end
     "cas_08_core" => "event:/music/cassette/09_core"
 ))
 end
+
+windpatterns = [
+    "None",
+    "Left",
+    "Right",
+    "LeftStrong",
+    "RightStrong",
+    "LeftOnOff",
+    "RightOnOff",
+    "LeftOnOffFast",
+    "RightOnOffFast",
+    "Alternating",
+    "LeftGemsOnly",
+    "RightCrazy",
+    "Down",
+    "Up",
+    "Space"
+]
