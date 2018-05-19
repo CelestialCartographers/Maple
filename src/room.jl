@@ -45,14 +45,16 @@ end
 function updateTileSize!(room::Room, center::Char='0', border::Char='0')
     tw, th = ceil.(Int, room.size ./ 8)
 
-    tiles = fill(border, (th, tw))
-    tiles[2:end - 1, 2:end - 1] = center
+    tiles = fill(center, (th, tw))
 
     fth, ftw = min.(size(room.fgTiles.data), (th, tw))
     bth, btw = min.(size(room.bgTiles.data), (th, tw))
 
-    fg = copy(tiles)[1:fth, 1:ftw] = room.fgTiles.data[1:fth, 1:ftw]
-    bg = copy(tiles)[1:bth, 1:btw] = room.bgTiles.data[1:bth, 1:btw]
+    fg = copy(tiles)
+    bg = copy(tiles)
+
+    fg[1:fth, 1:ftw] = room.fgTiles.data[1:fth, 1:ftw]
+    bg[1:bth, 1:btw] = room.bgTiles.data[1:bth, 1:btw]
 
     room.fgTiles = Tiles(fg)
     room.bgTiles = Tiles(bg)
