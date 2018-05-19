@@ -42,14 +42,20 @@ include("enums.jl")
 end
 
 # Set the fg and bg tiles to the size of the room
-function initTiles(room::Room, center::Char='0', border::Char='0')
+function updateTileSize!(room::Room, center::Char='0', border::Char='0')
     tw, th = ceil.(Int, room.size ./ 8)
 
     tiles = fill(border, (th, tw))
     tiles[2:end - 1, 2:end - 1] = center
 
-    room.fgTiles = Tiles(copy(tiles))
-    room.bgTiles = Tiles(copy(tiles))
+    fth, ftw = min.(size(room.fgTiles.data), (th, tw))
+    bth, btw = min.(size(room.bgTiles.data), (th, tw))
+
+    fg = copy(tiles)[1:fth, 1:ftw] = room.fgTiles.data[1:fth, 1:ftw]
+    bg = copy(tiles)[1:bth, 1:btw] = room.bgTiles.data[1:bth, 1:btw]
+
+    room.fgTiles = Tiles(fg)
+    room.bgTiles = Tiles(bg)
 end
 
 blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "entities", "triggers"]

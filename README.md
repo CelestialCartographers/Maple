@@ -5,7 +5,7 @@ For usage without Everest you can replace a map in `Content/Maps` (remember back
 
 Improvements to user-friendliness are under development. Coding experience is required, but the tool should be rather easy to learn even if you know just the basics. If you want a visual editor, check out [Ahorn](https://github.com/CelestialCartographers/Ahorn), which is built on this.
 
-This project is an unofficial level editor, it is merly a fan project aiming to aid map development until something official is available. None of this code is developed by or connected to the Celeste development team.
+This project is an unofficial level editor, it is merely a fan project aiming to aid map development until something official is available. None of this code is developed by or connected to the Celeste development team.
 
 ## Installation
 Maple can be installed using julia's `Pkg` system.
