@@ -11,9 +11,21 @@ mutable struct Trigger
     data::Dict{String, Any}
 end
 
-Trigger(name::String, data::Dict{String, Any}) = Trigger(name, nextTriggerId(), data)
+const defaultTriggerWidth = 16
+const defaultTriggerHeight = 16
 
-MiniTextBox(x::Integer, y::Integer, width::Integer, height::Integer, dialog_id::String, mode::String, onlyOnce::Bool=true) = Trigger("minitextboxTrigger", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "height"=>height, "dialog_id"=>dialog_id, "mode"=>mode, "onlyOnce"=>onlyOnce))
+# Don't care about the ID
+Base.isequal(lhs::Trigger, rhs::Trigger) = lhs.name == rhs.name && lhs.data == rhs.data
+
+Trigger(name::String, data::Dict{String, Any}) = Trigger(name, nextTriggerId(), data)
+Trigger(name::String; kwargs...) = Trigger(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs))
+
+MiniTextBox(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, dialog_id::String="", mode::String="OnLevelStart", onlyOnce::Bool=true) = Trigger("minitextboxTrigger", x=x, y=y, width=width, height=height, dialog_id=dialog_id, mode=mode, onlyOnce=onlyOnce)
+NoRefillTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, state::Bool=true) = Trigger("noRefillTrigger", x=x, y=y, width=width, height=height, state=state)
+GoldenBerryCollectionTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("goldenBerryCollectTrigger", x=x, y=y, width=width, height=height)
+WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, pattern::String="None") = Trigger("windTrigger", x=x, y=y, width=width, height=height, pattern=pattern)
+WindAttackTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("windAttackTrigger", x=x, y=y, width=width, height=height)
+EventTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, event::String="end_city") = Trigger("eventTrigger", x=x, y=y, width=width, height=height, event=event)
 
 blacklistedTriggerAttrs = String["nodes"]
 

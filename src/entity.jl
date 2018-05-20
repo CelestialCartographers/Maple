@@ -67,6 +67,7 @@ Refill(x::Integer, y::Integer) = Entity("refill", x=x, y=y, originX=4, originY=4
 Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity("infiniteStar", x=x, y=y, shielded=shielded, singleUse=singleUse)
 
 Checkpoint(x::Integer, y::Integer) = Entity("summitcheckpoint", x=x, y=y)
+Checkpoint(x::Integer, y::Integer, number::Integer) = Entity("summitcheckpoint", x=x, y=y, number=number)
 ChapterCheckpoint(x::Integer, y::Integer) = Entity("checkpoint", x=x, y=y)
 
 SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
@@ -109,8 +110,6 @@ MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, wi
 ZipMover(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
 
 CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", x=x, y=y, onlyIce=onlyIce, onlyFire=onlyFire, persistent=persistent)
-
-Checkpoint(x::Integer, y::Integer, number::Integer) = Entity("summitcheckpoint", x=x, y=y, number=number)
 
 Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="floor") = Entity("slider", x=x, y=y, clockwise=clockwise, surface=surface)
 
@@ -160,13 +159,13 @@ BigWaterfall(x::Integer, y::Integer, height::Integer, layer::String="FG") = Enti
 HangingLamp(x::Integer, y::Integer, height::Integer=16) = Entity("hanginglamp", x=x, y=y, height=height)
 ResortLantern(x::Integer, y::Integer) = Entity("resortLantern", x=x, y=y)
 
-Door(x::Integer, y::Integer, variant::String="wood") = Entity("door", x=x, y=y, variant=variant)
+Door(x::Integer, y::Integer, variant::String="wood") = Entity("door", Dict{String, Any}("x" => x, "y" => y, "type" => variant))
 OshiroDoor(x::Integer, y::Integer) = Entity("oshirodoor", x=x, y=y)
 TrapDoor(x::Integer, y::Integer) = Entity("trapdoor", x=x, y=y)
 
 PicoConsole(x::Integer, y::Integer) = Entity("picoconsole", x=x, y=y)
 
-SoundSource(x::Integer, y::Integer, sound::String) = Entity("soundsource", x=x, y=y, sound=sound)
+SoundSource(x::Integer, y::Integer, sound::String="") = Entity("soundsource", x=x, y=y, sound=sound)
 
 IntroCar(x::Integer, y::Integer) = Entity("introCar", x=x, y=y)
 
