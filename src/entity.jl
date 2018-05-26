@@ -42,6 +42,10 @@ function BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple
     return Entity("finalBoss", x=x, y=y, startHit=startHit, nodes=nodes, patternIndex=patternIndex)
 end
 
+function FireBall(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
+    return Entity("fireBall", x=x, y=y, nodes=nodes)
+end
+
 function Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], fear_distance::String="close", slide_until::Integer=0) where {T <: Integer}
     return Entity("tentacles", x=x, y=y, slide_until=slide_until, nodes=nodes, fear_distance=fear_distance)
 end
@@ -57,6 +61,7 @@ end
 Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
 
 Towerviewer(x::Integer, y::Integer) = Entity("towerviewer", x=x, y=y)
+Lookout = Towerviewer
 
 FloatingDebris(x::Integer, y::Integer) = Entity("floatingDebris", x=x, y=y)
 ForegroundDebris(x::Integer, y::Integer) = Entity("foregroundDebris", x=x, y=y)
@@ -118,15 +123,18 @@ HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Int
 
 CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("crumbleBlock", x=x, y=y, width=width)
 FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("fakeWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
+ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tiletype=tiletype)
+CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
+DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
 FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype)
 CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0) = Entity("cassetteBlock", x=x, y=y, width=width, height=height, index=index)
-DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
-ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tiletype=tiletype)
 NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("negaBlock", x=x, y=y, width=width, height=height)
 MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false) = Entity("moveBlock", x=x, y=y, width=width, height=height, direction=direction, canSteer=canSteer, fast=fast)
 CrushBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, axes::String="both") = Entity("crushBlock", x=x, y=y, width=width, height=height, axes=axes)
-IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("iceBlock", x=x, y=y, width=width, height=height)
 KevinBlock = CrushBlock
+
+IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("iceBlock", x=x, y=y, width=width, height=height)
+FireBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("fireBarrier", x=x, y=y, width=width, height=height)
 
 DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("dreamBlock", x=x, y=y, width=width, height=height)
 MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false) = Entity("dreamBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, fastMoving=fastMoving)
@@ -136,19 +144,19 @@ MovingSpaceJam = MovingDreamBlock
 StarJumpController(x::Integer, y::Integer) = Entity("starClimbController", x=x, y=y)
 StarJumpBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=true) = Entity("starJumpBlock", x=x, y=y, width=width, height=height, sinks=sinks)
 
-BlockField(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("blockField", x=x, y=y, width=width, height=height)
+BlockField(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("blockField", x=x, y=y, width=width, height=height)
 StrawberryBlockField = BlockField
 
 BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("bounceBlock", x=x, y=y, width=width, height=height)
 
-WhiteBlock(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("whiteblock", x=x, y=y, width=width, height=height)
+WhiteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("whiteblock", x=x, y=y, width=width, height=height)
 
-Barrier(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("invisibleBarrier", x=x, y=y, width=width, height=height)
-SeekerBarrier(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("seekerBarrier", x=x, y=y, width=width, height=height)
+Barrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("invisibleBarrier", x=x, y=y, width=width, height=height)
+SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("seekerBarrier", x=x, y=y, width=width, height=height)
 
-TempleCrackedBlock(x::Integer, y::Integer, width::Integer, height::Integer, persistent::Bool=false) = Entity("templeCrackedBlock", x=x, y=y, width=width, height=height, persistent=persistent)
+TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false) = Entity("templeCrackedBlock", x=x, y=y, width=width, height=height, persistent=persistent)
 
-BadelineBlock(x::Integer, y::Integer, width::Integer, height::Integer) = Entity("finalBossFallingBlock", x=x, y=y, width=width, height=height)
+BadelineBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("finalBossFallingBlock", x=x, y=y, width=width, height=height)
 
 Killbox(x::Integer, y::Integer, width::Integer) = Entity("killbox", x=x, y=y, width=width)
 

@@ -21,6 +21,7 @@ Trigger(name::String, data::Dict{String, Any}) = Trigger(name, nextTriggerId(), 
 Trigger(name::String; kwargs...) = Trigger(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs))
 
 MiniTextBox(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, dialog_id::String="", mode::String="OnLevelStart", onlyOnce::Bool=true) = Trigger("minitextboxTrigger", x=x, y=y, width=width, height=height, dialog_id=dialog_id, mode=mode, onlyOnce=onlyOnce)
+ChangeRespawnTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("changeRespawnTrigger", x=x, y=y, width=width, height=height)
 NoRefillTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, state::Bool=true) = Trigger("noRefillTrigger", x=x, y=y, width=width, height=height, state=state)
 GoldenBerryCollectionTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("goldenBerryCollectTrigger", x=x, y=y, width=width, height=height)
 WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, pattern::String="None") = Trigger("windTrigger", x=x, y=y, width=width, height=height, pattern=pattern)

@@ -154,8 +154,9 @@ function loadMap(map::Dict{String, Any})
                 if entityName == "offsetX" || entityName == "offsetY"
                     continue
 
-                elseif entityName == "ridgeBlock"
+                #elseif entityName == "ridgeGate"
                     # TBI
+                    # Has a weird data structure to point at strawberries
             
                 else
                     for data in packIfDict(entityData)
