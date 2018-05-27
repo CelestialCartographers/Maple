@@ -1,4 +1,4 @@
-tile_names = Dict{Any, Any}(
+tile_fg_names = Dict{Any, Any}(
     '0' => "Air",
     '1' => "Dirt",
     '3' => "Snow",
@@ -46,6 +46,38 @@ tile_names = Dict{Any, Any}(
     "Deadgrass" => 'l',
 )
 
+tile_bg_names = Dict{Any, Any}(
+    '0' => "Air",
+    '1' => "Dirt",
+    '2' => "Brick",
+    '3' => "Brick Ruined",
+    '4' => "Wood",
+    '5' => "Resort Stone",
+    '6' => "Cliffside",
+    '7' => "Pool",
+    '8' => "Temple A",
+    '9' => "Temple B",
+    'a' => "Reflection",
+    'b' => "Snow",
+    'c' => "Summit",
+    'd' => "Core",
+
+    "Air" => '0',
+    "Dirt" => '1',
+    "Brick" => '2',
+    "Brick Ruined" => '3',
+    "Wood" => '4',
+    "Resort Stone" => '5',
+    "Cliffside" => '6',
+    "Pool" => '7',
+    "Temple A" => '8',
+    "Temple B" => '9',
+    "Reflection" => 'a',
+    "Snow" => 'b',
+    "Summit" => 'c',
+    "Core" => 'd',
+)
+
 valid_fg_tiles = Char[
     '0', '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd', 'e',
@@ -54,8 +86,8 @@ valid_fg_tiles = Char[
 ]
 
 valid_bg_tiles = Char[
-    '0', '1', '3', '4', '5', '6', '7',
-    '8', '9', 'a', 'b', 'c', 'd'
+    '0', '1', '2', '3', '4', '5', '6',
+    '7', '8', '9', 'a', 'b', 'c', 'd'
 ]
 
 mutable struct Tiles
@@ -94,8 +126,8 @@ FgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(T
 FgTiles(s::String, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(s), valid)
 
 BgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(tiles, valid)
-BgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(tiles), valid)
-BgTiles(s::String, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(s), valid)
+BgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(tiles), valid)
+BgTiles(s::String, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(s), valid)
 
 function Base.string(t::Tiles)
     return join(String.([t.data[i, :] for i in 1:size(t.data, 1)]), "\n")

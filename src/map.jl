@@ -202,10 +202,10 @@ function loadMap(map::Dict{String, Any})
 
 
         # fgtiles
-        fgTiles = FgTiles(get(room["solids"], "innerText", ""))
+        fgTiles = Tiles(get(room["solids"], "innerText", ""))
 
         # bgtiles
-        bgTiles = BgTiles(get(room["bg"], "innerText", ""))
+        bgTiles = Tiles(get(room["bg"], "innerText", ""))
 
         push!(rooms, Room(
             name = get(room, "name", "lvl_1"),
