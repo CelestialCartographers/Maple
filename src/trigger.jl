@@ -27,6 +27,7 @@ GoldenBerryCollectionTrigger(x::Integer, y::Integer, width::Integer=defaultTrigg
 WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, pattern::String="None") = Trigger("windTrigger", x=x, y=y, width=width, height=height, pattern=pattern)
 WindAttackTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("windAttackTrigger", x=x, y=y, width=width, height=height)
 EventTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, event::String="end_city") = Trigger("eventTrigger", x=x, y=y, width=width, height=height, event=event)
+CheckpointBlockerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("checkpointBlockerTrigger", x=x, y=y, width=width, height=height)
 
 blacklistedTriggerAttrs = String["nodes"]
 

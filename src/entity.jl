@@ -86,7 +86,7 @@ TriggerSpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = 
 TriggerSpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesRight", x=x, y=y, height=height)
 
 RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=[(x2, y2)], clockwise=clockwise)
-Spinner(x::Integer, y::Integer, attached::Bool=false) = Entity("spinner", x=x, y=y, attached=attached)
+Spinner(x::Integer, y::Integer, attachToSolid::Bool=false) = Entity("spinner", x=x, y=y, attachToSolid=attachToSolid)
 TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=[(x2, y2)], speed=speed, startCenter=startCenter)
 
 JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity("jumpThru", x=x, y=y, width=width, texture=texture)
@@ -159,6 +159,8 @@ TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, hei
 BadelineBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("finalBossFallingBlock", x=x, y=y, width=width, height=height)
 
 Killbox(x::Integer, y::Integer, width::Integer) = Entity("killbox", x=x, y=y, width=width)
+
+CliffsideFlag(x::Integer, y::Integer, index::Integer=0) = Entity("cliffside_flag", x=x, y=y, index=index)
 
 Water(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, steamy::Bool=false) = Entity("water", x=x, y=y, width=width, height=height, steamy=steamy)
 Waterfall(x::Integer, y::Integer) = Entity("waterfall", x=x, y=y)

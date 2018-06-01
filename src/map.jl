@@ -85,22 +85,13 @@ function loadStyleground(styleData::Dict{String, Any})
                     end
                 end
 
-                push!(style.children, Apply(
-                    get(a, "loopx", false),
-                    get(a, "loopy", false),
-
-                    get(a, "scrollx", 1),
-                    get(a, "scrolly", 1),
-
-                    get(a, "only", ""),
-                    get(a, "always", ""),
-
-                    parallax
-                ))
+                applyData = copy(a)
+                delete!(applyData, "parallax")
+                push!(style.children, Apply(applyData, parallax))
             end
 
         else
-            push!(style.children, Effect(styleType, get(data, "only", "*")))
+            push!(style.children, Effect(styleType, data))
         end
     end
 
