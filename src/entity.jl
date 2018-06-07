@@ -85,6 +85,12 @@ TriggerSpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = En
 TriggerSpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesLeft", x=x, y=y, height=height)
 TriggerSpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesRight", x=x, y=y, height=height)
 
+# Added by Everest
+TriggerSpikesOriginalUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Main.Maple.Entity("triggerSpikesOriginalUp", x=x, y=y, width=width)
+TriggerSpikesOriginalDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Main.Maple.Entity("triggerSpikesOriginalDown", x=x, y=y, width=width)
+TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Main.Maple.Entity("triggerSpikesOriginalLeft", x=x, y=y, height=height)
+TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Main.Maple.Entity("triggerSpikesOriginalRight", x=x, y=y, height=height)
+
 RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=[(x2, y2)], clockwise=clockwise)
 Spinner(x::Integer, y::Integer, attachToSolid::Bool=false) = Entity("spinner", x=x, y=y, attachToSolid=attachToSolid)
 TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=[(x2, y2)], speed=speed, startCenter=startCenter)
