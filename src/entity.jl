@@ -173,6 +173,8 @@ Waterfall(x::Integer, y::Integer) = Entity("waterfall", x=x, y=y)
 BigWaterfall(x::Integer, y::Integer, height::Integer, layer::String="FG") = Entity("bigWaterfall", x=x, y=y, height=height, layer=layer)
 
 HangingLamp(x::Integer, y::Integer, height::Integer=16) = Entity("hanginglamp", x=x, y=y, height=height)
+Lamp(x::Integer, y::Integer, broken::Bool=false) = Entity("lamp", x=x, y=y, broken=broken)
+BrokenLamp(x::Integer, y::Integer) = Entity("lamp", x=x, y=y, broken=true)
 ResortLantern(x::Integer, y::Integer) = Entity("resortLantern", x=x, y=y)
 
 Door(x::Integer, y::Integer, variant::String="wood") = Entity("door", Dict{String, Any}("x" => x, "y" => y, "type" => variant))
