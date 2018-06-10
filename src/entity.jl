@@ -73,7 +73,7 @@ Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = E
 
 Checkpoint(x::Integer, y::Integer) = Entity("summitcheckpoint", x=x, y=y)
 Checkpoint(x::Integer, y::Integer, number::Integer) = Entity("summitcheckpoint", x=x, y=y, number=number)
-ChapterCheckpoint(x::Integer, y::Integer) = Entity("checkpoint", x=x, y=y)
+ChapterCheckpoint(x::Integer, y::Integer; allowOrigin::Bool=false) = Entity("checkpoint", x=x, y=y, allowOrigin=allowOrigin)
 
 SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
 SpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesDown", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
