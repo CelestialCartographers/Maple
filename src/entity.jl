@@ -107,7 +107,7 @@ Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Int
 
 Torch(x::Integer, y::Integer, startLit::Bool=false) = Entity("torch", x=x, y=y, startLit=startLit)
 
-Wire(x1::Integer, y1::Integer, x2::Integer, y2::Integer, above::Bool=false) = Entity("wire", x=x1, y=y1, nodes=[(x2, y2)], above=above)
+Wire(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1, above::Bool=false) = Entity("wire", x=x1, y=y1, nodes=[(x2, y2)], above=above)
 ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("clothesline", x=x1, y=y1, nodes=[(x2, y2)])
 
 SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("swapBlock", x=x1, y=y1, width=width, height=height, nodes=[(x2, y2)])
