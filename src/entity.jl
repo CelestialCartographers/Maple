@@ -194,12 +194,13 @@ Spring(x::Integer, y::Integer, playerCanUse::Bool=true) = Entity("spring", x=x, 
 SpringRight(x::Integer, y::Integer) = Entity("wallSpringRight", x=x, y=y)
 SpringLeft(x::Integer, y::Integer) = Entity("wallSpringLeft", x=x, y=y)
 
-ColorSwitch(x::Integer, y::Integer, variant::String) = Entity("colorSwitch", x=x, y=y, variant=variant)
-YellowBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("yellowBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-GreenBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("greenBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-RedBlock(x::Integer, y::Integer, width::Integer, height::Integer, inverted::Bool=false) = Entity("redBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
+ColorSwitch(x::Integer, y::Integer, variant::String="red") = Entity("colorSwitch", Dict{String, Any}("x" => x, "y" => y, "type" => variant))
+YellowBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("yellowBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
+GreenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("greenBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
+RedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("redBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
 ClutterCabinet(x::Integer, y::Integer) = Entity("clutterCabinet", x=x, y=y)
-ClutterDoor(x::Integer, y::Integer, width::Integer, height::Integer, variant::String) = Entity("clutterDoor", x=x, y=y, width=width, height=height, variant=variant)
+ClutterDoor(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, variant::String="red") = Entity("clutterDoor", x=x, y=y, width=width, height=height, variant=variant)
+ClutterSwitch = ColorSwitch
 
 DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=false, sprite::String="default") = Entity("dashSwitchH", x=x, y=y, leftSide=leftSide, persistent=persistent, sprite=sprite)
 DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=false, sprite::String="default") = Entity("dashSwitchV", x=x, y=y, ceiling=ceiling, persistent=persistent, sprite=sprite)
