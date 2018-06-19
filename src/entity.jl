@@ -26,6 +26,10 @@ Entity(name::String; kwargs...) = Entity(name, Dict{String, Any}(String(k) => v 
 Player(x::Integer, y::Integer) = Entity("player", x=x, y=y, width=8, originX=4, originY=8)
 DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", x=x, y=y)
 
+# Added by Everest to make Dark Chasers useable by custom maps
+DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Main.Maple.Entity("darkChaserEnd", x=x, y=y, width=width, height=height)
+DarkChaserBarrier = DarkChaserEnd
+
 function Strawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
     return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes, originX=4, originY=4)
 end
