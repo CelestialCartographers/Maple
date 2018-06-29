@@ -91,7 +91,9 @@ function loadStyleground(styleData::Dict{String, Any})
             end
 
         else
-            push!(style.children, Effect(styleType, data))
+            for e in packIfDict(data)
+                push!(style.children, Effect(styleType, e))
+            end
         end
     end
 
