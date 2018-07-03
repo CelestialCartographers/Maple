@@ -191,6 +191,8 @@ SoundSource(x::Integer, y::Integer, sound::String="") = Entity("soundsource", x=
 
 IntroCar(x::Integer, y::Integer) = Entity("introCar", x=x, y=y)
 
+TempleEye(x::Integer, y::Integer) = Entity("templeEye", x=x, y=y)
+
 Cloud(x::Integer, y::Integer, fragile::Bool=false) = Entity("cloud", x=x, y=y, fragile=fragile)
 FragileCloud(x::Integer, y::Integer) = Cloud(x, y, true)
 
@@ -203,7 +205,7 @@ YellowBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::In
 GreenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("greenBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
 RedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("redBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
 ClutterCabinet(x::Integer, y::Integer) = Entity("clutterCabinet", x=x, y=y)
-ClutterDoor(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, variant::String="red") = Entity("clutterDoor", x=x, y=y, width=width, height=height, variant=variant)
+ClutterDoor(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, variant::String="red") = Entity("colorSwitch", Dict{String, Any}("x" => x, "y" => y, "width" => width, "height" => height, "type" => variant))
 ClutterSwitch = ColorSwitch
 
 DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=false, sprite::String="default") = Entity("dashSwitchH", x=x, y=y, leftSide=leftSide, persistent=persistent, sprite=sprite)
@@ -224,9 +226,9 @@ Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", x=x, y=y)
 Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", x=x, y=y, mode=mode)
 
 CoreMessage(x::Integer, y::Integer, line::Integer) = Entity("coreMessage", x=x, y=y, line=line)
-CustomCoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("customCoreMessage", x=x, y=y, line=line, dialog=dialog)
+EverestCoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
 Memorial(x::Integer, y::Integer, dreaming::Bool=false) = Entity("memorial", x=x, y=y, dreaming=dreaming)
-CustomMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("customMemorial", x=x, y=y, dreaming=dreaming, dialog=dialog, sprite=sprite)
+EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("everest/memorial", x=x, y=y, dreaming=dreaming, dialog=dialog, sprite=sprite)
 
 blacklistedEntityAttrs = String["nodes"]
 

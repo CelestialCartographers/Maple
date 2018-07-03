@@ -28,6 +28,7 @@ WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::
 WindAttackTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("windAttackTrigger", x=x, y=y, width=width, height=height)
 EventTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, event::String="end_city") = Trigger("eventTrigger", x=x, y=y, width=width, height=height, event=event)
 CheckpointBlockerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("checkpointBlockerTrigger", x=x, y=y, width=width, height=height)
+EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("everest/flagTrigger", x=x, y=y, width=width, height=height)
 
 blacklistedTriggerAttrs = String["nodes"]
 
