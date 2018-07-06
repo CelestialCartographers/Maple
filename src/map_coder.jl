@@ -212,16 +212,26 @@ function decodeAllMaps(maps::String, output::String)
   end
 end
 
-function populateEncodeKeyNames!(d, seen::Dict{String, Bool})
+function populateEncodeKeyNames!(d, seen::Dict{String, Integer})
   seen[d["__name"]] = true
   children = get(d, "__children", [])
 
   for (k, v) in d
     if !startswith(k, "__")
-      seen[k] = true
+      if haskey(seen, k)
+        seen[k] += 1
+
+      else
+        seen[k] = 1
+      end
     end
     if isa(v, String) && k != "innerText"
-      seen[v] = true
+      if haskey(seen, v)
+        seen[v] += 1
+
+      else
+        seen[v] = 1
+      end
     end
   end
 
@@ -267,9 +277,10 @@ function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Array
 end
 
 function encodeMap(map::Dict{String, Any}, outfile::String)
-  seen = Dict{String, Bool}()
+  seen = Dict{String, Integer}()
   populateEncodeKeyNames!(map, seen)
-  lookup = collect(keys(seen))
+  # Store lookup table in order of occurrence
+  lookup = String[k for (k, v) in sort(collect(seen), by=v -> v[2], rev=true)]
   buffer = IOBuffer()
 
   writeString(buffer, "CELESTE MAP")
@@ -285,4 +296,33 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
   open(outfile, "w") do fh
     write(fh, buffer.data)
   end
+end
+
+function attributes(data::Dict{String, Any})
+  res = Dict{String, Any}()
+
+  for (k, v) in data
+    if !isa(v, Dict) && !isa(v, Array)
+      res[k] = v
+    end
+  end
+
+  return res
+end
+
+function children(data::Dict{String, Any})
+  res = Tuple{String, Any}[]
+
+  for (k, v) in data
+    if isa(v, Dict)
+      push!(res, (k, v))
+
+    elseif isa(v, Array)
+      for d in v
+        push!(res, (k, d))
+      end
+    end
+  end
+
+  return res
 end

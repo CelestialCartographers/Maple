@@ -5,20 +5,20 @@ mutable struct Parallax
     Parallax(; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs))
 end
 
-mutable struct Apply
-    data::Dict{String, Any}
-    parallax::Array{Parallax, 1}
-
-    Apply(data::Dict{String, Any}, parallax::Array{Parallax, 1}) = new(data, parallax)
-    Apply(parallax::Array{Parallax, 1}; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs), parallax)
-end
-
 mutable struct Effect
     typ::String
     data::Dict{String, Any}
 
     Effect(typ::String, data::Dict{String, Any}) = new(typ, data)
     Effect(typ::String; kwargs...) = new(typ, Dict(string(a) => b for (a, b) in kwargs))
+end
+
+mutable struct Apply
+    data::Dict{String, Any}
+    parallax::Array{Union{Effect, Parallax}, 1}
+
+    Apply(data::Dict{String, Any}, parallax::Array{Union{Effect, Parallax}, 1}) = new(data, parallax)
+    Apply(parallax::Array{Union{Effect, Parallax}, 1}; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs), parallax)
 end
 
 SnowFg(data::Dict{String, Any}) = Effect("snowFg", data)
@@ -40,7 +40,7 @@ struct Styleground
     Styleground() = new([])
 end
 
-struct Style
+mutable struct Style
     foregrounds::Styleground
     backgrounds::Styleground
 

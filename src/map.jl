@@ -6,7 +6,7 @@ include("style.jl")
 # Quirk with the "fancy" JSON converting, make sure we always have an array to work with
 packIfDict(data) = isa(data, Dict) ? Dict{String, Any}[data] : data
 
-struct Map
+mutable struct Map
     package::String
     rooms::Array{Room, 1}
     style::Style
@@ -16,6 +16,8 @@ struct Map
     Map(package::String, rooms::Room...) = new(package, rooms, Style())
     Map(package::String, rooms::Array{Room, 1}, style::Style) = new(package, rooms, style)
 end
+
+Base.isequal(lhs::Map, rhs::Map) = Dict(lhs) == Dict(rhs)
 
 function Base.Dict(m::Map)
     return Dict{String, Any}(
@@ -77,17 +79,19 @@ function loadStyleground(styleData::Dict{String, Any})
 
         elseif styleType == "apply"
             for a in packIfDict(data)
-                parallax = Parallax[]
+                applyAttr = attributes(a)
 
-                if haskey(a, "parallax")
-                    for p in packIfDict(a["parallax"])
-                        push!(parallax, Parallax(p))
+                parallax = Union{Parallax, Effect}[]
+                for (typ, d) in children(a)
+                    if typ == "parallax"
+                        push!(parallax, Parallax(d))
+
+                    else
+                        push!(parallax, Effect(typ, d))
                     end
                 end
 
-                applyData = copy(a)
-                delete!(applyData, "parallax")
-                push!(style.children, Apply(applyData, parallax))
+                push!(style.children, Apply(applyAttr, parallax))
             end
 
         else
