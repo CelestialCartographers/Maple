@@ -94,3 +94,102 @@ windpatterns = [
     "Up",
     "Space"
 ]
+
+temple_gate_modes = [
+    "NearestSwitch",
+    "CloseBehindPlayer",
+    "CloseBehindPlayerAlways",
+    "HoldingTheo",
+    "TouchSwitches",
+    "CloseBehindPlayerAndTheo"
+]
+
+bird_npc_modes = [
+    "ClimbingTutorial",
+    "DashingTutorial",
+    "DreamJumpTutorial",
+    "SuperWallJumpTutorial",
+    "HyperJumpTutorial",
+    "FlyAway",
+    "None",
+    "Sleeping"
+]
+
+bonfire_modes = [
+    "Unlit",
+    "Lit",
+    "Smoking"
+]
+
+clutter_block_colors = [
+    "Red",
+    "Green",
+    "Yellow"
+]
+
+# Core color added by Everest
+crystal_colors = [
+    "Blue",
+    "Red",
+    "Purple",
+    "Core"
+]
+
+dash_switch_sides = [
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+move_block_directions = [
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+spike_directions = [
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+trigger_spike_directions = [
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+spring_orientations = [
+    "Floor",
+    "WallLeft",
+    "WallRight"
+]
+
+track_spinner_speeds = [
+    "Slow",
+    "Normal",
+    "Fast"
+]
+
+fake_wall_modes = [
+    "Wall",
+    "Block"
+]
+
+badeline_boss_shooting_patterns = [
+    0, 1, 2, 3, 4,
+    5, 6, 7, 8, 9, 
+    10, 11, 12, 13, 14,
+    15
+]
+
+tile_entity_legal_tiles = [
+    '1', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd',
+    'e', 'f', 'g', 'h', 'i', 'j',
+    'k', 'l'
+]

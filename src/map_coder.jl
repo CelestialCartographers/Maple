@@ -17,7 +17,7 @@ function writeVarLength(fh, n)
   res = UInt8[]
   while n > 127
     push!(res, n & 127 | 0b10000000)
-    n /= 128
+    n = floor(Int, n / 128)
   end
   push!(res, n)
   write(fh, res)
@@ -297,6 +297,10 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
     write(fh, buffer.data)
   end
 end
+
+# Helper functions for quirks with the decoder
+# Children are stored as singular dictionaries or arrays of dics
+# Everything else are the actuall attributes of the element
 
 function attributes(data::Dict{String, Any})
   res = Dict{String, Any}()

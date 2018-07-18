@@ -23,7 +23,7 @@ Base.isequal(lhs::Entity, rhs::Entity) = lhs.name == rhs.name && lhs.data == rhs
 Entity(name::String, data::Dict{String, Any}) = Entity(name, nextEntityId(), data)
 Entity(name::String; kwargs...) = Entity(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs))
 
-Player(x::Integer, y::Integer) = Entity("player", x=x, y=y, width=8, originX=4, originY=8)
+Player(x::Integer, y::Integer) = Entity("player", x=x, y=y, width=8)
 DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", x=x, y=y)
 
 # Added by Everest to make Dark Chasers useable by custom maps
@@ -31,23 +31,23 @@ DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::
 DarkChaserBarrier = DarkChaserEnd
 
 function Strawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes, originX=4, originY=4)
+    return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes)
 end
 
 function GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("goldenBerry", x=x, y=y, winged=winged, nodes=nodes, originX=4, originY=4)
+    return Entity("goldenBerry", x=x, y=y, winged=winged, nodes=nodes)
 end
 
 function BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true) where {T <: Integer}
     return Entity("badelineBoost", x=x, y=y, lockCamera=lockCamera, nodes=nodes)
 end
 
-function BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false) where {T <: Integer}
-    return Entity("finalBoss", x=x, y=y, startHit=startHit, nodes=nodes, patternIndex=patternIndex)
+function BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, lockCamera::Bool=true) where {T <: Integer}
+    return Entity("finalBoss", x=x, y=y, startHit=startHit, nodes=nodes, patternIndex=patternIndex, cameraPastY=cameraPastY, lockCamera=lockCamera)
 end
 
-function FireBall(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("fireBall", x=x, y=y, nodes=nodes)
+function FireBall(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1) where {T <: Integer}
+    return Entity("fireBall", x=x, y=y, amount=amount, offset=offset, speed=speed, nodes=nodes)
 end
 
 function Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], fear_distance::String="close", slide_until::Integer=0) where {T <: Integer}
@@ -72,11 +72,10 @@ ForegroundDebris(x::Integer, y::Integer) = Entity("foregroundDebris", x=x, y=y)
 
 DreamMirror(x::Integer, y::Integer) = Entity("dreammirror", x=x, y=y)
 
-Refill(x::Integer, y::Integer) = Entity("refill", x=x, y=y, originX=4, originY=4)
+Refill(x::Integer, y::Integer) = Entity("refill", x=x, y=y)
 Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity("infiniteStar", x=x, y=y, shielded=shielded, singleUse=singleUse)
 
-Checkpoint(x::Integer, y::Integer) = Entity("summitcheckpoint", x=x, y=y)
-Checkpoint(x::Integer, y::Integer, number::Integer) = Entity("summitcheckpoint", x=x, y=y, number=number)
+Checkpoint(x::Integer, y::Integer, number::Integer=0) = Entity("summitcheckpoint", x=x, y=y, number=number)
 ChapterCheckpoint(x::Integer, y::Integer; allowOrigin::Bool=false) = Entity("checkpoint", x=x, y=y, allowOrigin=allowOrigin)
 
 SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
@@ -133,7 +132,7 @@ HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Int
 
 CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("crumbleBlock", x=x, y=y, width=width)
 FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("fakeWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
-ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tiletype=tiletype)
+ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tileType=tiletype)
 CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
 DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
 FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype)
@@ -225,8 +224,8 @@ LockBlock(x::Integer, y::Integer, sprite::String="wood") = Entity("lockBlock", x
 Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", x=x, y=y)
 Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", x=x, y=y, mode=mode)
 
-CoreMessage(x::Integer, y::Integer, line::Integer) = Entity("coreMessage", x=x, y=y, line=line)
-EverestCoreMessage(x::Integer, y::Integer, line::Integer, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
+CoreMessage(x::Integer, y::Integer, line::Integer=0) = Entity("coreMessage", x=x, y=y, line=line)
+EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
 Memorial(x::Integer, y::Integer, dreaming::Bool=false) = Entity("memorial", x=x, y=y, dreaming=dreaming)
 EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("everest/memorial", x=x, y=y, dreaming=dreaming, dialog=dialog, sprite=sprite)
 
