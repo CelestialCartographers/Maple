@@ -77,7 +77,7 @@ end
 ))
 end
 
-windpatterns = [
+windpatterns = String[
     "None",
     "Left",
     "Right",
@@ -95,7 +95,7 @@ windpatterns = [
     "Space"
 ]
 
-temple_gate_modes = [
+temple_gate_modes = String[
     "NearestSwitch",
     "CloseBehindPlayer",
     "CloseBehindPlayerAlways",
@@ -104,7 +104,7 @@ temple_gate_modes = [
     "CloseBehindPlayerAndTheo"
 ]
 
-bird_npc_modes = [
+bird_npc_modes = String[
     "ClimbingTutorial",
     "DashingTutorial",
     "DreamJumpTutorial",
@@ -115,81 +115,115 @@ bird_npc_modes = [
     "Sleeping"
 ]
 
-bonfire_modes = [
+bonfire_modes = String[
     "Unlit",
     "Lit",
     "Smoking"
 ]
 
-clutter_block_colors = [
+clutter_block_colors = String[
     "Red",
     "Green",
     "Yellow"
 ]
 
 # Core color added by Everest
-crystal_colors = [
+crystal_colors = String[
     "Blue",
     "Red",
     "Purple",
     "Core"
 ]
 
-dash_switch_sides = [
+dash_switch_sides = String[
     "Up",
     "Down",
     "Left",
     "Right"
 ]
 
-move_block_directions = [
+move_block_directions = String[
     "Up",
     "Down",
     "Left",
     "Right"
 ]
 
-spike_directions = [
+spike_directions = String[
     "Up",
     "Down",
     "Left",
     "Right"
 ]
 
-trigger_spike_directions = [
+trigger_spike_directions = String[
     "Up",
     "Down",
     "Left",
     "Right"
 ]
 
-spring_orientations = [
+spring_orientations = String[
     "Floor",
     "WallLeft",
     "WallRight"
 ]
 
-track_spinner_speeds = [
+track_spinner_speeds = String[
     "Slow",
     "Normal",
     "Fast"
 ]
 
-fake_wall_modes = [
+fake_wall_modes = String[
     "Wall",
     "Block"
 ]
 
-badeline_boss_shooting_patterns = [
+badeline_boss_shooting_patterns = Int[
     0, 1, 2, 3, 4,
     5, 6, 7, 8, 9, 
     10, 11, 12, 13, 14,
     15
 ]
 
-tile_entity_legal_tiles = [
+tile_entity_legal_tiles = Char[
     '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd',
     'e', 'f', 'g', 'h', 'i', 'j',
     'k', 'l'
+]
+
+trigger_position_modes = String[
+    "HorizontalCenter",
+    "VerticalCenter",
+    "TopToBottom",
+    "BottomToTop",
+    "LeftToRight",
+    "RightToLeft",
+    "NoEffect"
+]
+
+event_trigger_events = String[
+    "cancel_ch5_see_theo",
+    "ch5_found_theo",
+    "ch5_mirror_reflection",
+    "ch6_boss_intro",
+    "ch6_reflect",
+    "ch7_summit",
+    "ch8_door",
+    "end_city",
+    "end_oldsite_awake",
+    "end_oldsite_dream"
+]
+
+mini_textbox_trigger_modes = String[
+    "OnPlayerEnter",
+    "OnLevelStart",
+    "OnTheoEnter"
+]
+
+music_fade_trigger_directions = String[
+    "leftToRight",
+    "rightToLeft"
 ]
