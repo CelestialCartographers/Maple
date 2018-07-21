@@ -21,7 +21,7 @@ Trigger(name::String, data::Dict{String, Any}) = Trigger(name, nextTriggerId(), 
 Trigger(name::String; kwargs...) = Trigger(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs))
 
 AltMusicTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; track::String="", resetOnLeave::Bool=true) = Trigger("altMusicTrigger", x=x, y=y, width=width, height=height, track=track, resetOnLeave=resetOnLeave)
-AmbientParamTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; parameter::String="", from::Number=0.0, to::Number=0.0, direction::String="NoEffect") = Trigger("ambienceParamTrigger", x=x, y=y, width=width, height=height, parameter=parameter, from=from, to=to, direction=direction)
+AmbienceParamTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; parameter::String="", from::Number=0.0, to::Number=0.0, direction::String="NoEffect") = Trigger("ambienceParamTrigger", x=x, y=y, width=width, height=height, parameter=parameter, from=from, to=to, direction=direction)
 BloomFadeTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; bloomAddFrom::Number=0.0, bloomAddTo::Number=0.0, positionMode::String="NoEffect") = Trigger("bloomFadeTrigger", x=x, y=y, width=width, height=height, bloomAddFrom=bloomAddFrom, bloomAddTo=bloomAddTo, positionMode=positionMode)
 CameraAdvanceTargetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; lerpStrengthX::Number=0.0, lerpStrengthY::Number=0.0, positionModeX::String="NoEffect", positionModeY::String="NoEffect", xOnly::Bool=false, yOnly::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer} = Trigger("cameraAdvanceTargetTrigger", x=x, width=width, height=height, lerpStrengthX=lerpStrengthX, lerpStrengthY=lerpStrengthY, positionModeX=positionModeX, positionModeY=positionModeY, xOnly=xOnly, yOnly=yOnly, nodes=nodes)
 CameraOffsetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; cameraX::Number=0.0, cameraY::Number=0.0) = Trigger("cameraOffsetTrigger", x=x, y=y, width=width, height=height, cameraX=cameraX, cameraY=cameraY)
@@ -44,7 +44,7 @@ StopBoostTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, hei
 WindAttackTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("windAttackTrigger", x=x, y=y, width=width, height=height)
 WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, pattern::String="None") = Trigger("windTrigger", x=x, y=y, width=width, height=height, pattern=pattern)
 
-EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight) = Trigger("everest/flagTrigger", x=x, y=y, width=width, height=height)
+EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, flag::String="", state::Bool=false, mode::String="OnPlayerEnter", only_once::Bool=false, death_count::Integer=-1) = Trigger("everest/flagTrigger", x=x, y=y, width=width, height=height, flag=flag, state=state, mode=mode, only_once=only_once, death_count=death_count)
 
 blacklistedTriggerAttrs = String["nodes"]
 

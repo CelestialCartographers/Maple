@@ -223,6 +223,12 @@ const mini_textbox_trigger_modes = String[
     "OnTheoEnter"
 ]
 
+const everest_flag_trigger_modes = String[
+    "OnPlayerEnter",
+    "OnPlayerLeave",
+    "OnLevelStart"
+]
+
 const music_fade_trigger_directions = String[
     "leftToRight",
     "rightToLeft"
