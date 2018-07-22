@@ -158,7 +158,7 @@ StrawberryBlockField = BlockField
 
 BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("bounceBlock", x=x, y=y, width=width, height=height)
 
-WhiteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("whiteblock", x=x, y=y, width=width, height=height)
+WhiteBlock(x::Integer, y::Integer) = Entity("whiteblock", x=x, y=y)
 
 Barrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("invisibleBarrier", x=x, y=y, width=width, height=height)
 SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("seekerBarrier", x=x, y=y, width=width, height=height)
