@@ -1,184 +1,84 @@
-include("map.jl")
+# Metadata enums and default <meta> dict
 
-safe_string(s::String) = "\"$s\""
+const intro_types = String[
+    "Respawn",
+    "WalkInRight",
+    "WalkInLeft",
+    "Jump",
+    "WakeUp",
+    "Fall",
+    "TempleMirrorVoid",
+    "None"
+]
 
-yaml(buf::IOBuffer, s::String, indent::Integer = 0; list::Bool = false) = write(buf, (list ? " "^max(0, indent - 2) * "- " : " "^indent) * s)
-yaml(buf::IOBuffer, k::String, v::String, indent::Integer = 0; list::Bool = false, unsafe::Bool = false) = yaml(buf, "$k: $(unsafe ? v : safe_string(v))\n", indent, list = list)
-yaml(buf::IOBuffer, k::String, v::Bool, indent::Integer = 0; list::Bool = false) = yaml(buf, "$k: $(string(v))\n", indent, list = list)
-yaml(buf::IOBuffer, k::String, v::Enum, indent::Integer = 0; list::Bool = false) = yaml(buf, "$k: $(safe_string(string(v)))\n", indent, list = list)
-yaml(buf::IOBuffer, k::String, t::NTuple{N, AbstractFloat} where N, indent::Integer = 0) = yaml(buf, "$k: [$(join(t, ", "))]\n", indent)
+const color_grades = String[
+    "oldsite",
+    "reflection"
+]
 
-struct CompleteScreenLayer
-    name::String
-    images::Array{String, 1}
-    position::NTuple{2, AbstractFloat}
-    scroll:: NTuple{2, AbstractFloat}
-end
+const inventories = String[
+    "Default",
+    "CH6End",
+    "Core",
+    "OldSite",
+    "Prologue",
+    "TheSummit"
+]
 
-function yaml(buf::IOBuffer, l::CompleteScreenLayer, indent::Integer = 0)
-    yaml(buf, "Type", l.name, indent, list=true)
-    yaml(buf, "Images", "[$(join(safe_string.(l.images), ", "))]", indent)
-    yaml(buf, "Position", l.position, indent)
-    yaml(buf, "Scroll", l.scroll, indent)
-end
+const mountain_time = String[
+    "Night",
+    "Dawn",
+    "Morning"
+]
 
-struct CompleteScreen
-    atlas::String
-    start::NTuple{2, AbstractFloat}
-    center::NTuple{2, AbstractFloat}
-    offset::NTuple{2, AbstractFloat}
-    layers::Array{CompleteScreenLayer, 1}
-end
+const core_modes = String[
+    "None",
+    "Cold",
+    "Hot"
+]
 
-function yaml(buf::IOBuffer, k::String, s::CompleteScreen, indent::Integer = 0)
-    yaml(buf, "$k:\n", indent)
-    indent += 4
-    yaml(buf, "Atlas", s.atlas, indent)
-    yaml(buf, "Start", s.start, indent)
-    yaml(buf, "Center", s.center, indent)
-    yaml(buf, "Offset", s.offset, indent)
+const default_meta = Dict{String, Any}(
+    #"Name" => "", # Better to let Everest decide
+    #"SID" => "", # Better to let Everest decide
+    "Icon" => "",
 
-    # Write the layers
-    yaml(buf, "Layers:\n", indent)
-    indent += 4
-    for layer in s.layers
-        yaml(buf, layer, indent)
-    end
-end
+    "Interlude" => false,
+    "CompleteScreenName" => "",
 
-module MountainTime
-@enum Time Night Dawn Morning
-end
+    #"CassetteCheckpointIndex" => 0, # Better to let Everest decide
 
-struct MountainCam
-    position::NTuple{3, AbstractFloat}
-    target::NTuple{3, AbstractFloat}
-end
+    #"TitleBaseColor" => "", # Somewhat useless, don't expose
+    #"TitleAccentColor" => "", # Somewhat useless, don't expose
+    #"TitleTextColor" => "", # Somewhat useless, don't expose
 
-function yaml(buf::IOBuffer, k::String, m::MountainCam, indent::Integer = 0)
-    yaml(buf, "$k:\n", indent)
-    indent += 4
-    yaml(buf, "Position", m.position, indent)
-    yaml(buf, "Target", m.target, indent)
-end
+    "IntroType" => "WakeUp",
 
-struct Mountain
-    idle::MountainCam
-    select::MountainCam
-    zoom::MountainCam
-    cursor::NTuple{3, AbstractFloat}
-    state::MountainTime.Time
-end
+    "Dreaming" => false,
 
-function yaml(buf::IOBuffer, k::String, m::Mountain, indent::Integer = 0)
-    yaml(buf, "$k:\n", indent)
-    indent += 4
-    yaml(buf, "Idle", m.idle, indent)
-    yaml(buf, "Select", m.select, indent)
-    yaml(buf, "Zoom", m.zoom, indent)
-    yaml(buf, "Cursor", m.cursor, indent)
-    yaml(buf, "State", string(Int32(m.state)), indent, unsafe = true)
-end
+    "ColorGrade" => "",
 
-module IntroTypes
-@enum IntroType Respawn WalkInRight WalkInLeft Jump WakeUp Fall TempleMirrorVoid None
-end
+    #"Wipe" => "", # Not actually supported
 
-module ColorGrades
-@enum ColorGrade oldsite reflection
-end
+    "DarknessAlpha" => 0.05,
+    "BloomBase" => 0.0,
+    "BloomStrength" => 1.0,
 
-module Inventories
-@enum Inventory Default CH6End Core OldSite Prologue TheSummit
-end
+    #"Jumpthru" => "", Done on a per entity basis in editor, not useful for us
 
-struct Side
-    map::Map
-    inventory::Inventories.Inventory
-    # TODO Checkpoints, audio state, poem ID?
-end
+    "CoreMode" => "",
 
-function yaml(buf::IOBuffer, s::Side, indent::Integer = 0)
-    yaml(buf, "Path", s.map.package, indent, list=true)
-    yaml(buf, "Inventory", s.inventory, indent)
-end
+    "CassetteNoteColor" => "",
+    "CassetteSong" => "",
 
-struct Chapter
-    name::String
-    id::String
-    sides::NTuple{3, Union{Side, Void}}
-    data::Dict{String, Any}
+    "FixRotateSpinnerAngles" => true
+)
 
-    Chapter(
-        name::String,
-        id::String = name;
-        icon::String = "",
-        interlude::Bool = false,
-        completeScreen::Union{CompleteScreen, Void} = nothing,
-        completeScreenName::String = "",
-        titleBaseColor::Union{UInt32, Void} = nothing,
-        titleAccentColor::Union{UInt32, Void} = nothing,
-        titleTextColor::Union{UInt32, Void} = nothing,
-        introType::Union{IntroTypes.IntroType, Void} = nothing,
-        colorGrade::Union{ColorGrades.ColorGrade, Void} = nothing,
-        cassetteNoteColor::Union{UInt32, Void} = nothing,
-        cassetteSong::String = "event:/music/lvl2/awake",
-        sideA::Union{Side, Void} = nothing,
-        sideB::Union{Side, Void} = nothing,
-        sideC::Union{Side, Void} = nothing,
-        mountain::Union{Mountain, Void} = nothing
-    ) = new(name, id, (sideA, sideB, sideC), filter(Dict{String, Any}(
-            "Icon" => icon,
-            "Interlude" => interlude,
-            "CompleteScreen" => completeScreen,
-            "CompleteScreenName" => completeScreenName,
-            "TitleBaseColor" => titleBaseColor,
-            "TitleAccentColor" => titleAccentColor,
-            "TitleTextColor" => titleTextColor,
-            "IntroType" => introType,
-            "ColorGrade" => colorGrade,
-            "CassetteNoteColor" => cassetteNoteColor,
-            "CassetteSong" => cassetteSong,
-            "Mountain" => mountain
-    )) do x, v
-        v !== nothing && !(isa(v, String) && isempty(v))
-    end)
-end
+const default_mode = Dict{String, Any}(
+    "IgnoreLevelAudioLayerData" => false,
+    "Inventory" => "Default",
+    #"Path" => "", # We have allready loaded the file, this can always be null
+    #"PoemID" => "", # Autogenerated by Everest
 
-function yaml(buf::IOBuffer, c::Chapter, indent::Integer = 0; sid::String = "1-$(c.name)")
-    yaml(buf, "Name", c.name, indent)
-    yaml(buf, "SID", sid, indent)
-    for (k, v) in enumerate(c.data)
-        if isa(v[2], UInt32)
-            yaml(buf, v[1], num2hex(v[2])[end-5:end], indent)
-        else
-            yaml(buf, v[1], v[2], indent)
-        end
-    end
-
-    # Write the modes
-    yaml(buf, "Modes:\n", indent)
-    indent += 4
-    for side in c.sides
-        if side !== nothing
-            yaml(buf, side, indent)
-        end
-    end
-end
-
-struct Story
-    name::String
-    chapters::Array{Chapter, 1}
-
-    Story(name::String, chapters::Array{Chapter, 1}) = new(name, chapters)
-    Story(name::String, chapters::Chapter...) = new(name, [c for c in chapters])
-end
-
-function yaml(s::Story, indent::Integer = 0)
-    for (i, c) in enumerate(s.chapters)
-        buf = IOBuffer()
-        yaml(buf, c, sid = "$(s.name)/$i-$(c.id)")
-        # TODO write to file
-        println(String(buf))
-    end
-end
+    "StartLevel" => "",
+    "HeartIsEnd" => false
+)

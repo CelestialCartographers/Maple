@@ -2,6 +2,7 @@ using Parameters
 
 include("room.jl")
 include("style.jl")
+include("filler.jl")
 
 # Quirk with the "fancy" JSON converting, make sure we always have an array to work with
 packIfDict(data) = isa(data, Dict) ? Dict{String, Any}[data] : data
@@ -10,11 +11,12 @@ mutable struct Map
     package::String
     rooms::Array{Room, 1}
     style::Style
+    fillers::Array{Filler, 1}
 
-    Map(package::String) = new(package, Room[], Style())
-    Map(package::String, rooms::Array{Room, 1}) = new(package, rooms, Style())
-    Map(package::String, rooms::Room...) = new(package, rooms, Style())
-    Map(package::String, rooms::Array{Room, 1}, style::Style) = new(package, rooms, style)
+    Map(package::String) = new(package, Room[], Style(), Filler[])
+    Map(package::String, rooms::Array{Room, 1}) = new(package, rooms, Style(), Filler[])
+    Map(package::String, rooms::Room...) = new(package, rooms, Style(), Filler[])
+    Map(package::String, rooms::Array{Room, 1}, style::Style, filler::Array{Filler, 1}=Filler[]) = new(package, rooms, style, filler)
 end
 
 Base.isequal(lhs::Map, rhs::Map) = Dict(lhs) == Dict(rhs)
@@ -34,9 +36,13 @@ function Base.Dict(m::Map)
             Dict{String, Any}(
                 "__name" => "Style",
                 "__children" => Dict(m.style)
-            )
+            ),
 
-            # TODO - Filler rects?
+            # Filler rects
+            Dict{String, Any}(
+                "__name" => "Filler",
+                "__children" => Dict.(m.fillers)
+            )
         ]
     )
 end
@@ -104,18 +110,34 @@ function loadStyleground(styleData::Dict{String, Any})
     return style
 end
 
+function loadFillerRects(fillerData::Dict{String, Any})
+    res = Filler[]
+
+    for (typ, data) in fillerData
+        if typ == "rect"
+            for r in packIfDict(data)
+                push!(res, Filler(r["x"], r["y"], r["w"], r["h"]))
+            end
+        end
+    end
+
+    return res
+end
+
 # TODO Consider splitting this up like styleground
 function loadMap(map::Dict{String, Any})
     mapData = map["Map"]
     package = map["_package"]
-    roomsData = mapData["levels"]["level"]
+    roomsData = get(mapData["levels"], "level", Dict{String, Any}[])
 
     rooms = Room[]
 
-    style = get(mapData, "Style", Dict{Any, String}())
+    style = get(mapData, "Style", Dict{String, Any}())
     
     fgStyle = loadStyleground(get(style, "Foregrounds", Dict{String, Any}()))
     bgStyle = loadStyleground(get(style, "Backgrounds", Dict{String, Any}()))
+
+    fillerRects = loadFillerRects(get(mapData, "Filler", Dict{String, Any}()))
 
     # Add rooms
     for room in packIfDict(roomsData)
@@ -150,10 +172,6 @@ function loadMap(map::Dict{String, Any})
                 # Special cases
                 if entityName == "offsetX" || entityName == "offsetY"
                     continue
-
-                #elseif entityName == "ridgeGate"
-                    # TBI
-                    # Has a weird data structure to point at strawberries
             
                 else
                     for data in packIfDict(entityData)
@@ -237,5 +255,5 @@ function loadMap(map::Dict{String, Any})
         ))
     end
 
-    return Map(package, rooms, Style(fgStyle, bgStyle))
+    return Map(package, rooms, Style(fgStyle, bgStyle), fillerRects)
 end

@@ -6,11 +6,12 @@ macro exportalltypes()
 end
 
 include("metadata.jl")
+include("side.jl")
 include("map_coder.jl")
 
 @exportalltypes
 
 # export functions manually
-export encodeMap, loadMap, entityMap, yaml, getRoomByName
+export encodeMap, loadMap, encodeSide, loadSide, entityMap, getRoomByName, getSideName
 
 end

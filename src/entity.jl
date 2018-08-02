@@ -125,7 +125,7 @@ ZipMover(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Int
 
 CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", x=x, y=y, onlyIce=onlyIce, onlyFire=onlyFire, persistent=persistent)
 
-Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="floor") = Entity("slider", x=x, y=y, clockwise=clockwise, surface=surface)
+Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor") = Entity("slider", x=x, y=y, clockwise=clockwise, surface=surface)
 
 CrystalHeart(x::Integer, y::Integer) = Entity("blackGem", x=x, y=y)
 HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Integer) = Entity("heartGemDoor", x=x, y=y, width=width, height=height, requires=requires)
@@ -135,7 +135,7 @@ FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integ
 ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tileType=tiletype)
 CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
 DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
-FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype)
+FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype, finalBoss=finalBoss, behind=behind)
 CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0) = Entity("cassetteBlock", x=x, y=y, width=width, height=height, index=index)
 NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("negaBlock", x=x, y=y, width=width, height=height)
 MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false) = Entity("moveBlock", x=x, y=y, width=width, height=height, direction=direction, canSteer=canSteer, fast=fast)
@@ -165,13 +165,14 @@ SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::
 
 TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false) = Entity("templeCrackedBlock", x=x, y=y, width=width, height=height, persistent=persistent)
 
-BadelineBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("finalBossFallingBlock", x=x, y=y, width=width, height=height)
+BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("fallingBlock", x=x, y=y, width=width, height=height, tiletype="g", finalBoss=true, behind=false, climbFall=false)
+BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
 
 Killbox(x::Integer, y::Integer, width::Integer) = Entity("killbox", x=x, y=y, width=width)
 
 CliffsideFlag(x::Integer, y::Integer, index::Integer=0) = Entity("cliffside_flag", x=x, y=y, index=index)
 
-Water(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, steamy::Bool=false) = Entity("water", x=x, y=y, width=width, height=height, steamy=steamy)
+Water(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, hasBottom::Bool=false) = Entity("water", x=x, y=y, width=width, height=height, hasBottom=hasBottom)
 Waterfall(x::Integer, y::Integer) = Entity("waterfall", x=x, y=y)
 BigWaterfall(x::Integer, y::Integer, height::Integer, layer::String="FG") = Entity("bigWaterfall", x=x, y=y, height=height, layer=layer)
 

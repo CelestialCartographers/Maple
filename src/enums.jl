@@ -194,6 +194,13 @@ const tile_entity_legal_tiles = Char[
     'k', 'l'
 ]
 
+const slider_surfaces = String[
+    "Ceiling",
+    "LeftWall",
+    "RightWall",
+    "Floor"
+]
+
 const trigger_position_modes = String[
     "HorizontalCenter",
     "VerticalCenter",
