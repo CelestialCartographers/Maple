@@ -1,6 +1,6 @@
 using JSON
 
-function getVarLength(fh)
+function getVarLength(fh::IOStream)
   res = 0
   count = 0
   while true
@@ -13,7 +13,7 @@ function getVarLength(fh)
   end
 end
 
-function writeVarLength(fh, n)
+function writeVarLength(fh::IOBuffer, n::Integer)
   res = UInt8[]
   while n > 127
     push!(res, n & 127 | 0b10000000)
@@ -23,7 +23,7 @@ function writeVarLength(fh, n)
   write(fh, res)
 end
 
-function readString(fh)
+function readString(fh::IOStream)
   length = getVarLength(fh)
   res = ""
 
@@ -34,13 +34,13 @@ function readString(fh)
   return res
 end
 
-function writeString(fh, s)
+function writeString(fh::IOBuffer, s::String)
   s = [UInt8(c) for c in s]
   writeVarLength(fh, length(s))
   write(fh, s)
 end
 
-function readRunLengthEncoded(fh)
+function readRunLengthEncoded(fh::IOStream)
   byteCount = read(fh, UInt16)
   data = UInt8[]
   res = ""
@@ -64,7 +64,7 @@ decodeTypes = Dict{Integer, Type}(
   4 => Float32
 )
 
-function decodeValue(typ, lookup, fh)
+function decodeValue(typ::Any, lookup::Array{String, 1}, fh::IOStream)
   if 0 <= typ <= 4
     return read(fh, decodeTypes[typ])
   elseif typ == 5
@@ -76,7 +76,7 @@ function decodeValue(typ, lookup, fh)
   end
 end
 
-function encodeRunLength(s)
+function encodeRunLength(s::String)
   count::UInt8 = 1
   res = UInt8[]
   current::Char = s[1]
@@ -109,7 +109,6 @@ function encodeValue(buffer::IOBuffer, key::String, value::Bool, lookup::Array{S
   write(buffer, 0x0)
   write(buffer, value)
 end
-
 
 function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Array{String, 1})
   for (i, t) in enumerate(numTypes)
@@ -149,7 +148,7 @@ function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Array
   end
 end
 
-function decodeElement(fh, parent, lookup)
+function decodeElement(fh::IOStream, parent::Dict{String, Any}, lookup::Array{String, 1})
   element = Dict{String, Any}()
   name = look(lookup, fh)
   attributeCount = read(fh, UInt8)
@@ -212,26 +211,19 @@ function decodeAllMaps(maps::String, output::String)
   end
 end
 
-function populateEncodeKeyNames!(d, seen::Dict{String, Integer})
-  seen[d["__name"]] = true
-  children = get(d, "__children", [])
+function populateEncodeKeyNames!(d::Dict{String, Any}, seen::Dict{String, Integer})
+  name = d["__name"]
+  seen[name] = get(seen, name, 0) + 1
+
+  children = get(d, "__children", Dict{String, Any}[])
 
   for (k, v) in d
     if !startswith(k, "__")
-      if haskey(seen, k)
-        seen[k] += 1
-
-      else
-        seen[k] = 1
-      end
+      seen[k] = get(seen, k, 0) + 1
     end
-    if isa(v, String) && k != "innerText"
-      if haskey(seen, v)
-        seen[v] += 1
 
-      else
-        seen[v] = 1
-      end
+    if isa(v, String) && k != "innerText"
+      seen[v] = get(seen, v, 0) + 1
     end
   end
 
@@ -244,7 +236,9 @@ function getAttributeNames(d::Dict{String, Any})
   attr = Dict{String, Any}()
 
   for (k, v) in d
-    if !startswith(k, "_")
+    # Attributes starting with _ are magical, and contains data that shouldn't be written directly
+    # Attributes with value nothing should not be written either, and is the lack of attribute instead
+    if !startswith(k, "_") && v !== nothing
       attr[k] = v
     end
   end
@@ -266,10 +260,8 @@ function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Array
   write(buffer, UInt8(length(keys(attributes))))
 
   for (attr, value) in attributes
-    if !startswith(attr, "_")
-      write(buffer, UInt16(findfirst(lookup, attr) - 1))
-      encodeValue(buffer, attr, value, lookup)
-    end
+    write(buffer, UInt16(findfirst(lookup, attr) - 1))
+    encodeValue(buffer, attr, value, lookup)
   end
 
   write(buffer, UInt16(length(children)))
@@ -279,7 +271,9 @@ end
 function encodeMap(map::Dict{String, Any}, outfile::String)
   seen = Dict{String, Integer}()
   populateEncodeKeyNames!(map, seen)
+
   # Store lookup table in order of occurrence
+  # It's faster to sort this array than look them up in random order
   lookup = String[k for (k, v) in sort(collect(seen), by=v -> v[2], rev=true)]
   buffer = IOBuffer()
 

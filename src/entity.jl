@@ -30,8 +30,8 @@ DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", x=x, y=y)
 DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Main.Maple.Entity("darkChaserEnd", x=x, y=y, width=width, height=height)
 DarkChaserBarrier = DarkChaserEnd
 
-function Strawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes)
+function Strawberry(x::Integer, y::Integer, winged::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
+    return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes, checkpointID=checkpointID, order=order)
 end
 
 function GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
@@ -75,8 +75,11 @@ DreamMirror(x::Integer, y::Integer) = Entity("dreammirror", x=x, y=y)
 Refill(x::Integer, y::Integer) = Entity("refill", x=x, y=y)
 Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity("infiniteStar", x=x, y=y, shielded=shielded, singleUse=singleUse)
 
+# Everest needs null values here for automatic fills
+# Inventory and Dreaming has to be nullable, -1 for checkpointID is considered null
+ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Void}=nothing, dreaming::Union{Bool, Void}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false) = Entity("checkpoint", x=x, y=y, allowOrigin=allowOrigin, inventory=inventory, dreaming=dreaming, checkpointID=checkpointID)
+
 Checkpoint(x::Integer, y::Integer, number::Integer=0) = Entity("summitcheckpoint", x=x, y=y, number=number)
-ChapterCheckpoint(x::Integer, y::Integer; allowOrigin::Bool=false) = Entity("checkpoint", x=x, y=y, allowOrigin=allowOrigin)
 
 SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
 SpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesDown", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
@@ -121,7 +124,7 @@ TouchSwitch(x::Integer, y::Integer) = Entity("touchSwitch", x=x, y=y)
 SinkingPlatform(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("sinkingPlatform", x=x, y=y, width=width)
 MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth) = Entity("movingPlatform", x=x1, y=y1, nodes=[(x2, y2)], width=width)
 
-ZipMover(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
+ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
 
 CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", x=x, y=y, onlyIce=onlyIce, onlyFire=onlyFire, persistent=persistent)
 
@@ -133,9 +136,14 @@ HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Int
 CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("crumbleBlock", x=x, y=y, width=width)
 FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("fakeWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
 ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tileType=tiletype)
+ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", condition::String="Key", conditionID::String="1:1") = Entity("conditionBlock", x=x, y=y, width=width, height=height, tileType=tiletype, condition=condition, conditionID=conditionID)
 CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
 DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
 FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype, finalBoss=finalBoss, behind=behind)
+
+# Is actually not resizable, but still has a width for collision purposes
+RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=[(x2, y2)], width=32, height=32, strawberries=strawberries)
+
 CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0) = Entity("cassetteBlock", x=x, y=y, width=width, height=height, index=index)
 NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("negaBlock", x=x, y=y, width=width, height=height)
 MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false) = Entity("moveBlock", x=x, y=y, width=width, height=height, direction=direction, canSteer=canSteer, fast=fast)
