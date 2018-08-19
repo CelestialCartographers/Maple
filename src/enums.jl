@@ -77,7 +77,7 @@ end
 ))
 end
 
-const windpatterns = String[
+const wind_patterns = String[
     "None",
     "Left",
     "Right",

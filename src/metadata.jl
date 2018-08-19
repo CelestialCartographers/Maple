@@ -63,14 +63,14 @@ const default_meta = Dict{String, Any}(
     "BloomBase" => 0.0,
     "BloomStrength" => 1.0,
 
-    #"Jumpthru" => "", Done on a per entity basis in editor, not useful for us
+    #"Jumpthru" => "", # Done on a per entity basis in editor, not useful for us
 
     "CoreMode" => "",
 
     "CassetteNoteColor" => "",
     "CassetteSong" => "",
 
-    "FixRotateSpinnerAngles" => true
+    #"FixRotateSpinnerAngles" => true # Now fixed in Celeste, Everest no longer has this exposed
 )
 
 const default_mode = Dict{String, Any}(

@@ -27,7 +27,7 @@ Player(x::Integer, y::Integer) = Entity("player", x=x, y=y, width=8)
 DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", x=x, y=y)
 
 # Added by Everest to make Dark Chasers useable by custom maps
-DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Main.Maple.Entity("darkChaserEnd", x=x, y=y, width=width, height=height)
+DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Maple.Entity("darkChaserEnd", x=x, y=y, width=width, height=height)
 DarkChaserBarrier = DarkChaserEnd
 
 function Strawberry(x::Integer, y::Integer, winged::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
@@ -92,10 +92,10 @@ TriggerSpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = 
 TriggerSpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesRight", x=x, y=y, height=height)
 
 # Added by Everest
-TriggerSpikesOriginalUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Main.Maple.Entity("triggerSpikesOriginalUp", x=x, y=y, width=width)
-TriggerSpikesOriginalDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Main.Maple.Entity("triggerSpikesOriginalDown", x=x, y=y, width=width)
-TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Main.Maple.Entity("triggerSpikesOriginalLeft", x=x, y=y, height=height)
-TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Main.Maple.Entity("triggerSpikesOriginalRight", x=x, y=y, height=height)
+TriggerSpikesOriginalUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Maple.Entity("triggerSpikesOriginalUp", x=x, y=y, width=width)
+TriggerSpikesOriginalDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Maple.Entity("triggerSpikesOriginalDown", x=x, y=y, width=width)
+TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Maple.Entity("triggerSpikesOriginalLeft", x=x, y=y, height=height)
+TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Maple.Entity("triggerSpikesOriginalRight", x=x, y=y, height=height)
 
 RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=[(x2, y2)], clockwise=clockwise)
 Spinner(x::Integer, y::Integer, attachToSolid::Bool=false) = Entity("spinner", x=x, y=y, attachToSolid=attachToSolid)
@@ -140,6 +140,8 @@ ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height:
 CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
 DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
 FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype, finalBoss=finalBoss, behind=behind)
+
+IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("introCrusher", x=x, y=y, width=width, height=height)
 
 # Is actually not resizable, but still has a width for collision purposes
 RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=[(x2, y2)], width=32, height=32, strawberries=strawberries)
@@ -223,7 +225,7 @@ TheoCrystal(x::Integer, y::Integer) = Entity("theoCrystal", x=x, y=y)
 
 Bumper(x::Integer, y::Integer) = Entity("bigSpinner", x=x, y=y)
 
-Bonfire(x::Integer, y::Integer, mode::String="lit") = Entity("bonfire", x=x, y=y, mode=mode)
+Bonfire(x::Integer, y::Integer, mode::String="Lit") = Entity("bonfire", x=x, y=y, mode=mode)
 FriendlyGhost(x::Integer, y::Integer) = Entity("friendlyGhost", x=x, y=y)
 OshiroBoss = FriendlyGhost
 
@@ -237,6 +239,8 @@ CoreMessage(x::Integer, y::Integer, line::Integer=0) = Entity("coreMessage", x=x
 EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
 Memorial(x::Integer, y::Integer, dreaming::Bool=false) = Entity("memorial", x=x, y=y, dreaming=dreaming)
 EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("everest/memorial", x=x, y=y, dreaming=dreaming, dialog=dialog, sprite=sprite)
+
+Payphone(x::Integer, y::Integer) = Entity("payphone", x=x, y=y)
 
 blacklistedEntityAttrs = String["nodes"]
 

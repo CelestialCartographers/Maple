@@ -62,7 +62,7 @@ function getRoomByCoords(map::Map, x::Number, y::Number)
         roomX, roomY = Int.(room.position)
         width, height = Int.(room.size)
         
-        if x > roomX && x < roomX + width && y > roomY && y < roomY + height
+        if x >= roomX && x < roomX + width && y >= roomY && y < roomY + height
             return room
         end
     end
@@ -241,6 +241,9 @@ function loadMap(map::Dict{String, Any})
             musicLayer2 = get(room, "musicLayer2", true),
             musicLayer3 = get(room, "musicLayer3", true),
             musicLayer4 = get(room, "musicLayer4", true),
+
+            # Is this safe? Does the game expect string or integer in the case the value is there?
+            musicProgress = string(get(room, "musicProgress", "")),
 
             dark = get(room, "dark", false),
             space = get(room, "space", false),

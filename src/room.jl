@@ -28,6 +28,8 @@ include("enums.jl")
     musicLayer3::Bool = true
     musicLayer4::Bool = true
 
+    musicProgress::String = ""
+
     dark::Bool = false
     space::Bool = false
     underwater::Bool = false
