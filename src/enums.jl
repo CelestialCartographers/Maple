@@ -186,6 +186,41 @@ const condition_block_conditions = String[
     "Strawberry"
 ]
 
+const npc_npcs = String[
+    "granny_00_house",
+    "theo_01_campfire",
+    "theo_02_campfire",
+    "theo_03_escaping",
+    "theo_03_vents",
+    "oshiro_03_lobby",
+    "oshiro_03_hallway",
+    "oshiro_03_hallway2",
+    "oshiro_03_bigroom",
+    "oshiro_03_breakdown",
+    "oshiro_03_suite",
+    "oshiro_03_rooftop",
+    "granny_04_cliffside",
+    "theo_04_cliffside",
+    "theo_05_entrance",
+    "theo_05_inmirror",
+    "evil_05",
+    "theo_06_plateau",
+    "granny_06_intro",
+    "badeline_06_crying",
+    "granny_06_ending",
+    "theo_06_ending",
+    "granny_07x",
+    "theo_08_inside",
+    "granny_08_inside",
+    "granny_09_outside",
+    "granny_09_inside"
+]
+
+const seeker_statue_hatches = String[
+    "Distance",
+    "PlayerRightOfX"
+]
+
 const badeline_boss_shooting_patterns = Int[
     0, 1, 2, 3, 4,
     5, 6, 7, 8, 9, 
@@ -244,5 +279,5 @@ const everest_flag_trigger_modes = String[
 
 const music_fade_trigger_directions = String[
     "leftToRight",
-    "rightToLeft"
+    "topToBottom"
 ]

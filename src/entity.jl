@@ -62,6 +62,10 @@ function Seeker(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integ
     return Entity("seeker", x=x, y=y, nodes=nodes)
 end
 
+function SeekerStatue(x::Integer, y::Integer, hatch::String="Distance", nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
+    return Entity("seekerStatue", x=x, y=y, hatch=hatch, nodes=nodes)
+end
+
 Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
 
 Towerviewer(x::Integer, y::Integer) = Entity("towerviewer", x=x, y=y)
@@ -178,7 +182,7 @@ TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, hei
 BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("fallingBlock", x=x, y=y, width=width, height=height, tiletype="g", finalBoss=true, behind=false, climbFall=false)
 BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
 
-Killbox(x::Integer, y::Integer, width::Integer) = Entity("killbox", x=x, y=y, width=width)
+Killbox(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("killbox", x=x, y=y, width=width)
 
 CliffsideFlag(x::Integer, y::Integer, index::Integer=0) = Entity("cliffside_flag", x=x, y=y, index=index)
 
@@ -233,7 +237,9 @@ Key(x::Integer, y::Integer) = Entity("key", x=x, y=y)
 LockBlock(x::Integer, y::Integer, sprite::String="wood") = Entity("lockBlock", x=x, y=y, sprite=sprite)
 
 Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", x=x, y=y)
-Bird(x::Integer, y::Integer, mode::String="") = Entity("bird", x=x, y=y, mode=mode)
+Bird(x::Integer, y::Integer, mode::String="Sleeping") = Entity("bird", x=x, y=y, mode=mode)
+NPC(x::Integer, y::Integer, npc::String="granny_00_house") = Entity("npc", x=x, y=y, npc=npc)
+Npc = NPC
 
 CoreMessage(x::Integer, y::Integer, line::Integer=0) = Entity("coreMessage", x=x, y=y, line=line)
 EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
