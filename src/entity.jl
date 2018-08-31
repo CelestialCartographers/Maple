@@ -248,6 +248,9 @@ EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="ME
 
 Payphone(x::Integer, y::Integer) = Entity("payphone", x=x, y=y)
 
+RisingLava(x::Integer, y::Integer, intro::Bool=false) = Entity("risingLava", x=x, y=y, intro=intro)
+SandwichLava(x::Integer, y::Integer) = Entity("sandwichLava", x=x, y=y)
+
 blacklistedEntityAttrs = String["nodes"]
 
 function Base.Dict(e::Entity)
