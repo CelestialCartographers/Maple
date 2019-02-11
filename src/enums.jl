@@ -1,8 +1,9 @@
 # Grabbed from Sfxs.cs
 # These are the constant fields in the class and they seem to be correct
+
 module Songs
 macro songnames(s::Symbol, expr::Expr)
-    return Expr(:block, esc(:($s = $expr)), [esc(:($(parse(k)) = $v)) for (k, v) in eval(expr)]...)
+    return Expr(:block, esc(:($s = $expr)), [esc(:($(Meta.parse(k)) = $v)) for (k, v) in eval(expr)]...)
 end
 
 @songnames(songs, Dict{String, String}(
@@ -66,6 +67,23 @@ end
     "music_rmx_06_reflection" => "event:/music/remix/06_reflection",
     "music_rmx_07_summit" => "event:/music/remix/07_summit",
     "music_rmx_09_core" => "event:/music/remix/09_core",
+    "cas_01_forsaken_city" => "event:/music/cassette/01_forsaken_city",
+    "cas_02_old_site" => "event:/music/cassette/02_old_site",
+    "cas_03_resort" => "event:/music/cassette/03_resort",
+    "cas_04_cliffside" => "event:/music/cassette/04_cliffside",
+    "cas_05_mirror_temple" => "event:/music/cassette/05_mirror_temple",
+    "cas_06_reflection" => "event:/music/cassette/06_reflection",
+    "cas_07_summit" => "event:/music/cassette/07_summit",
+    "cas_08_core" => "event:/music/cassette/09_core"
+))
+end
+
+module CassetteSongs
+macro songnames(s::Symbol, expr::Expr)
+    return Expr(:block, esc(:($s = $expr)), [esc(:($(Meta.parse(k)) = $v)) for (k, v) in eval(expr)]...)
+end
+
+@songnames(songs, Dict{String, String}(
     "cas_01_forsaken_city" => "event:/music/cassette/01_forsaken_city",
     "cas_02_old_site" => "event:/music/cassette/02_old_site",
     "cas_03_resort" => "event:/music/cassette/03_resort",
@@ -142,6 +160,19 @@ const dash_switch_sides = String[
     "Right"
 ]
 
+const tentacle_sides = String[
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+const tentacle_fear_distance = String[
+    "close",
+    "medium",
+    "far"
+]
+
 const move_block_directions = String[
     "Up",
     "Down",
@@ -154,6 +185,18 @@ const spike_directions = String[
     "Down",
     "Left",
     "Right"
+]
+
+const tentacle_effect_directions = String[
+    "Up",
+    "Down",
+    "Left",
+    "Right"
+]
+
+const planet_effect_sizes = String[
+    "big",
+    "small"
 ]
 
 const trigger_spike_directions = String[
@@ -184,6 +227,30 @@ const condition_block_conditions = String[
     "Key",
     "Button",
     "Strawberry"
+]
+
+const spike_types = String[
+    "default",
+    "outline",
+    "cliffside",
+    "tentacles",
+    "reflection"
+]
+
+const crumble_block_textures = String[
+    "default",
+    "cliffside"
+]
+
+const wood_platform_textures = String[
+    "default",
+    "cliffside"
+]
+
+const kevin_axes = String[
+    "both",
+    "horizontal",
+    "vertical"
 ]
 
 const npc_npcs = String[
@@ -275,6 +342,11 @@ const everest_flag_trigger_modes = String[
     "OnPlayerEnter",
     "OnPlayerLeave",
     "OnLevelStart"
+]
+
+const everest_crystal_shatter_trigger_modes = String[
+    "All",
+    "Contained"
 ]
 
 const music_fade_trigger_directions = String[

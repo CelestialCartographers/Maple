@@ -10,7 +10,9 @@ This project is an unofficial level editor, it is merely a fan project aiming to
 ## Installation
 Maple can be installed using julia's `Pkg` system.
 ```julia
-julia> Pkg.clone("https://github.com/CelestialCartographers/Maple.git")
+julia> using Pkg
+
+julia> Pkg.add(PackageSpec(url="https://github.com/CelestialCartographers/Maple.git"))
 ```
 Maple can be updated using `Pkg.update()`.
 

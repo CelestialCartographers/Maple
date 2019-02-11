@@ -1,3 +1,19 @@
+@fieldproxy mutable struct Entity{T}
+    name::String
+    data::Dict{String, Any}
+
+    id::Integer
+
+    Entity{T}(name::String, data::Dict{String, Any}, id::Integer=nextEntityId()) where T = new{T}(name, data, id)
+    Entity{T}(name::String, id::Integer=nextEntityId(); kwargs...) where T = new{T}(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs), id)
+
+    Entity(name::String, data::Dict{String, Any}, id::Integer=nextEntityId()) = new{Symbol(name)}(name, data, id)
+    Entity(name::String, id::Integer=nextEntityId(); kwargs...) = new{Symbol(name)}(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs), id)
+end
+
+# Don't care about the ID
+Base.:(==)(lhs::Entity{T}, rhs::Entity{T}) where T = lhs.data == rhs.data
+
 entityIdSerial = 0
 
 const defaultBlockWidth = 16
@@ -10,246 +26,260 @@ function nextEntityId()
     return global entityIdSerial += 1
 end
 
-mutable struct Entity
-    name::String
-    id::Integer
 
-    data::Dict{String, Any}
-end
-
-# Don't care about the ID
-Base.isequal(lhs::Entity, rhs::Entity) = lhs.name == rhs.name && lhs.data == rhs.data
-
-Entity(name::String, data::Dict{String, Any}) = Entity(name, nextEntityId(), data)
-Entity(name::String; kwargs...) = Entity(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs))
-
-Player(x::Integer, y::Integer) = Entity("player", x=x, y=y, width=8)
-DarkChaser(x::Integer, y::Integer) = Entity("darkChaser", x=x, y=y)
+@mapdef Entity "player" Player(x::Integer, y::Integer)
+@mapdef Entity "darkChaser" DarkChaser(x::Integer, y::Integer, canChangeMusic::Bool=true)
+BadelineChaser = DarkChaser
 
 # Added by Everest to make Dark Chasers useable by custom maps
-DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Maple.Entity("darkChaserEnd", x=x, y=y, width=width, height=height)
+@mapdef Entity "darkChaserEnd" DarkChaserEnd(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 DarkChaserBarrier = DarkChaserEnd
+BadelineChaserEnd = DarkChaserEnd
+BadelineChaserBarrier = DarkChaserEnd
 
-function Strawberry(x::Integer, y::Integer, winged::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("strawberry", x=x, y=y, winged=winged, nodes=nodes, checkpointID=checkpointID, order=order)
-end
+@mapdef Entity "strawberry" Strawberry(x::Integer, y::Integer, winged::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "goldenBerry" GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "memorialTextController" MemorialTextController(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+GoldenStrawberryNoDash = MemorialTextController
 
-function GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("goldenBerry", x=x, y=y, winged=winged, nodes=nodes)
-end
+@mapdef Entity "badelineBoost" BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true)
+@mapdef Entity "finalBoss" BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, lockCamera::Bool=true, canChangeMusic::Bool=true)
 
-function BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true) where {T <: Integer}
-    return Entity("badelineBoost", x=x, y=y, lockCamera=lockCamera, nodes=nodes)
-end
+FinalBoss = BadelineBoss
 
-function BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, lockCamera::Bool=true) where {T <: Integer}
-    return Entity("finalBoss", x=x, y=y, startHit=startHit, nodes=nodes, patternIndex=patternIndex, cameraPastY=cameraPastY, lockCamera=lockCamera)
-end
+@mapdef Entity "fireBall" FireBall(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1)
 
-function FireBall(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1) where {T <: Integer}
-    return Entity("fireBall", x=x, y=y, amount=amount, offset=offset, speed=speed, nodes=nodes)
-end
+@mapdef Entity "tentacles" Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], fear_distance::String="", slide_until::Integer=0)
 
-function Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[], fear_distance::String="close", slide_until::Integer=0) where {T <: Integer}
-    return Entity("tentacles", x=x, y=y, slide_until=slide_until, nodes=nodes, fear_distance=fear_distance)
-end
+# Cobweb color exposed by Everest
+@mapdef Entity "cobweb" Cobweb(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], color::String="696A6A")
 
-function Cobweb(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("cobweb", x=x, y=y, nodes=nodes)
-end
+@mapdef Entity "seeker" Seeker(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "seekerStatue" SeekerStatue(x::Integer, y::Integer, hatch::String="Distance", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
-function Seeker(x::Integer, y::Integer, nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("seeker", x=x, y=y, nodes=nodes)
-end
+@mapdef Entity "playerSeeker" PlayerSeeker(x::Integer, y::Integer)
 
-function SeekerStatue(x::Integer, y::Integer, hatch::String="Distance", nodes::Array{Tuple{T, T}, 1}=Tuple{Integer, Integer}[]) where {T <: Integer}
-    return Entity("seekerStatue", x=x, y=y, hatch=hatch, nodes=nodes)
-end
+@pardef Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
 
-Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
-
-Towerviewer(x::Integer, y::Integer) = Entity("towerviewer", x=x, y=y)
+@mapdef Entity "towerviewer" Towerviewer(x::Integer, y::Integer)
 Lookout = Towerviewer
 
-FloatingDebris(x::Integer, y::Integer) = Entity("floatingDebris", x=x, y=y)
-ForegroundDebris(x::Integer, y::Integer) = Entity("foregroundDebris", x=x, y=y)
+@mapdef Entity "floatingDebris" FloatingDebris(x::Integer, y::Integer)
+@mapdef Entity "foregroundDebris" ForegroundDebris(x::Integer, y::Integer)
 
-DreamMirror(x::Integer, y::Integer) = Entity("dreammirror", x=x, y=y)
+@mapdef Entity "dreammirror" DreamMirror(x::Integer, y::Integer)
+@mapdef Entity "resortmirror" ResortMirror(x::Integer, y::Integer)
+@mapdef Entity "templeMirror" TempleMirror(x::Integer, y::Integer, reflectX::Number=0, reflectY::Number=0)
 
-Refill(x::Integer, y::Integer) = Entity("refill", x=x, y=y)
-Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false) = Entity("infiniteStar", x=x, y=y, shielded=shielded, singleUse=singleUse)
+@mapdef Entity "refill" Refill(x::Integer, y::Integer, twoDash::Bool=false, oneUse::Bool=false)
+@mapdef Entity "infiniteStar" Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false)
 
 # Everest needs null values here for automatic fills
 # Inventory and Dreaming has to be nullable, -1 for checkpointID is considered null
-ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Void}=nothing, dreaming::Union{Bool, Void}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false) = Entity("checkpoint", x=x, y=y, allowOrigin=allowOrigin, inventory=inventory, dreaming=dreaming, checkpointID=checkpointID)
+@mapdef Entity "checkpoint" ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Nothing}=nothing, dreaming::Union{Bool, Nothing}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false)
 
-Checkpoint(x::Integer, y::Integer, number::Integer=0) = Entity("summitcheckpoint", x=x, y=y, number=number)
+@mapdef Entity "summitcheckpoint" Checkpoint(x::Integer, y::Integer, number::Integer=0)
 
-SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesUp", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
-SpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, variant::String="default") = Entity("spikesDown", Dict{String, Any}("x"=>x, "y"=>y, "width"=>width, "type"=>variant))
-SpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, variant::String="default") = Entity("spikesLeft", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "type"=>variant))
-SpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, variant::String="default") = Entity("spikesRight", Dict{String, Any}("x"=>x, "y"=>y, "height"=>height, "type"=>variant))
+@mapdef Entity "spikesUp" SpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, type::String="default")
+@mapdef Entity "spikesDown" SpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, type::String="default")
+@mapdef Entity "spikesLeft" SpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
+@mapdef Entity "spikesRight" SpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
 
-TriggerSpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Entity("triggerSpikesUp", x=x, y=y, width=width)
-TriggerSpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Entity("triggerSpikesDown", x=x, y=y, width=width)
-TriggerSpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesLeft", x=x, y=y, height=height)
-TriggerSpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Entity("triggerSpikesRight", x=x, y=y, height=height)
+@mapdef Entity "triggerSpikesUp" TriggerSpikesUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth)
+@mapdef Entity "triggerSpikesDown" TriggerSpikesDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth)
+@mapdef Entity "triggerSpikesLeft" TriggerSpikesLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight)
+@mapdef Entity "triggerSpikesRight" TriggerSpikesRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight)
 
 # Added by Everest
-TriggerSpikesOriginalUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Maple.Entity("triggerSpikesOriginalUp", x=x, y=y, width=width)
-TriggerSpikesOriginalDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth) = Maple.Entity("triggerSpikesOriginalDown", x=x, y=y, width=width)
-TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Maple.Entity("triggerSpikesOriginalLeft", x=x, y=y, height=height)
-TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight) = Maple.Entity("triggerSpikesOriginalRight", x=x, y=y, height=height)
+@mapdef Entity "triggerSpikesOriginalUp" TriggerSpikesOriginalUp(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, type::String="default")
+@mapdef Entity "triggerSpikesOriginalDown" TriggerSpikesOriginalDown(x::Integer, y::Integer, width::Integer=defaultSpikeWidth, type::String="default")
+@mapdef Entity "triggerSpikesOriginalLeft" TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
+@mapdef Entity "triggerSpikesOriginalRight" TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
 
-RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=[(x2, y2)], clockwise=clockwise)
-Spinner(x::Integer, y::Integer, attachToSolid::Bool=false) = Entity("spinner", x=x, y=y, attachToSolid=attachToSolid)
-TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=[(x2, y2)], speed=speed, startCenter=startCenter)
+@mapdef Entity "rotateSpinner" RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false)
+@mapdef Entity "spinner" Spinner(x::Integer, y::Integer, attachToSolid::Bool=false)
+@mapdef Entity "trackSpinner" TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false)
 
-JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood") = Entity("jumpThru", x=x, y=y, width=width, texture=texture)
-Platform = JumpThru
+@mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood")
 
-Booster(x::Integer, y::Integer, red::Bool=false) = Entity("booster", x=x, y=y, red=red)
+@mapdef Entity "wallBooster" WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false)
+@mapdef Entity "booster" Booster(x::Integer, y::Integer, red::Bool=false)
 GreenBooster(x::Integer, y::Integer) = Booster(x, y, false) # Helper
 RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
-WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false) = Entity("wallBooster", x=x, y=y, height=height, left=left)
 
-Lightbeam(x::Integer, y::Integer, width::Integer, height::Integer, rotation::Integer=0) = Entity("lightbeam", x=x, y=y, width=width, height=height, rotation=rotation)
+@mapdef Entity "lightbeam" Lightbeam(x::Integer, y::Integer, width::Integer=32, height::Integer=24, flag::String="", rotation::Integer=0)
 
-Torch(x::Integer, y::Integer, startLit::Bool=false) = Entity("torch", x=x, y=y, startLit=startLit)
+@mapdef Entity "torch" Torch(x::Integer, y::Integer, startLit::Bool=false)
 
-Wire(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1, above::Bool=false) = Entity("wire", x=x1, y=y1, nodes=[(x2, y2)], above=above)
-ClothesLine(x1::Integer, y1::Integer, x2::Integer, y2::Integer) = Entity("clothesline", x=x1, y=y1, nodes=[(x2, y2)])
+# Wire color exposed by Everest
+@pardef Wire(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1, above::Bool=false, color::String="595866") = Entity("wire", x=x1, y=y1, nodes=[(x2, y2)], above=above, color=color)
+@pardef ClothesLine(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("clothesline", x=x1, y=y1, nodes=[(x2, y2)])
+@pardef CliffFlags(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("cliffflag", x=x1, y=y1, nodes=[(x2, y2)])
+FlagLine = CliffFlags
 
-SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("swapBlock", x=x1, y=y1, width=width, height=height, nodes=[(x2, y2)])
+@mapdef Entity "swapBlock" SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-SwitchGate(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false, sprite::String="block") = Entity("switchGate", x=x1, y=y1, width=width, height=height, nodes=[(x2, y2)], persistent=persistent, sprite=sprite)
-TouchSwitch(x::Integer, y::Integer) = Entity("touchSwitch", x=x, y=y)
+@mapdef Entity "switchGate" SwitchGate(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false, sprite::String="block")
+@mapdef Entity "touchSwitch" TouchSwitch(x::Integer, y::Integer)
 
-SinkingPlatform(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("sinkingPlatform", x=x, y=y, width=width)
-MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth) = Entity("movingPlatform", x=x1, y=y1, nodes=[(x2, y2)], width=width)
+# Texture exposed by Everest
+@mapdef Entity "sinkingPlatform" SinkingPlatform(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
+@pardef MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, texture::String="default") = Entity("movingPlatform", x=x1, y=y1, nodes=[(x2, y2)], width=width, texture=texture)
 
-ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
+@pardef ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
 
-CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false) = Entity("coreModeToggle", x=x, y=y, onlyIce=onlyIce, onlyFire=onlyFire, persistent=persistent)
+@mapdef Entity "coreModeToggle" CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false)
 
-Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor") = Entity("slider", x=x, y=y, clockwise=clockwise, surface=surface)
+@mapdef Entity "slider" Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor")
 
-CrystalHeart(x::Integer, y::Integer) = Entity("blackGem", x=x, y=y)
-HeartDoor(x::Integer, y::Integer, width::Integer, height::Integer, requires::Integer) = Entity("heartGemDoor", x=x, y=y, width=width, height=height, requires=requires)
+@mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer)
+@mapdef Entity "fakeHeart" FakeCrystalHeart(x::Integer, y::Integer)
+@mapdef Entity "dreamHeartGem" DreamCrystalHeart(x::Integer, y::Integer)
+@mapdef Entity "heartGemDoor" HeartDoor(x::Integer, y::Integer, width::Integer=40, requires::Integer=0)
 
-CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("crumbleBlock", x=x, y=y, width=width)
-FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("fakeWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
-ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("exitBlock", x=x, y=y, width=width, height=height, tileType=tiletype)
-ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", condition::String="Key", conditionID::String="1:1") = Entity("conditionBlock", x=x, y=y, width=width, height=height, tileType=tiletype, condition=condition, conditionID=conditionID)
-CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3") = Entity("coverupWall", x=x, y=y, width=width, height=height, tiletype=tiletype)
-DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true) = Entity("dashBlock", x=x, y=y, width=width, height=height, tiletype=tiletype, blendin=blendin, canDash=canDash, permanent=permanent)
-FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false) = Entity("fallingBlock", x=x, y=y, width=width, height=height, climbFall=climbFall, tiletype=tiletype, finalBoss=finalBoss, behind=behind)
+@mapdef Entity "plateau" Plateau(x::Integer, y::Integer)
+@mapdef Entity "resortRoofEnding" ResortRoofEnding(x::Integer, y::Integer, width::Integer=defaultBlockWidth)
 
-IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("introCrusher", x=x, y=y, width=width, height=height)
+# CrumbleBlock texture exposed by Everest
+@mapdef Entity "crumbleBlock" CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
+@mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "fakeBlock" FakeBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "exitBlock" ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
+@mapdef Entity "conditionBlock" ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", condition::String="Key", conditionID::String="1:1")
+@mapdef Entity "coverupWall" CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "dashBlock" DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true)
+@mapdef Entity "fallingBlock" FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false)
+
+@mapdef Entity "introCrusher" IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", flags::String="1,0b")
 
 # Is actually not resizable, but still has a width for collision purposes
-RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=[(x2, y2)], width=32, height=32, strawberries=strawberries)
+@pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=[(x2, y2)], width=32, height=32, strawberries=strawberries)
 
-CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0) = Entity("cassetteBlock", x=x, y=y, width=width, height=height, index=index)
-NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("negaBlock", x=x, y=y, width=width, height=height)
-MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false) = Entity("moveBlock", x=x, y=y, width=width, height=height, direction=direction, canSteer=canSteer, fast=fast)
-CrushBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, axes::String="both") = Entity("crushBlock", x=x, y=y, width=width, height=height, axes=axes)
+@mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0)
+@mapdef Entity "negaBlock" NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "moveBlock" MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false)
+@mapdef Entity "crushBlock" CrushBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, axes::String="both", chillout::Bool=false)
 KevinBlock = CrushBlock
 
-IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("iceBlock", x=x, y=y, width=width, height=height)
-FireBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("fireBarrier", x=x, y=y, width=width, height=height)
+@mapdef Entity "iceBlock" IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "fireBarrier" FireBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("dreamBlock", x=x, y=y, width=width, height=height)
-MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false) = Entity("dreamBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, fastMoving=fastMoving)
+@mapdef Entity "dreamBlock" DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false)
+@mapdef false Entity "dreamBlock" MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false)
 SpaceJam = DreamBlock
 MovingSpaceJam = MovingDreamBlock
 
-StarJumpController(x::Integer, y::Integer) = Entity("starClimbController", x=x, y=y)
-StarJumpBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=true) = Entity("starJumpBlock", x=x, y=y, width=width, height=height, sinks=sinks)
+@mapdef Entity "starJumpBlock" StarJumpBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=true)
+@mapdef Entity "starClimbController" StarJumpController(x::Integer, y::Integer)
+StarClimbController = StarJumpController
 
-BlockField(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("blockField", x=x, y=y, width=width, height=height)
+@mapdef Entity "blockField" BlockField(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 StrawberryBlockField = BlockField
 
-BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("bounceBlock", x=x, y=y, width=width, height=height)
+@mapdef Entity "bounceBlock" BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-WhiteBlock(x::Integer, y::Integer) = Entity("whiteblock", x=x, y=y)
+@mapdef Entity "whiteblock" WhiteBlock(x::Integer, y::Integer)
 
-Barrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("invisibleBarrier", x=x, y=y, width=width, height=height)
-SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("seekerBarrier", x=x, y=y, width=width, height=height)
+@mapdef Entity "invisibleBarrier" Barrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "seekerBarrier" SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false) = Entity("templeCrackedBlock", x=x, y=y, width=width, height=height, persistent=persistent)
+@mapdef Entity "templeCrackedBlock" TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false)
+@mapdef Entity "templeMirrorPortal" TempleMirrorPortal(x::Integer, y::Integer)
 
-BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("fallingBlock", x=x, y=y, width=width, height=height, tiletype="g", finalBoss=true, behind=false, climbFall=false)
-BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
+@pardef BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
+BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = FallingBlock(x, y, width, height, "g", false, false, true) # Helper
 
-Killbox(x::Integer, y::Integer, width::Integer=defaultBlockWidth) = Entity("killbox", x=x, y=y, width=width)
+@mapdef Entity "killbox" Killbox(x::Integer, y::Integer, width::Integer=defaultBlockWidth)
 
-CliffsideFlag(x::Integer, y::Integer, index::Integer=0) = Entity("cliffside_flag", x=x, y=y, index=index)
+@mapdef Entity "cliffside_flag" CliffsideFlag(x::Integer, y::Integer, index::Integer=0)
 
-Water(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, hasBottom::Bool=false) = Entity("water", x=x, y=y, width=width, height=height, hasBottom=hasBottom)
-Waterfall(x::Integer, y::Integer) = Entity("waterfall", x=x, y=y)
-BigWaterfall(x::Integer, y::Integer, height::Integer, layer::String="FG") = Entity("bigWaterfall", x=x, y=y, height=height, layer=layer)
+@mapdef Entity "water" Water(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, hasBottom::Bool=false)
+@mapdef Entity "waterfall" Waterfall(x::Integer, y::Integer)
+@mapdef Entity "bigWaterfall" BigWaterfall(x::Integer, y::Integer, width::Integer=16, height::Integer=64, layer::String="FG")
 
-HangingLamp(x::Integer, y::Integer, height::Integer=16) = Entity("hanginglamp", x=x, y=y, height=height)
-Lamp(x::Integer, y::Integer, broken::Bool=false) = Entity("lamp", x=x, y=y, broken=broken)
-BrokenLamp(x::Integer, y::Integer) = Entity("lamp", x=x, y=y, broken=true)
-ResortLantern(x::Integer, y::Integer) = Entity("resortLantern", x=x, y=y)
+@mapdef Entity "hanginglamp" HangingLamp(x::Integer, y::Integer, height::Integer=16)
+@mapdef Entity "resortLantern" ResortLantern(x::Integer, y::Integer)
+@mapdef Entity "lamp" Lamp(x::Integer, y::Integer, broken::Bool=false)
+BrokenLamp(x::Integer, y::Integer) = Lamp(x, y, true) # Helper
 
-Door(x::Integer, y::Integer, variant::String="wood") = Entity("door", Dict{String, Any}("x" => x, "y" => y, "type" => variant))
-OshiroDoor(x::Integer, y::Integer) = Entity("oshirodoor", x=x, y=y)
-TrapDoor(x::Integer, y::Integer) = Entity("trapdoor", x=x, y=y)
+@mapdef Entity "door" Door(x::Integer, y::Integer, type::String="wood")
+@mapdef Entity "oshirodoor" OshiroDoor(x::Integer, y::Integer)
+@mapdef Entity "trapdoor" Trapdoor(x::Integer, y::Integer)
 
-PicoConsole(x::Integer, y::Integer) = Entity("picoconsole", x=x, y=y)
+@mapdef Entity "picoconsole" PicoConsole(x::Integer, y::Integer)
 
-SoundSource(x::Integer, y::Integer, sound::String="") = Entity("soundsource", x=x, y=y, sound=sound)
+@mapdef Entity "soundSource" SoundSource(x::Integer, y::Integer, sound::String="")
 
-IntroCar(x::Integer, y::Integer) = Entity("introCar", x=x, y=y)
+@mapdef Entity "introCar" IntroCar(x::Integer, y::Integer, hasRoadAndBarriers::Bool=false)
+@pardef Gondola(x::Integer, y::Integer, stopX::Integer=x+128, stopY::Integer=y-128, active::Bool=true) = Entity("gondola", x=x, y=y, nodes=[(stopX, stopY)])
 
-TempleEye(x::Integer, y::Integer) = Entity("templeEye", x=x, y=y)
+@mapdef Entity "templeEye" TempleEye(x::Integer, y::Integer)
+@mapdef Entity "templeBigEyeball" TempleBigEyeball(x::Integer, y::Integer)
+TempleBigEye = TempleBigEyeball
 
-Cloud(x::Integer, y::Integer, fragile::Bool=false) = Entity("cloud", x=x, y=y, fragile=fragile)
-FragileCloud(x::Integer, y::Integer) = Cloud(x, y, true)
+@mapdef Entity "summitcloud" SummitCloud(x::Integer, y::Integer)
+@mapdef Entity "cloud" Cloud(x::Integer, y::Integer, fragile::Bool=false, small::Bool=false)
+FragileCloud(x::Integer, y::Integer, small::Bool=false) = Cloud(x, y, true, small)
 
-Spring(x::Integer, y::Integer, playerCanUse::Bool=true) = Entity("spring", x=x, y=y, playerCanUse=playerCanUse)
-SpringRight(x::Integer, y::Integer) = Entity("wallSpringRight", x=x, y=y)
-SpringLeft(x::Integer, y::Integer) = Entity("wallSpringLeft", x=x, y=y)
+@mapdef Entity "spring" Spring(x::Integer, y::Integer, playerCanUse::Bool=true)
+@mapdef Entity "wallSpringRight" SpringRight(x::Integer, y::Integer)
+@mapdef Entity "wallSpringLeft" SpringLeft(x::Integer, y::Integer)
 
-ColorSwitch(x::Integer, y::Integer, variant::String="red") = Entity("colorSwitch", Dict{String, Any}("x" => x, "y" => y, "type" => variant))
-YellowBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("yellowBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-GreenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("greenBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-RedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, inverted::Bool=false) = Entity("redBlocks", x=x, y=y, width=width, height=height, inverted=inverted)
-ClutterCabinet(x::Integer, y::Integer) = Entity("clutterCabinet", x=x, y=y)
-ClutterDoor(x::Integer, y::Integer, width::Integer=24, height::Integer=24, variant::String="green") = Entity("clutterDoor", Dict{String, Any}("x" => x, "y" => y, "width" => width, "height" => height, "type" => variant))
+@mapdef Entity "colorSwitch" ColorSwitch(x::Integer, y::Integer, type::String="red")
+@mapdef Entity "yellowBlocks" YellowBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "greenBlocks" GreenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "redBlocks" RedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "clutterCabinet" ClutterCabinet(x::Integer, y::Integer)
+@mapdef Entity "clutterDoor" ClutterDoor(x::Integer, y::Integer, width::Integer=24, height::Integer=24, type::String="green")
 ClutterSwitch = ColorSwitch
 
-DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=false, sprite::String="default") = Entity("dashSwitchH", x=x, y=y, leftSide=leftSide, persistent=persistent, sprite=sprite)
-DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=false, sprite::String="default") = Entity("dashSwitchV", x=x, y=y, ceiling=ceiling, persistent=persistent, sprite=sprite)
-TempleGate(x::Integer, y::Integer, height::Integer=48, variant::String="NearestSwitch", sprite::String="default") = Entity("templeGate", Dict{String, Any}("x" => x, "y" => y, "height" => height, "type" => variant, "sprite" => sprite))
-TheoCrystal(x::Integer, y::Integer) = Entity("theoCrystal", x=x, y=y)
+@mapdef Entity "dashSwitchH" DashSwitchHorizontal(x::Integer, y::Integer, leftSide::Bool=false, persistent::Bool=false, sprite::String="default")
+@mapdef Entity "dashSwitchV" DashSwitchVertical(x::Integer, y::Integer, ceiling::Bool=false, persistent::Bool=false, sprite::String="default")
+@mapdef Entity "templeGate" TempleGate(x::Integer, y::Integer, height::Integer=48, type::String="NearestSwitch", sprite::String="default")
 
-Bumper(x::Integer, y::Integer) = Entity("bigSpinner", x=x, y=y)
+@mapdef Entity "theoCrystalPedestal" TheoCrystalPedestal(x::Integer, y::Integer)
+@mapdef Entity "theoCrystal" TheoCrystal(x::Integer, y::Integer)
 
-Bonfire(x::Integer, y::Integer, mode::String="Lit") = Entity("bonfire", x=x, y=y, mode=mode)
-FriendlyGhost(x::Integer, y::Integer) = Entity("friendlyGhost", x=x, y=y)
+@mapdef Entity "bigSpinner" Bumper(x::Integer, y::Integer)
+
+@mapdef Entity "bonfire" Bonfire(x::Integer, y::Integer, mode::String="Lit")
+@mapdef Entity "friendlyGhost" FriendlyGhost(x::Integer, y::Integer)
 OshiroBoss = FriendlyGhost
 
-Key(x::Integer, y::Integer) = Entity("key", x=x, y=y)
-LockBlock(x::Integer, y::Integer, sprite::String="wood") = Entity("lockBlock", x=x, y=y, sprite=sprite)
+@mapdef Entity "key" Key(x::Integer, y::Integer)
+@mapdef Entity "lockBlock" LockBlock(x::Integer, y::Integer, sprite::String="wood")
 
-Flutterbird(x::Integer, y::Integer) = Entity("flutterbird", x=x, y=y)
-Bird(x::Integer, y::Integer, mode::String="Sleeping") = Entity("bird", x=x, y=y, mode=mode)
-NPC(x::Integer, y::Integer, npc::String="granny_00_house") = Entity("npc", x=x, y=y, npc=npc)
+@mapdef Entity "flutterbird" Flutterbird(x::Integer, y::Integer)
+@mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping")
+@pardef Hahaha(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, ifset::String="", triggerLaughSfx::Bool=false) = Entity("hahaha", x=x1, y=y1, nodes=[(x2, y2)], ifset=ifset, triggerLaughSfx=triggerLaughSfx)
+@mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
 
-CoreMessage(x::Integer, y::Integer, line::Integer=0) = Entity("coreMessage", x=x, y=y, line=line)
-EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending") = Entity("everest/coreMessage", x=x, y=y, line=line, dialog=dialog)
-Memorial(x::Integer, y::Integer, dreaming::Bool=false) = Entity("memorial", x=x, y=y, dreaming=dreaming)
-EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="") = Entity("everest/memorial", x=x, y=y, dreaming=dreaming, dialog=dialog, sprite=sprite)
+@mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onceOnly::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
+EverestCustomNpc = EverestCustomNPC
 
-Payphone(x::Integer, y::Integer) = Entity("payphone", x=x, y=y)
+@pardef ReflectionHeartStatue(x::Integer, y::Integer, hintX1::Integer=x+32, hintY1::Integer=y, hintX2::Integer=x+64, hintY2::Integer=y, hintX3::Integer=x+96, hintY3::Integer=y, hintX4::Integer=x+128, hintY4::Integer=y, gemX::Integer=x, gemY::Integer=y-64) = Entity("reflectionHeartStatue", x=x, y=y, nodes=[(hintX1, hintY1), (hintX2, hintY2), (hintX3, hintY3), (hintX4, hintY4), (gemX, gemY)])
+@pardef BirdForsakenCityGem(x::Integer, y::Integer, birdX::Integer=x+64, birdY::Integer=y, gemX::Integer=x+48, gemY::Integer=y) = Entity("birdForsakenCityGem", x=x, y=y, nodes=[(birdX, birdY), (gemX, gemY)])
+ForsakenCitySatellite = BirdForsakenCityGem
 
-RisingLava(x::Integer, y::Integer, intro::Bool=false) = Entity("risingLava", x=x, y=y, intro=intro)
-SandwichLava(x::Integer, y::Integer) = Entity("sandwichLava", x=x, y=y)
+@mapdef Entity "coreMessage" CoreMessage(x::Integer, y::Integer, line::Integer=0)
+@mapdef Entity "everest/coreMessage" EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending")
+@mapdef Entity "memorial" Memorial(x::Integer, y::Integer, dreaming::Bool=false)
+@mapdef Entity "everest/memorial" EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="scenery/memorial/memorial", spacing::Integer=16)
+
+@mapdef Entity "payphone" Payphone(x::Integer, y::Integer)
+
+@mapdef Entity "risingLava" RisingLava(x::Integer, y::Integer, intro::Bool=false)
+@mapdef Entity "sandwichLava" SandwichLava(x::Integer, y::Integer)
+
+@pardef Bridge(x::Integer, y::Integer, width::Integer=32, gapStartX::Integer=x+96, gapStopX::Integer=x+128) = Entity("bridge", x=x, y=y, width=width, nodes=[(gapStartX, y), (gapStopX, y)])
+@mapdef Entity "bridgeFixed" BridgeFixed(x::Integer, y::Integer, width::Integer=32)
+
+@mapdef Entity "glassBlock" GlassBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=false)
+
+@mapdef Entity "summitgem" SummitGem(x::Integer, y::Integer, gem::Integer=0)
+@mapdef Entity "summitGemManager" SummitGemManager(x::Integer, y::Integer)
+
 
 blacklistedEntityAttrs = String["nodes"]
 
@@ -276,11 +306,6 @@ function Base.Dict(e::Entity)
                 ))
             end
         end
-    end
-
-    if haskey(res, "variant")
-        res["type"] = res["variant"]
-        delete!(res, "variant")
     end
 
     return res

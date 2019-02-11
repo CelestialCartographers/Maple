@@ -1,5 +1,5 @@
 # TODO - Add more
-default_entity_map = Dict{Char, Function}(
+default_entity_map = Dict{Char, Union{Type, Function}}(
     '^' => SpikesUp,
     '<' => SpikesLeft,
     'v' => SpikesDown,
@@ -25,7 +25,9 @@ default_entity_map = Dict{Char, Function}(
     'F' => Feather
 )
 
-entity_offsets = Dict{Function, Tuple{Integer, Integer}}(
+
+# TODO - Add more
+entity_offsets = Dict{Union{Type, Function}, Tuple{Integer, Integer}}(
     SpikesUp => (0, 8),
     SpikesLeft => (8, 0),
     SpikesDown => (0, 0),
@@ -53,11 +55,9 @@ entity_offsets = Dict{Function, Tuple{Integer, Integer}}(
     Spring => (8, 8),
     SpringLeft => (0, 8),
     SpringRight => (8, 8),
-
-    # TODO - Add more
 )
 # Function => (searchWidth, searchHeight)
-search_for_size = Dict{Function, Tuple{Bool, Bool}}(
+search_for_size = Dict{Union{Type, Function}, Tuple{Bool, Bool}}(
     SpikesUp => (true, false),
     SpikesDown => (true, false),
     SpikesLeft => (false, true),
@@ -110,10 +110,10 @@ function searchSize(tiles::Array{Char, 2}, x::Integer, y::Integer, searchWidth::
     return stopX - x + 1, stopY - y + 1
 end
 
-entityMap(s::String, lookup::Dict{Char, Function}=default_entity_map) = entityMap(Tiles(s).data, lookup)
-entityMap(t::Tiles, lookup::Dict{Char, Function}=default_entity_map) = entityMap(t.data, lookup)
+entityMap(s::String, lookup::Dict{Char, Union{Type, Function}}=default_entity_map) = entityMap(Tiles(s).data, lookup)
+entityMap(t::Tiles, lookup::Dict{Char, Union{Type, Function}}=default_entity_map) = entityMap(t.data, lookup)
 
-function entityMap(tiles::Array{Char, 2}, lookup::Dict{Char, Function}=default_entity_map)
+function entityMap(tiles::Array{Char, 2}, lookup::Dict{Char, Union{Type, Function}}=default_entity_map)
     height, width = size(tiles)
 
     complete = fill(false, (height, width))
@@ -126,12 +126,12 @@ function entityMap(tiles::Array{Char, 2}, lookup::Dict{Char, Function}=default_e
 
             if !complete[y, x] && haskey(lookup, v)
                 func = lookup[v]
-                offset = haskey(entity_offsets, func)? entity_offsets[func] : (0, 0)
+                offset = haskey(entity_offsets, func) ? entity_offsets[func] : (0, 0)
 
-                searchWidth, searchHeight = haskey(search_for_size, func)? search_for_size[func] : (false, false)
+                searchWidth, searchHeight = haskey(search_for_size, func) ? search_for_size[func] : (false, false)
                 tileWidth, tileHeight = searchSize(tiles, x, y, searchWidth, searchHeight)
 
-                complete[y:y + tileHeight - 1, x:x + tileWidth - 1] = true
+                complete[y:y + tileHeight - 1, x:x + tileWidth - 1] .= true
 
                 if !searchWidth && !searchHeight
                     push!(res, func(x * 8 + offset[1] - 8, y * 8 + offset[2] - 8))

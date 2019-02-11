@@ -10,6 +10,6 @@ mutable struct Nodes
         ]
         sort!(nodesRaw, by=(v -> v[1]))
 
-        return @time new([node[2] for node in nodesRaw])
+        return new([node[2] for node in nodesRaw])
     end
 end

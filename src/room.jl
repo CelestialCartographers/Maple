@@ -2,16 +2,18 @@ include("entity.jl")
 include("decal.jl")
 include("trigger.jl")
 include("tiles.jl")
+include("object_tiles.jl")
 include("nodes.jl")
 include("entity_map.jl")
 include("enums.jl")
 
-@with_kw mutable struct Room
+Base.@kwdef mutable struct Room
     fgDecals::Array{Decal, 1} = Decal[]
     bgDecals::Array{Decal, 1} = Decal[]
 
     fgTiles::Tiles = Tiles()
     bgTiles::Tiles = Tiles()
+    objTiles::ObjectTiles = ObjectTiles()
 
     entities::Array{Entity, 1} = Entity[]
 
@@ -48,26 +50,30 @@ function updateTileSize!(room::Room, center::Char='0', border::Char='0')
     tw, th = ceil.(Int, room.size ./ 8)
 
     tiles = fill(center, (th, tw))
+    objTiles = fill(-1, (th, tw))
 
     fth, ftw = min.(size(room.fgTiles.data), (th, tw))
     bth, btw = min.(size(room.bgTiles.data), (th, tw))
+    oth, otw = min.(size(room.objTiles.data), (th, tw))
 
     fg = copy(tiles)
     bg = copy(tiles)
 
     fg[1:fth, 1:ftw] = room.fgTiles.data[1:fth, 1:ftw]
     bg[1:bth, 1:btw] = room.bgTiles.data[1:bth, 1:btw]
+    objTiles[1:oth, 1:otw] = room.objTiles.data[1:oth, 1:otw]
 
     room.fgTiles = Tiles(fg)
     room.bgTiles = Tiles(bg)
+    room.objTiles = ObjectTiles(objTiles)
 end
 
-blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "entities", "triggers"]
+blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "objTiles", "entities", "triggers"]
 
 function Base.Dict(r::Room)
     res = Dict{String, Any}()
 
-    for f in fieldnames(r)
+    for f in fieldnames(typeof(r))
         fs = String(f)
         value = getfield(r, f)
 
@@ -89,12 +95,17 @@ function Base.Dict(r::Room)
     res["__children"] = Dict{String, Any}[
         Dict{String, Any}(
             "__name" => "solids",
-            "innerText" => string(r.fgTiles)
+            "innerText" => minimizeTilesString(r.fgTiles.data, '0', "")
         ),
 
         Dict{String, Any}(
             "__name" => "bg",
-            "innerText" => string(r.bgTiles),
+            "innerText" => minimizeTilesString(r.bgTiles.data, '0', ""),
+        ),
+
+        Dict{String, Any}(
+            "__name" => "objtiles",
+            "innerText" => minimizeTilesString(r.objTiles.data, -1, ','),
         ),
 
         Dict{String, Any}(
@@ -116,7 +127,6 @@ function Base.Dict(r::Room)
             "__name" => "triggers",
             "__children" => Dict.(r.triggers)
         ),
-
 
         Dict{String, Any}(
             "__name" => "fgdecals",

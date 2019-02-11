@@ -41,7 +41,7 @@ function writeString(fh::IOBuffer, s::String)
 end
 
 function readRunLengthEncoded(fh::IOStream)
-  byteCount = read(fh, UInt16)
+  byteCount = read(fh, Int16)
   data = UInt8[]
   res = ""
   for i = 1:byteCount
@@ -127,15 +127,16 @@ function encodeValue(buffer::IOBuffer, key::String, value::AbstractFloat, lookup
 end
 
 function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Array{String, 1})
-  index = findfirst(lookup, value) - 1
+  index = something(findfirst(isequal(value), lookup), 0) - 1
 
   if index < 0
-    if key == "innerText"
-      value = encodeRunLength(value)
+    encodedValue = encodeRunLength(value)
+    encodedLength = length(encodedValue)
 
+    if encodedLength < length(value) && encodedLength <= typemax(Int16)
       write(buffer, 0x7)
-      write(buffer, UInt16(length(value)))
-      write(buffer, value)
+      write(buffer, Int16(encodedLength))
+      write(buffer, encodedValue)
 
     else
       write(buffer, 0x6)
@@ -215,7 +216,7 @@ function populateEncodeKeyNames!(d::Dict{String, Any}, seen::Dict{String, Intege
   name = d["__name"]
   seen[name] = get(seen, name, 0) + 1
 
-  children = get(d, "__children", Dict{String, Any}[])
+  children = get(Array{Dict{String, Any}, 1}, d, "__children")
 
   for (k, v) in d
     if !startswith(k, "__")
@@ -254,13 +255,13 @@ end
 
 function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Array{String})
   attributes = getAttributeNames(element)
-  children = get(element, "__children", Dict{String, Any}[])
+  children = get(Array{Dict{String, Any}, 1}, element, "__children")
 
-  write(buffer, UInt16(findfirst(lookup, element["__name"]) - 1))
+  write(buffer, UInt16(something(findfirst(isequal(element["__name"]), lookup), 0) - 1))
   write(buffer, UInt8(length(keys(attributes))))
 
   for (attr, value) in attributes
-    write(buffer, UInt16(findfirst(lookup, attr) - 1))
+    write(buffer, UInt16(something(findfirst(isequal(attr), lookup), 0) - 1))
     encodeValue(buffer, attr, value, lookup)
   end
 

@@ -21,6 +21,8 @@ tile_fg_names = Dict{Any, Any}(
     'j' => "Summit No Snow",
     'k' => "Core",
     'l' => "Deadgrass",
+    'm' => "Lostlevels",
+    'z' => "Template",
 
     "Air" => '0',
     "Dirt" => '1',
@@ -44,6 +46,8 @@ tile_fg_names = Dict{Any, Any}(
     "Summit No Snow" => 'j',
     "Core" => 'k',
     "Deadgrass" => 'l',
+    "Lostlevels" => 'm',
+    "Template" => 'z'    
 )
 
 tile_bg_names = Dict{Any, Any}(
@@ -61,6 +65,8 @@ tile_bg_names = Dict{Any, Any}(
     'b' => "Snow",
     'c' => "Summit",
     'd' => "Core",
+    'e' => "Lostlevels",
+    'z' => "Template",
 
     "Air" => '0',
     "Dirt" => '1',
@@ -76,6 +82,8 @@ tile_bg_names = Dict{Any, Any}(
     "Snow" => 'b',
     "Summit" => 'c',
     "Core" => 'd',
+    "Lostlevels" => 'e',
+    "Template" => 'z'
 )
 
 valid_fg_tiles = Char[
@@ -98,7 +106,7 @@ mutable struct Tiles
     Tiles(d::Array{Char, 2}) = new(d)
 
     function Tiles(s::String)
-        s = chomp(replace(s, "\r\n", "\n"))
+        s = chomp(replace(s, "\r\n" => "\n"))
         lines = split(s, "\n")
 
         cols = maximum(length.(lines))
@@ -117,7 +125,7 @@ end
 # Removes illegal characters from the tileset
 # Makes it possible to put simple entity map and fg in same string
 function FgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_fg_tiles)
-    tiles.data = [c in valid? c : '0' for c in tiles.data]
+    tiles.data = [c in valid ? c : '0' for c in tiles.data]
 
     return tiles
 end
@@ -128,6 +136,40 @@ FgTiles(s::String, valid::Array{Char, 1}=valid_fg_tiles) = FgTiles(Tiles(s), val
 BgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(tiles, valid)
 BgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(tiles), valid)
 BgTiles(s::String, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(s), valid)
+
+# All trailing '0's don't need to be written to be loadable
+# We can also stop when all remaining rows are '0's
+function minimizeTilesString(data::Matrix{T}, emptyValue::T='0', separator::Union{Char, String}=',') where T
+    res = String[]
+
+    rows, cols = size(data)
+    relevantRowsCount = 0
+
+    for i in rows:-1:1
+        relevantRowsCount = i
+
+        if !all(data[i, :] .== emptyValue)
+            break
+        end 
+    end
+
+    for i in 1:relevantRowsCount
+        row = data[i, :]
+        relevantCols = cols
+        
+        for j in cols:-1:1            
+            if row[j] != emptyValue
+                break
+            end
+
+            relevantCols -= 1
+        end
+
+        push!(res, join(row[1:relevantCols], separator))
+    end
+
+    return join(res, '\n')
+end
 
 function Base.string(t::Tiles)
     return join(String.([t.data[i, :] for i in 1:size(t.data, 1)]), "\n")

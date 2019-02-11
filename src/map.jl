@@ -1,5 +1,3 @@
-using Parameters
-
 include("room.jl")
 include("style.jl")
 include("filler.jl")
@@ -19,7 +17,7 @@ mutable struct Map
     Map(package::String, rooms::Array{Room, 1}, style::Style, filler::Array{Filler, 1}=Filler[]) = new(package, rooms, style, filler)
 end
 
-Base.isequal(lhs::Map, rhs::Map) = Dict(lhs) == Dict(rhs)
+Base.:(==)(lhs::Map, rhs::Map) = Dict(lhs) == Dict(rhs)
 
 function Base.Dict(m::Map)
     return Dict{String, Any}(
@@ -70,17 +68,35 @@ function getRoomByCoords(map::Map, x::Number, y::Number)
     return false
 end
 
+function bounds(m::Maple.Map)
+    tlx = tly = typemax(Int)
+    brx = bry = typemin(Int)
+
+    for room in m.rooms
+        x, y = Int.(room.position)
+        w, h = Int.(room.size)
+
+        tlx = min(tlx, x)
+        tly = min(tly, y)
+
+        brx = max(brx, x + w)
+        bry = max(bry, y + h)
+    end
+
+    return tlx, tly, brx, bry
+end
+
 encodeMap(map::Map, outfile::String) = encodeMap(Dict(map), outfile)
 
 loadMap(fn::String) = loadMap(decodeMap(fn))
 
-function loadStyleground(styleData::Dict{String, Any})
-    style = Styleground()
+function loadBackdrops(styleData::Dict{String, Any})
+    backdrops = Backdrop[]
 
     for (styleType, data) in styleData
         if styleType == "parallax"
             for p in packIfDict(data)
-                push!(style.children, Parallax(p))
+                push!(backdrops, Parallax(p))
             end
 
         elseif styleType == "apply"
@@ -97,166 +113,147 @@ function loadStyleground(styleData::Dict{String, Any})
                     end
                 end
 
-                push!(style.children, Apply(applyAttr, parallax))
+                push!(backdrops, Apply(applyAttr, parallax))
             end
 
         else
             for e in packIfDict(data)
-                push!(style.children, Effect(styleType, e))
+                push!(backdrops, Effect(styleType, e))
             end
         end
     end
 
-    return style
+    return backdrops
+end
+
+function loadEntities(roomData::Dict{String, Any}, constructor::Union{Type{Entity}, Type{Trigger}})
+    key = constructor == Entity ? "entities" : "triggers"
+    entities = constructor[]
+
+    for (entityName, entityData) in get(roomData, key, [])
+        # Special cases
+        if entityName == "offsetX" || entityName == "offsetY"
+            continue
+    
+        else
+            for data in packIfDict(entityData)
+                id = get(data, "id", -1)
+                delete!(data, "id")
+
+                if haskey(data, "node")
+                    data["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in packIfDict(data["node"])]
+                end
+
+                delete!(data, "node")
+
+                push!(entities, constructor(entityName, data, id))
+            end
+        end
+    end
+
+    return entities
+end
+
+function loadDecals(roomData::Dict{String, Any}, fg::Bool=true)
+    decals = Decal[]
+    key = fg ? "fgdecals" : "bgdecals"
+
+    for (decalName, decalData) in get(roomData, key, [])
+        if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
+            for data in packIfDict(decalData)
+                push!(decals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
+            end
+        end
+    end
+
+    return decals
+end
+
+function loadRoom(roomData::Dict{String, Any})
+    fgDecals = loadDecals(roomData, true)
+    bgDecals = loadDecals(roomData, false)
+
+    entities = loadEntities(roomData, Entity)
+    triggers = loadEntities(roomData, Trigger)
+
+    fgTilesRaw = get(roomData["solids"], "innerText", "")
+    bgTilesRaw = get(roomData["bg"], "innerText", "")
+    objTilesRaw = get(get(Dict{String, Any}, roomData, "objtiles"), "innerText", "")
+
+    fgTiles = Tiles(fgTilesRaw)
+    bgTiles = Tiles(bgTilesRaw)
+    objTiles = ObjectTiles(objTilesRaw)
+
+    room = Room(
+        name = get(roomData, "name", "lvl_1"),
+        
+        position = (roomData["x"], roomData["y"]),
+        size = (roomData["width"], roomData["height"]),
+
+        entities = entities,
+        triggers = triggers,
+
+        bgDecals = bgDecals,
+        fgDecals = fgDecals,
+
+        fgTiles = fgTiles,
+        bgTiles = bgTiles,
+        objTiles = objTiles,
+
+        musicLayer1 = get(roomData, "musicLayer1", true),
+        musicLayer2 = get(roomData, "musicLayer2", true),
+        musicLayer3 = get(roomData, "musicLayer3", true),
+        musicLayer4 = get(roomData, "musicLayer4", true),
+
+        musicProgress = string(get(roomData, "musicProgress", "")),
+
+        dark = get(roomData, "dark", false),
+        space = get(roomData, "space", false),
+        underwater = get(roomData, "underwater", false),
+        whisper = get(roomData, "whisper", false),
+        disableDownTransition = get(roomData, "disableDownTransition", false),
+
+        music = get(roomData, "music", "music_oldsite_awake"),
+        alt_music = get(roomData, "alt_music", ""),
+        
+        windPattern = get(roomData, "windPattern", "None"),
+
+        color = get(roomData, "c", 0)
+    )
+
+    updateTileSize!(room, '0', '0')
+
+    return room
 end
 
 function loadFillerRects(fillerData::Dict{String, Any})
-    res = Filler[]
+    fillers = Filler[]
 
-    for (typ, data) in fillerData
-        if typ == "rect"
+    for (type, data) in fillerData
+        if type == "rect"
             for r in packIfDict(data)
-                push!(res, Filler(r["x"], r["y"], r["w"], r["h"]))
+                push!(fillers, Filler(r["x"], r["y"], r["w"], r["h"]))
             end
         end
     end
 
-    return res
+    return fillers
 end
 
-# TODO Consider splitting this up like styleground
+
 function loadMap(map::Dict{String, Any})
     mapData = map["Map"]
     package = map["_package"]
-    roomsData = get(mapData["levels"], "level", Dict{String, Any}[])
+    roomsData = get(Array{Dict{String, Any}, 1}, mapData["levels"], "level")
 
-    rooms = Room[]
-
-    style = get(mapData, "Style", Dict{String, Any}())
+    style = get(Dict{String, Any}, mapData, "Style")
     
-    fgStyle = loadStyleground(get(style, "Foregrounds", Dict{String, Any}()))
-    bgStyle = loadStyleground(get(style, "Backgrounds", Dict{String, Any}()))
+    fgStyle = loadBackdrops(get(Dict{String, Any}, style, "Foregrounds"))
+    bgStyle = loadBackdrops(get(Dict{String, Any}, style, "Backgrounds"))
 
-    fillerRects = loadFillerRects(get(mapData, "Filler", Dict{String, Any}()))
+    fillerRects = loadFillerRects(get(Dict{String, Any}, mapData, "Filler"))
 
-    # Add rooms
-    for room in packIfDict(roomsData)
-        # Add fg decals
-        fgDecals = Decal[]
-        if haskey(room, "fgdecals")
-            for (decalName, decalData) in room["fgdecals"]
-                if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
-                    for data in packIfDict(decalData)
-                        push!(fgDecals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
-                    end
-                end
-            end
-        end
-
-        # Add bg decals
-        bgDecals = Decal[]
-        if haskey(room, "bgdecals")
-            for (decalName, decalData) in room["bgdecals"]
-                if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
-                    for data in packIfDict(decalData)
-                        push!(bgDecals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
-                    end
-                end
-            end
-        end
-
-        # Add room entities
-        entities = Entity[]
-        if haskey(room, "entities")
-            for (entityName, entityData) in room["entities"]
-                # Special cases
-                if entityName == "offsetX" || entityName == "offsetY"
-                    continue
-            
-                else
-                    for data in packIfDict(entityData)
-                        id = get(data, "id", -1)
-                        delete!(data, "id")
-
-                        if haskey(data, "node")
-                            data["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in packIfDict(data["node"])]
-                        end
-
-                        delete!(data, "node")
-
-                        push!(entities, Entity(entityName, id, data))
-                    end
-                end
-            end
-        end
-
-        # Add room entities
-        triggers = Trigger[]
-        if haskey(room, "triggers")
-            for (triggerName, triggerData) in room["triggers"]
-                # Special cases
-                if triggerName == "offsetX" || triggerName == "offsetY"
-                    continue
-
-                else
-                    for data in packIfDict(triggerData)
-                        id = get(data, "id", -1)
-                        delete!(data, "id")
-
-                        if haskey(data, "node")
-                            data["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in packIfDict(data["node"])]
-                        end
-
-                        delete!(data, "node")
-
-                        push!(triggers, Trigger(triggerName, id, data))
-                    end
-                end
-            end
-        end
-
-
-        # fgtiles
-        fgTiles = Tiles(get(room["solids"], "innerText", ""))
-
-        # bgtiles
-        bgTiles = Tiles(get(room["bg"], "innerText", ""))
-
-        push!(rooms, Room(
-            name = get(room, "name", "lvl_1"),
-            
-            position = (room["x"], room["y"]),
-            size = (room["width"], room["height"]),
-
-            entities = entities,
-            triggers = triggers,
-
-            bgDecals = bgDecals,
-            fgDecals = fgDecals,
-
-            fgTiles = fgTiles,
-            bgTiles = bgTiles,
-
-            musicLayer1 = get(room, "musicLayer1", true),
-            musicLayer2 = get(room, "musicLayer2", true),
-            musicLayer3 = get(room, "musicLayer3", true),
-            musicLayer4 = get(room, "musicLayer4", true),
-
-            # Is this safe? Does the game expect string or integer in the case the value is there?
-            musicProgress = string(get(room, "musicProgress", "")),
-
-            dark = get(room, "dark", false),
-            space = get(room, "space", false),
-            underwater = get(room, "underwater", false),
-            whisper = get(room, "whisper", false),
-            disableDownTransition = get(room, "disableDownTransition", false),
-
-            music = get(room, "music", "music_oldsite_awake"),
-            alt_music = get(room, "alt_music", ""),
-            
-            windPattern = get(room, "windPattern", "None")
-        ))
-    end
+    rooms = loadRoom.(packIfDict(roomsData))
 
     return Map(package, rooms, Style(fgStyle, bgStyle), fillerRects)
 end

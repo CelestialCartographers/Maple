@@ -7,6 +7,16 @@ mutable struct Side
     Side(map::Map, data::Dict{String, Any}=Dict{String, Any}()) = new(map, data)
 end
 
+Base.:(==)(lhs::Side, rhs::Side) = Dict(lhs) == Dict(rhs)
+Base.hash(s::Side) = hash(Dict(s))
+
+function Base.Dict(s::Side)
+    data = Dict(s.map)
+    encodeMetadata!(s.data, data)
+
+    return data
+end
+
 function loadMetadata(data::Dict{String, Any})
     res = Dict{String, Any}()
 
@@ -50,11 +60,7 @@ function encodeMetadata!(data::Dict{String, Any}, res::Dict{String, Any}=Dict{St
 end
 
 function encodeSide(side::Side, outfile::String)
-    data = Dict(side.map)
-
-    encodeMetadata!(side.data, data)
-
-    return encodeMap(data, outfile)
+    return encodeMap(Dict(side), outfile)
 end
 
 function getSideName(side::Side)

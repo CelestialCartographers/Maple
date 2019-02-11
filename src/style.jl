@@ -1,19 +1,26 @@
-mutable struct Parallax
+abstract type Backdrop
+
+end
+
+@fieldproxy mutable struct Parallax <: Backdrop
     data::Dict{String, Any}
 
     Parallax(data::Dict{String, Any}) = new(data)
     Parallax(; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs))
 end
 
-mutable struct Effect
-    typ::String
+@fieldproxy mutable struct Effect{T} <: Backdrop
+    name::String
     data::Dict{String, Any}
 
-    Effect(typ::String, data::Dict{String, Any}) = new(typ, data)
-    Effect(typ::String; kwargs...) = new(typ, Dict(string(a) => b for (a, b) in kwargs))
+    Effect{T}(name::String, data::Dict{String, Any}) where T = new{T}(name, data)
+    Effect{T}(name::String; kwargs...) where T = new{T}(name, Dict(string(a) => b for (a, b) in kwargs))
 end
 
-mutable struct Apply
+Effect(name::String, data::Dict{String, Any}) = Effect{Symbol(name)}(name, data)
+Effect(name::String; kwargs...) = Effect{Symbol(name)}(name, Dict(string(a) => b for (a, b) in kwargs))
+
+@fieldproxy mutable struct Apply <: Backdrop
     data::Dict{String, Any}
     parallax::Array{Union{Effect, Parallax}, 1}
 
@@ -21,47 +28,81 @@ mutable struct Apply
     Apply(parallax::Array{Union{Effect, Parallax}, 1}; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs), parallax)
 end
 
-SnowFg(data::Dict{String, Any}) = Effect("snowFg", data)
-SnowBg(data::Dict{String, Any}) = Effect("snowBg", data)
-Heatwave(data::Dict{String, Any}) = Effect("heatwave", data)
-Stars(data::Dict{String, Any}) = Effect("corestarsfg", data)
-Wind(data::Dict{String, Any}) = Effect("windsnow", data)
+@mapdef Effect "snowFg" SnowFg(only::String="*", exclude::String="")
+@mapdef Effect "snowBg" SnowBg(only::String="*", exclude::String="")
+@mapdef Effect "heatwave" Heatwave(only::String="*", exclude::String="")
+@mapdef Effect "dreamstars" DreamStars(only::String="*", exclude::String="")
+@mapdef Effect "stars" Stars(only::String="*", exclude::String="")
+@mapdef Effect "mirrorfg" MirrorFg(only::String="*", exclude::String="")
+@mapdef Effect "reflectionfg" ReflectionFg(only::String="*", exclude::String="")
+@mapdef Effect "corestarsfg" CoreStarFg(only::String="*", exclude::String="")
+@mapdef Effect "godrays" GodRays(only::String="*", exclude::String="")
+@mapdef Effect "bossStarField" BossStarField(only::String="*", exclude::String="")
+@mapdef Effect "windsnow" Wind(only::String="*", exclude::String="")
+@mapdef Effect "planets" Planets(only::String="*", exclude::String="", count::Number=32, size::String="small")
+@mapdef Effect "starfield" Starfield(only::String="*", exclude::String="", color::String="")
+@mapdef Effect "petals" Petals(only::String="*", exclude::String="")
+@mapdef Effect "northernlights" NorthernLights(only::String="*", exclude::String="")
+@mapdef Effect "tentacles" TentacleEffect(only::String="*", exclude::String="", side::String="Right", color::String="", offset::Number=0)
 
-Base.isequal(lhs::Parallax, rhs::Parallax) = lhs.data == rhs.data
-Base.isequal(lhs::Effect, rhs::Effect) = lhs.typ == rhs.typ && lhs.data == rhs.data
-
-# Maybe care about types?
-# TODO Consider removing at some point
-struct Styleground
-    children::Array
-
-    Styleground(children::Array) = new(children)
-    Styleground(children::Any...) = new(children)
-    Styleground() = new([])
-end
+Base.:(==)(lhs::Parallax, rhs::Parallax) = lhs.data == rhs.data
+Base.:(==)(lhs::Effect, rhs::Effect) = lhs.name == rhs.name && lhs.data == rhs.data
 
 mutable struct Style
-    foregrounds::Styleground
-    backgrounds::Styleground
+    foregrounds::Array{Backdrop, 1}
+    backgrounds::Array{Backdrop, 1}
 
-    Style(fg::Styleground, bg::Styleground) = new(fg, bg)
-    Style() = new(Styleground(), Styleground())
+    Style(fg::Array{Backdrop, 1}, bg::Array{Backdrop, 1}) = new(fg, bg)
+    Style() = new(Backdrop[], Backdrop[])
 end
 
-function Base.Dict(s::Styleground)
-    return Dict{String, Any}[Dict(e) for e in s.children]
+function expandApply(style::Backdrop)
+    if isa(style, Maple.Apply)
+        res = Backdrop[]
+
+        for p in style.parallax
+            if isa(p, Maple.Parallax)
+                push!(res, Maple.Parallax(merge(style.data, p.data)))
+
+            elseif isa(p, Maple.Effect)
+                push!(res, Maple.Effect(p.name, merge(style.data, p.data)))
+            end
+        end
+
+        return res
+
+    else
+        return Backdrop[style]
+    end
+end
+
+# Expand Apply types into parallax/effect
+# Easier to use for both coding and user perspective
+function expandStylegroundApplies(backdrops::Array{Backdrop, 1})
+    res = Backdrop[]
+
+    for backdrop in backdrops
+        append!(res, expandApply(backdrop))
+    end
+
+    return res
+end
+    
+function expandStylegroundApplies!(style::Style)
+    style.foregrounds = expandStylegroundApplies(style.foregrounds)
+    style.backgrounds = expandStylegroundApplies(style.backgrounds)
 end
 
 function Base.Dict(s::Style)
     return Dict{String, Any}[
         Dict{String, Any}(
             "__name" => "Foregrounds",
-            "__children" => Dict(s.foregrounds)
+            "__children" => Dict.(s.foregrounds)
         ),
 
         Dict{String, Any}(
             "__name" => "Backgrounds",
-            "__children" => Dict(s.backgrounds)
+            "__children" => Dict.(s.backgrounds)
         )
     ]
 end
@@ -86,7 +127,7 @@ end
 function Base.Dict(e::Effect)
     res = copy(e.data)
 
-    res["__name"] = e.typ
+    res["__name"] = e.name
 
     return res
 end
