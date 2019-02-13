@@ -43,7 +43,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "respawnTargetTrigger" RespawnTargetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 @mapdef Trigger "everest/flagTrigger" EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, flag::String="", state::Bool=false, mode::String="OnPlayerEnter", only_once::Bool=false, death_count::Integer=-1)
-@mapdef Trigger "everest/dialogTrigger" EverestDialogTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
+@mapdef Trigger "everest/dialogTrigger" EverestDialogTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, endLevel::Bool=false)
 @mapdef Trigger "everest/crystalShatterTrigger" EverestCrystalShatterTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="All")
 @mapdef Trigger "everest/completeAreaTrigger" EverestCompleteAreaTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
 @mapdef Trigger "everest/changeInventoryTrigger" EverestChangeInventoryTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, inventory::String="Default")
