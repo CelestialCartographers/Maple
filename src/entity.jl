@@ -164,8 +164,8 @@ KevinBlock = CrushBlock
 @mapdef Entity "iceBlock" IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "fireBarrier" FireBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-@mapdef Entity "dreamBlock" DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false)
-@mapdef false Entity "dreamBlock" MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false)
+@mapdef Entity "dreamBlock" DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false)
+@mapdef false Entity "dreamBlock" MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false)
 SpaceJam = DreamBlock
 MovingSpaceJam = MovingDreamBlock
 
