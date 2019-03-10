@@ -76,7 +76,7 @@ Lookout = Towerviewer
 
 # Everest needs null values here for automatic fills
 # Inventory and Dreaming has to be nullable, -1 for checkpointID is considered null
-@mapdef Entity "checkpoint" ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Nothing}=nothing, dreaming::Union{Bool, Nothing}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false)
+@mapdef Entity "checkpoint" ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Nothing}=nothing, dreaming::Union{Bool, Nothing}=nothing, coreMode::Union{String, Nothing}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false)
 
 @mapdef Entity "summitcheckpoint" Checkpoint(x::Integer, y::Integer, number::Integer=0)
 
