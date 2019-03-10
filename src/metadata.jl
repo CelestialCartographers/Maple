@@ -91,6 +91,8 @@ const default_meta = Dict{String, Any}(
     "AnimatedTiles" => "",
     "Portraits" => "",
     "Sprites" => "",
+
+    "OverrideASideMeta" => false,
 )
 
 const default_mode = Dict{String, Any}(
@@ -102,5 +104,6 @@ const default_mode = Dict{String, Any}(
     "StartLevel" => "",
     "HeartIsEnd" => false,
 
-    "SeekerSlowdown" => false
+    "SeekerSlowdown" => false,
+    "TheoInBubble" => false
 )
