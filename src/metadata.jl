@@ -107,3 +107,8 @@ const default_mode = Dict{String, Any}(
     "SeekerSlowdown" => false,
     "TheoInBubble" => false
 )
+
+const default_audiostate = Dict{String, Any}(
+    "Ambience" => "event:/env/amb/01_main",
+    "Music" => "event:/music/lvl1/main"
+)
