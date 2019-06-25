@@ -148,7 +148,8 @@ FlagLine = CliffFlags
 @mapdef Entity "conditionBlock" ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", condition::String="Key", conditionID::String="1:1")
 @mapdef Entity "coverupWall" CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
 @mapdef Entity "dashBlock" DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true)
-@mapdef Entity "fallingBlock" FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false, finalBoss::Bool=false)
+@mapdef Entity "fallingBlock" FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false)
+@mapdef Entity "finalBossFallingBlock" BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
 @mapdef Entity "introCrusher" IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", flags::String="1,0b")
 
@@ -187,7 +188,6 @@ StrawberryBlockField = BlockField
 @mapdef Entity "templeMirrorPortal" TempleMirrorPortal(x::Integer, y::Integer)
 
 @pardef BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
-BadelineFallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = FallingBlock(x, y, width, height, "g", false, false, true) # Helper
 
 @mapdef Entity "killbox" Killbox(x::Integer, y::Integer, width::Integer=defaultBlockWidth)
 
