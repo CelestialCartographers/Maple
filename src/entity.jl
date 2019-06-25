@@ -59,7 +59,7 @@ FinalBoss = BadelineBoss
 
 @mapdef Entity "playerSeeker" PlayerSeeker(x::Integer, y::Integer)
 
-@pardef Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=[(0, 0), (x2, y2)])
+@pardef Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=Tuple{Int, Int}[(0, 0), (x2, y2)])
 
 @mapdef Entity "towerviewer" Towerviewer(x::Integer, y::Integer)
 Lookout = Towerviewer
@@ -96,9 +96,10 @@ Lookout = Towerviewer
 @mapdef Entity "triggerSpikesOriginalLeft" TriggerSpikesOriginalLeft(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
 @mapdef Entity "triggerSpikesOriginalRight" TriggerSpikesOriginalRight(x::Integer, y::Integer, height::Integer=defaultSpikeHeight, type::String="default")
 
-@mapdef Entity "rotateSpinner" RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false)
 @mapdef Entity "spinner" Spinner(x::Integer, y::Integer, attachToSolid::Bool=false)
-@mapdef Entity "trackSpinner" TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false)
+
+@pardef TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], speed=speed, startCenter=startCenter)
+@pardef RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], clockwise=clockwise)
 
 @mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood")
 
@@ -112,9 +113,9 @@ RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
 @mapdef Entity "torch" Torch(x::Integer, y::Integer, startLit::Bool=false)
 
 # Wire color exposed by Everest
-@pardef Wire(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1, above::Bool=false, color::String="595866") = Entity("wire", x=x1, y=y1, nodes=[(x2, y2)], above=above, color=color)
-@pardef ClothesLine(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("clothesline", x=x1, y=y1, nodes=[(x2, y2)])
-@pardef CliffFlags(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("cliffflag", x=x1, y=y1, nodes=[(x2, y2)])
+@pardef Wire(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1, above::Bool=false, color::String="595866") = Entity("wire", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], above=above, color=color)
+@pardef ClothesLine(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("clothesline", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)])
+@pardef CliffFlags(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("cliffflag", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)])
 FlagLine = CliffFlags
 
 @mapdef Entity "swapBlock" SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
@@ -124,9 +125,9 @@ FlagLine = CliffFlags
 
 # Texture exposed by Everest
 @mapdef Entity "sinkingPlatform" SinkingPlatform(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
-@pardef MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, texture::String="default") = Entity("movingPlatform", x=x1, y=y1, nodes=[(x2, y2)], width=width, texture=texture)
+@pardef MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, texture::String="default") = Entity("movingPlatform", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, texture=texture)
 
-@pardef ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height)
+@pardef ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height)
 
 @mapdef Entity "coreModeToggle" CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false)
 
@@ -154,7 +155,7 @@ FlagLine = CliffFlags
 @mapdef Entity "introCrusher" IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", flags::String="1,0b")
 
 # Is actually not resizable, but still has a width for collision purposes
-@pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=[(x2, y2)], width=32, height=32, strawberries=strawberries)
+@pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=32, height=32, strawberries=strawberries)
 
 @mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0)
 @mapdef Entity "negaBlock" NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
@@ -187,7 +188,7 @@ StrawberryBlockField = BlockField
 @mapdef Entity "templeCrackedBlock" TempleCrackedBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false)
 @mapdef Entity "templeMirrorPortal" TempleMirrorPortal(x::Integer, y::Integer)
 
-@pardef BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
+@pardef BadelineMovingBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, nodeIndex::Integer=0) = Entity("finalBossMovingBlock", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height, nodeIndex=nodeIndex)
 
 @mapdef Entity "killbox" Killbox(x::Integer, y::Integer, width::Integer=defaultBlockWidth)
 
@@ -211,7 +212,7 @@ BrokenLamp(x::Integer, y::Integer) = Lamp(x, y, true) # Helper
 @mapdef Entity "soundSource" SoundSource(x::Integer, y::Integer, sound::String="")
 
 @mapdef Entity "introCar" IntroCar(x::Integer, y::Integer, hasRoadAndBarriers::Bool=false)
-@pardef Gondola(x::Integer, y::Integer, stopX::Integer=x+128, stopY::Integer=y-128, active::Bool=true) = Entity("gondola", x=x, y=y, nodes=[(stopX, stopY)])
+@pardef Gondola(x::Integer, y::Integer, stopX::Integer=x+128, stopY::Integer=y-128, active::Bool=true) = Entity("gondola", x=x, y=y, nodes=Tuple{Int, Int}[(stopX, stopY)])
 
 @mapdef Entity "templeEye" TempleEye(x::Integer, y::Integer)
 @mapdef Entity "templeBigEyeball" TempleBigEyeball(x::Integer, y::Integer)
@@ -251,15 +252,15 @@ OshiroBoss = FriendlyGhost
 
 @mapdef Entity "flutterbird" Flutterbird(x::Integer, y::Integer)
 @mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping")
-@pardef Hahaha(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, ifset::String="", triggerLaughSfx::Bool=false) = Entity("hahaha", x=x1, y=y1, nodes=[(x2, y2)], ifset=ifset, triggerLaughSfx=triggerLaughSfx)
+@pardef Hahaha(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, ifset::String="", triggerLaughSfx::Bool=false) = Entity("hahaha", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], ifset=ifset, triggerLaughSfx=triggerLaughSfx)
 @mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
 
 @mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onceOnly::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
 EverestCustomNpc = EverestCustomNPC
 
-@pardef ReflectionHeartStatue(x::Integer, y::Integer, hintX1::Integer=x+32, hintY1::Integer=y, hintX2::Integer=x+64, hintY2::Integer=y, hintX3::Integer=x+96, hintY3::Integer=y, hintX4::Integer=x+128, hintY4::Integer=y, gemX::Integer=x, gemY::Integer=y-64) = Entity("reflectionHeartStatue", x=x, y=y, nodes=[(hintX1, hintY1), (hintX2, hintY2), (hintX3, hintY3), (hintX4, hintY4), (gemX, gemY)])
-@pardef BirdForsakenCityGem(x::Integer, y::Integer, birdX::Integer=x+64, birdY::Integer=y, gemX::Integer=x+48, gemY::Integer=y) = Entity("birdForsakenCityGem", x=x, y=y, nodes=[(birdX, birdY), (gemX, gemY)])
+@pardef ReflectionHeartStatue(x::Integer, y::Integer, hintX1::Integer=x+32, hintY1::Integer=y, hintX2::Integer=x+64, hintY2::Integer=y, hintX3::Integer=x+96, hintY3::Integer=y, hintX4::Integer=x+128, hintY4::Integer=y, gemX::Integer=x, gemY::Integer=y-64) = Entity("reflectionHeartStatue", x=x, y=y, nodes=Tuple{Int, Int}[(hintX1, hintY1), (hintX2, hintY2), (hintX3, hintY3), (hintX4, hintY4), (gemX, gemY)])
+@pardef BirdForsakenCityGem(x::Integer, y::Integer, birdX::Integer=x+64, birdY::Integer=y, gemX::Integer=x+48, gemY::Integer=y) = Entity("birdForsakenCityGem", x=x, y=y, nodes=Tuple{Int, Int}[(birdX, birdY), (gemX, gemY)])
 ForsakenCitySatellite = BirdForsakenCityGem
 
 @mapdef Entity "coreMessage" CoreMessage(x::Integer, y::Integer, line::Integer=0)
@@ -272,7 +273,7 @@ ForsakenCitySatellite = BirdForsakenCityGem
 @mapdef Entity "risingLava" RisingLava(x::Integer, y::Integer, intro::Bool=false)
 @mapdef Entity "sandwichLava" SandwichLava(x::Integer, y::Integer)
 
-@pardef Bridge(x::Integer, y::Integer, width::Integer=32, gapStartX::Integer=x+96, gapStopX::Integer=x+128) = Entity("bridge", x=x, y=y, width=width, nodes=[(gapStartX, y), (gapStopX, y)])
+@pardef Bridge(x::Integer, y::Integer, width::Integer=32, gapStartX::Integer=x+96, gapStopX::Integer=x+128) = Entity("bridge", x=x, y=y, width=width, nodes=Tuple{Int, Int}[(gapStartX, y), (gapStopX, y)])
 @mapdef Entity "bridgeFixed" BridgeFixed(x::Integer, y::Integer, width::Integer=32)
 
 @mapdef Entity "glassBlock" GlassBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=false)
