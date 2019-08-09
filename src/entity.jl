@@ -118,9 +118,9 @@ RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
 @pardef CliffFlags(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("cliffflag", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)])
 FlagLine = CliffFlags
 
-@mapdef Entity "swapBlock" SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@pardef SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("swapBlock", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height)
 
-@mapdef Entity "switchGate" SwitchGate(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false, sprite::String="block")
+@pardef SwitchGate(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false, sprite::String="block") = Entity("switchGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height, persistent=persistent, sprite=sprite)
 @mapdef Entity "touchSwitch" TouchSwitch(x::Integer, y::Integer)
 
 # Texture exposed by Everest
