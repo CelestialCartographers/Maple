@@ -104,7 +104,7 @@ const default_mode = Dict{String, Any}(
     "StartLevel" => "",
     "HeartIsEnd" => false,
 
-    "SeekerSlowdown" => false,
+    "SeekerSlowdown" => true,
     "TheoInBubble" => false
 )
 
