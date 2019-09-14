@@ -104,3 +104,8 @@ end
 macro mapdef(e...)
     :(@mapdef true $(e...)) |> esc
 end
+
+# Used to escape normally illegal keywords like 'global'.
+macro kwesc(n::QuoteNode)
+    return n.value |> esc
+end

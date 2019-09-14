@@ -50,6 +50,7 @@ const wipe_names = Dict{String, String}(
     "KeyDoor" => "Celeste.KeyDoorWipe", # Celestial Resort 
     "Mountain" => "Celeste.MountainWipe", # Summit
     "Spotlight" => "Celeste.SpotlightWipe", # Cutscenes
+    "Starfield" => "Celeste.StarfieldWipe", # Farewell
     "Wind" => "Celeste.WindWipe" # Golden Ridge
 )
 
@@ -93,6 +94,8 @@ const default_meta = Dict{String, Any}(
     "Sprites" => "",
 
     "OverrideASideMeta" => false,
+
+    "PostcardSoundID" => ""
 )
 
 const default_mode = Dict{String, Any}(

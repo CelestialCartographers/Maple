@@ -42,6 +42,12 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "changeRespawnTrigger" ChangeRespawnTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @mapdef Trigger "respawnTargetTrigger" RespawnTargetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
+@mapdef Trigger "birdPathTrigger" BirdPathTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
+@mapdef Trigger "blackholeStrength" BlackHoleStrengthTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; strength::String="Mild")
+@mapdef Trigger "detachFollowersTrigger" DetachFollowersTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; @kwesc(:global)::Bool=true)
+@mapdef Trigger "moonGlitchBackgroundTrigger" MoonGlitchBackgroundTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; duration::String="Short", stay::Bool=false, glitch::Bool=true)
+@mapdef Trigger "rumbleTrigger" RumbleTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; manualTrigger::Bool=false, persistent::Bool=false)
+
 @mapdef Trigger "everest/flagTrigger" EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, flag::String="", state::Bool=false, mode::String="OnPlayerEnter", only_once::Bool=false, death_count::Integer=-1)
 @mapdef Trigger "everest/dialogTrigger" EverestDialogTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, endLevel::Bool=false)
 @mapdef Trigger "everest/crystalShatterTrigger" EverestCrystalShatterTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="All")

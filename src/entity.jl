@@ -37,7 +37,7 @@ DarkChaserBarrier = DarkChaserEnd
 BadelineChaserEnd = DarkChaserEnd
 BadelineChaserBarrier = DarkChaserEnd
 
-@mapdef Entity "strawberry" Strawberry(x::Integer, y::Integer, winged::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "strawberry" Strawberry(x::Integer, y::Integer, winged::Bool=false, moon::Bool=false, checkpointID::Integer=-1, order::Integer=-1, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @mapdef Entity "goldenBerry" GoldenStrawberry(x::Integer, y::Integer, winged::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @mapdef Entity "memorialTextController" MemorialTextController(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 GoldenStrawberryNoDash = MemorialTextController
@@ -47,7 +47,7 @@ GoldenStrawberryNoDash = MemorialTextController
 
 FinalBoss = BadelineBoss
 
-@mapdef Entity "fireBall" FireBall(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1)
+@mapdef Entity "fireBall" FireBall(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1, notCoreMode::Bool=false)
 
 @mapdef Entity "tentacles" Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], fear_distance::String="", slide_until::Integer=0)
 
@@ -76,7 +76,7 @@ Lookout = Towerviewer
 
 # Everest needs null values here for automatic fills
 # Inventory and Dreaming has to be nullable, -1 for checkpointID is considered null
-@mapdef Entity "checkpoint" ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Nothing}=nothing, dreaming::Union{Bool, Nothing}=nothing, coreMode::Union{String, Nothing}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false)
+@mapdef Entity "checkpoint" ChapterCheckpoint(x::Integer, y::Integer, inventory::Union{String, Nothing}=nothing, dreaming::Union{Bool, Nothing}=nothing, coreMode::Union{String, Nothing}=nothing, checkpointID::Integer=-1; allowOrigin::Bool=false, id="")
 
 @mapdef Entity "summitcheckpoint" Checkpoint(x::Integer, y::Integer, number::Integer=0)
 
@@ -98,12 +98,13 @@ Lookout = Towerviewer
 
 @mapdef Entity "spinner" Spinner(x::Integer, y::Integer, attachToSolid::Bool=false)
 
-@pardef TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], speed=speed, startCenter=startCenter)
-@pardef RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], clockwise=clockwise)
+# Star and Dust added by Everest
+@pardef TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false, dust::Bool=false, star::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], speed=speed, startCenter=startCenter, dust=dust, star)
+@pardef RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false, dust::Bool=false, star::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], clockwise=clockwise, dust=dust, star=star)
 
 @mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood")
 
-@mapdef Entity "wallBooster" WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false)
+@mapdef Entity "wallBooster" WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false, notCoreMode::Bool=false)
 @mapdef Entity "booster" Booster(x::Integer, y::Integer, red::Bool=false)
 GreenBooster(x::Integer, y::Integer) = Booster(x, y, false) # Helper
 RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
@@ -118,7 +119,8 @@ RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
 @pardef CliffFlags(x1::Integer, y1::Integer, x2::Integer=x1 + 8, y2::Integer=y1) = Entity("cliffflag", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)])
 FlagLine = CliffFlags
 
-@pardef SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = Entity("swapBlock", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height)
+@pardef SwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, theme="Normal") = Entity("swapBlock", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height, theme=theme)
+MoonSwapBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight) = SwapBlock(x1, y1, x2, y2, width, height, "Moon")
 
 @pardef SwitchGate(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, persistent::Bool=false, sprite::String="block") = Entity("switchGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height, persistent=persistent, sprite=sprite)
 @mapdef Entity "touchSwitch" TouchSwitch(x::Integer, y::Integer)
@@ -127,16 +129,17 @@ FlagLine = CliffFlags
 @mapdef Entity "sinkingPlatform" SinkingPlatform(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
 @pardef MovingPlatform(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, texture::String="default") = Entity("movingPlatform", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, texture=texture)
 
-@pardef ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Entity("zipMover", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height)
+@pardef ZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth, theme="Normal") = Entity("zipMover", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=width, height=height, theme=theme)
+MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, width::Integer=defaultBlockWidth, height::Integer=defaultBlockWidth) = Zipmover(x1, y1, x2, y2, width, height, "Moon")
 
 @mapdef Entity "coreModeToggle" CoreFlag(x::Integer, y::Integer, onlyIce::Bool=false, onlyFire::Bool=false, persistent::Bool=false)
 
 @mapdef Entity "slider" Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor")
 
-@mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer)
+@mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer, fake::Bool=false, removeCameraTriggers::Bool=false)
 @mapdef Entity "fakeHeart" FakeCrystalHeart(x::Integer, y::Integer)
 @mapdef Entity "dreamHeartGem" DreamCrystalHeart(x::Integer, y::Integer)
-@mapdef Entity "heartGemDoor" HeartDoor(x::Integer, y::Integer, width::Integer=40, requires::Integer=0)
+@mapdef Entity "heartGemDoor" HeartDoor(x::Integer, y::Integer, width::Integer=40, requires::Integer=0, startHidden::Bool=false)
 
 @mapdef Entity "plateau" Plateau(x::Integer, y::Integer)
 @mapdef Entity "resortRoofEnding" ResortRoofEnding(x::Integer, y::Integer, width::Integer=defaultBlockWidth)
@@ -144,9 +147,11 @@ FlagLine = CliffFlags
 # CrumbleBlock texture exposed by Everest
 @mapdef Entity "crumbleBlock" CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
 @mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "floatySpaceBlock" FloatySpaceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", disableSpawnOffset::Bool=false)
+@mapdef Entity "crumbleWallOnRumble" CrumbleWallOnRumble(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="m", blendin::Bool=true, persistent::Bool=false)
 @mapdef Entity "fakeBlock" FakeBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
-@mapdef Entity "exitBlock" ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
-@mapdef Entity "conditionBlock" ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", condition::String="Key", conditionID::String="1:1")
+@mapdef Entity "exitBlock" ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tileType::String="3", playTransitionReveal::Bool=false)
+@mapdef Entity "conditionBlock" ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tileType::String="3", condition::String="Key", conditionID::String="1:1")
 @mapdef Entity "coverupWall" CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
 @mapdef Entity "dashBlock" DashBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", blendin::Bool=true, canDash::Bool=true, permanent::Bool=true)
 @mapdef Entity "fallingBlock" FallingBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", climbFall::Bool=true, behind::Bool=false)
@@ -181,6 +186,7 @@ StrawberryBlockField = BlockField
 @mapdef Entity "bounceBlock" BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
 @mapdef Entity "whiteblock" WhiteBlock(x::Integer, y::Integer)
+@mapdef Entity "goldenBlock" GoldenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
 @mapdef Entity "invisibleBarrier" Barrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "seekerBarrier" SeekerBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
@@ -248,7 +254,7 @@ ClutterSwitch = ColorSwitch
 OshiroBoss = FriendlyGhost
 
 @mapdef Entity "key" Key(x::Integer, y::Integer)
-@mapdef Entity "lockBlock" LockBlock(x::Integer, y::Integer, sprite::String="wood")
+@mapdef Entity "lockBlock" LockBlock(x::Integer, y::Integer, sprite::String="wood", unlock_sfx::String="", stepMusicProgress::Bool=false)
 
 @mapdef Entity "flutterbird" Flutterbird(x::Integer, y::Integer)
 @mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping")
@@ -281,6 +287,21 @@ ForsakenCitySatellite = BirdForsakenCityGem
 @mapdef Entity "summitgem" SummitGem(x::Integer, y::Integer, gem::Integer=0)
 @mapdef Entity "summitGemManager" SummitGemManager(x::Integer, y::Integer)
 
+@mapdef Entity "moonCreature" MoonCreature(x::Integer, y::Integer, number::Integer=1)
+
+@mapdef Entity "glider" Glider(x::Integer, y::Integer, bubble::Bool=false, tutorial::Bool=false)
+Jellyfish = Glider
+
+@mapdef Entity "eyebomb" Puffer(x::Integer, y::Integer, right::Bool=false)
+
+@mapdef Entity "lightning" Lightning(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, perLevel::Bool=false, moveTime::Number=5.0, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "lightningBlock" LightningBreakerBox(x::Integer, y::Integer, flipX::Bool=false, music_progress::Integer=-1, music_session::Bool=false, music::Union{String, Nothing}=nothing, flag::Bool=false)
+
+@mapdef Entity "birdPath" BirdPath(x::Integer, y::Integer, only_once::Bool=false, onlyIfLeft::Bool=false, speedMult::Number=1.0)
+@mapdef Entity "flingBird" FlingBird(x::Integer, y::Integer, waiting::Bool=false)
+
+@mapdef Entity "playbackBillboard" PlaybackBillboard(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "playbackTutorial" PlayerPlayback(x::Integer, y::Integer, tutorial::String="", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 blacklistedEntityAttrs = String["nodes"]
 

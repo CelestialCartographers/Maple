@@ -74,7 +74,21 @@ end
     "cas_05_mirror_temple" => "event:/music/cassette/05_mirror_temple",
     "cas_06_reflection" => "event:/music/cassette/06_reflection",
     "cas_07_summit" => "event:/music/cassette/07_summit",
-    "cas_08_core" => "event:/music/cassette/09_core"
+    "cas_08_core" => "event:/music/cassette/09_core",
+    "music_farewell_part01" => "event:/new_content/music/lvl10/part01",
+    "music_farewell_part02" => "event:/new_content/music/lvl10/part02",
+    "music_farewell_part03" => "event:/new_content/music/lvl10/part03",
+    "music_farewell_intermission_heartgroove" => "event:/new_content/music/lvl10/intermission_heartgroove",
+    "music_farewell_intermission_powerpoint" => "event:/new_content/music/lvl10/intermission_powerpoint",
+    "music_farewell_reconciliation" => "event:/new_content/music/lvl10/reconciliation",
+    "music_farewell_cassette" => "event:/new_content/music/lvl10/cassette_rooms",
+    "music_farewell_final_run" => "event:/new_content/music/lvl10/final_run",
+    "music_farewell_end_cinematic" => "event:/new_content/music/lvl10/cinematic/end",
+    "music_farewell_end_cinematic_intro" => "event:/new_content/music/lvl10/cinematic/end_intro",
+    "music_farewell_firstbirdcrash_cinematic" => "event:/new_content/music/lvl10/cinematic/bird_crash_first",
+    "music_farewell_secondbirdcrash_cinematic" => "event:/new_content/music/lvl10/cinematic/bird_crash_second",
+    "music_farewell_granny" => "event:/new_content/music/lvl10/granny_farewell",
+    "music_farewell_golden_room" => "event:/new_content/music/lvl10/golden_room",
 ))
 end
 
@@ -115,7 +129,12 @@ end
     "env_loc_waterfall_big_main" => "event:/env/local/waterfall_big_main",
     "env_loc_waterfall_small_in_deep" => "event:/env/local/waterfall_small_in_deep",
     "env_loc_waterfall_small_in_shallow" => "event:/env/local/waterfall_small_in_shallow",
-    "env_loc_waterfall_small_main" => "event:/env/local/waterfall_small_main"
+    "env_loc_waterfall_small_main" => "event:/env/local/waterfall_small_main",
+    "env_loc_10_cafe_computer" => "event:/new_content/env/local/cafe_computer",
+    "env_loc_10_cafe_sign" => "event:/new_content/env/local/cafe_sign",
+    "env_loc_10_tutorial_static_left" => "event:/new_content/env/local/tutorial_static_left",
+    "env_loc_10_tutorial_static_right" => "event:/new_content/env/local/tutorial_static_right",
+    "env_loc_10_kevinpc" => "event:/new_content/env/local/kevinpc",
 ))
 end
 
@@ -141,6 +160,13 @@ end
     "env_amb_06_prehug" => "event:/env/amb/06_prehug",
     "env_amb_09_main" => "event:/env/amb/09_main",
     "env_amb_worldmap" => "event:/env/amb/worldmap",
+    "env_amb_10_rain" => "event:/new_content/env/10_rain",
+    "env_amb_10_electricity" => "event:/new_content/env/10_electricity",
+    "env_amb_10_endscene" => "event:/new_content/env/10_endscene",
+    "env_amb_10_rushingvoid" => "event:/new_content/env/10_rushingvoid",
+    "env_amb_10_space_underwater" => "event:/new_content/env/10_space_underwater",
+    "env_amb_10_voidspiral" => "event:/new_content/env/10_voidspiral",
+    "env_amb_10_grannyclouds" => "event:/new_content/env/10_grannyclouds",
 ))
 end
 
@@ -178,8 +204,10 @@ const bird_npc_modes = String[
     "SuperWallJumpTutorial",
     "HyperJumpTutorial",
     "FlyAway",
-    "None",
-    "Sleeping"
+    "Sleeping",
+    "MoveToNodes",
+    "WaitForLightningOff",
+    "None"
 ]
 
 const bonfire_modes = String[
@@ -194,12 +222,13 @@ const clutter_block_colors = String[
     "Yellow"
 ]
 
-# Core color added by Everest
+# Core and Rainbow color added by Everest
 const crystal_colors = String[
     "Blue",
     "Red",
     "Purple",
-    "Core"
+    "Core",
+    "Rainbow"
 ]
 
 const dash_switch_sides = String[
@@ -401,4 +430,27 @@ const everest_crystal_shatter_trigger_modes = String[
 const music_fade_trigger_directions = String[
     "leftToRight",
     "topToBottom"
+]
+
+const black_hole_trigger_strengths = String[
+    "Mild",
+    "Medium",
+    "High",
+    "Wild"
+]
+
+const moon_glitch_background_trigger_durations = String[
+    "Short",
+    "Medium",
+    "Long"
+]
+
+const zip_mover_themes = String[
+    "Normal",
+    "Moon"
+]
+
+const swap_block_themes = String[
+    "Normal",
+    "Moon"
 ]

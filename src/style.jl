@@ -44,6 +44,9 @@ end
 @mapdef Effect "petals" Petals(only::String="*", exclude::String="")
 @mapdef Effect "northernlights" NorthernLights(only::String="*", exclude::String="")
 @mapdef Effect "tentacles" TentacleEffect(only::String="*", exclude::String="", side::String="Right", color::String="", offset::Number=0)
+@mapdef Effect "stardust" StarDust(only::String="*", exclude::String="")
+@mapdef Effect "rain" Rain(only::String="*", exclude::String="", color::String="161933") # Color added by Everest
+@mapdef Effect "blackhole" BlackHole(only::String="*", exclude::String="")
 
 Base.:(==)(lhs::Parallax, rhs::Parallax) = lhs.data == rhs.data
 Base.:(==)(lhs::Effect, rhs::Effect) = lhs.name == rhs.name && lhs.data == rhs.data

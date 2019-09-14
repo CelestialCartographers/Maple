@@ -22,6 +22,7 @@ tile_fg_names = Dict{Any, Any}(
     'k' => "Core",
     'l' => "Deadgrass",
     'm' => "Lostlevels",
+    'n' => "Scifi",
     'z' => "Template",
 
     "Air" => '0',
@@ -47,6 +48,7 @@ tile_fg_names = Dict{Any, Any}(
     "Core" => 'k',
     "Deadgrass" => 'l',
     "Lostlevels" => 'm',
+    "Scifi" => 'n',
     "Template" => 'z'    
 )
 
