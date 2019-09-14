@@ -295,13 +295,18 @@ Jellyfish = Glider
 @mapdef Entity "eyebomb" Puffer(x::Integer, y::Integer, right::Bool=false)
 
 @mapdef Entity "lightning" Lightning(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, perLevel::Bool=false, moveTime::Number=5.0, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
-@mapdef Entity "lightningBlock" LightningBreakerBox(x::Integer, y::Integer, flipX::Bool=false, music_progress::Integer=-1, music_session::Bool=false, music::Union{String, Nothing}=nothing, flag::Bool=false)
+@mapdef Entity "lightningBlock" LightningBreakerBox(x::Integer, y::Integer, flipX::Bool=false, music_progress::Integer=-1, music_session::Bool=false, music::String="", flag::Bool=false)
 
 @mapdef Entity "birdPath" BirdPath(x::Integer, y::Integer, only_once::Bool=false, onlyIfLeft::Bool=false, speedMult::Number=1.0)
 @mapdef Entity "flingBird" FlingBird(x::Integer, y::Integer, waiting::Bool=false)
+@mapdef Entity "flingBirdIntro" FlingBirdIntro(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 @mapdef Entity "playbackBillboard" PlaybackBillboard(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "playbackTutorial" PlayerPlayback(x::Integer, y::Integer, tutorial::String="", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+
+@mapdef Entity "kevins_pc" KevinsPC(x::Integer, y::Integer)
+@mapdef Entity "wavedashmachine" WaveDashMachine(x::Integer, y::Integer, crashes::Bool=false)
+InternetCafe = WaveDashMachine
 
 blacklistedEntityAttrs = String["nodes"]
 

@@ -21,7 +21,7 @@ tile_fg_names = Dict{Any, Any}(
     'j' => "Summit No Snow",
     'k' => "Core",
     'l' => "Deadgrass",
-    'm' => "Lostlevels",
+    'm' => "Lost Levels",
     'n' => "Scifi",
     'z' => "Template",
 
@@ -47,7 +47,7 @@ tile_fg_names = Dict{Any, Any}(
     "Summit No Snow" => 'j',
     "Core" => 'k',
     "Deadgrass" => 'l',
-    "Lostlevels" => 'm',
+    "Lost Levels" => 'm',
     "Scifi" => 'n',
     "Template" => 'z'    
 )
@@ -67,7 +67,7 @@ tile_bg_names = Dict{Any, Any}(
     'b' => "Snow",
     'c' => "Summit",
     'd' => "Core",
-    'e' => "Lostlevels",
+    'e' => "Lost Levels",
     'z' => "Template",
 
     "Air" => '0',
@@ -84,7 +84,7 @@ tile_bg_names = Dict{Any, Any}(
     "Snow" => 'b',
     "Summit" => 'c',
     "Core" => 'd',
-    "Lostlevels" => 'e',
+    "Lost Levels" => 'e',
     "Template" => 'z'
 )
 
