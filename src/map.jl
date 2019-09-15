@@ -138,6 +138,7 @@ function loadEntities(roomData::Dict{String, Any}, constructor::Union{Type{Entit
         else
             for data in packIfDict(entityData)
                 id = get(data, "id", -1)
+                id = isa(id, Integer) ? id : 0
                 delete!(data, "id")
 
                 if haskey(data, "node")
