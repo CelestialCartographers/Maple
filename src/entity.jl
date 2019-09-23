@@ -257,7 +257,7 @@ OshiroBoss = FriendlyGhost
 @mapdef Entity "lockBlock" LockBlock(x::Integer, y::Integer, sprite::String="wood", unlock_sfx::String="", stepMusicProgress::Bool=false)
 
 @mapdef Entity "flutterbird" Flutterbird(x::Integer, y::Integer)
-@mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping")
+@mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @pardef Hahaha(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, ifset::String="", triggerLaughSfx::Bool=false) = Entity("hahaha", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], ifset=ifset, triggerLaughSfx=triggerLaughSfx)
 @mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
