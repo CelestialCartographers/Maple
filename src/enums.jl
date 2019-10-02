@@ -105,7 +105,8 @@ end
     "cas_05_mirror_temple" => "event:/music/cassette/05_mirror_temple",
     "cas_06_reflection" => "event:/music/cassette/06_reflection",
     "cas_07_summit" => "event:/music/cassette/07_summit",
-    "cas_08_core" => "event:/music/cassette/09_core"
+    "cas_08_core" => "event:/music/cassette/09_core",
+    "music_farewell_cassette" => "event:/new_content/music/lvl10/cassette_rooms"
 ))
 end
 

@@ -105,7 +105,7 @@ Lookout = Towerviewer
 @mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood")
 
 @mapdef Entity "wallBooster" WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false, notCoreMode::Bool=false)
-@mapdef Entity "booster" Booster(x::Integer, y::Integer, red::Bool=false)
+@mapdef Entity "booster" Booster(x::Integer, y::Integer, red::Bool=false, ch9_hub_booster::Bool=false)
 GreenBooster(x::Integer, y::Integer) = Booster(x, y, false) # Helper
 RedBooster(x::Integer, y::Integer) = Booster(x, y, true) # Helper
 
