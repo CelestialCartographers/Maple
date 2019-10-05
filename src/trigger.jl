@@ -30,7 +30,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "lookoutBlocker" LookoutBlocker(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
 @mapdef Trigger "minitextboxTrigger" MiniTextBoxTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; dialog_id::String="", mode::String="OnPlayerEnter", only_once::Bool=true, death_count::Integer=-1)
 @mapdef Trigger "musicFadeTrigger" MusicFadeTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; direction::String="leftToRight", fadeA::Number=0.0, fadeB::Number=1.0, parameter::String="")
-@mapdef Trigger "musicTrigger" MusicTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; track::String="", resetOnLeave::Bool=true)
+@mapdef Trigger "musicTrigger" MusicTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; track::String="", resetOnLeave::Bool=true, progress::Int=0)
 @mapdef Trigger "noRefillTrigger" NoRefillTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, state::Bool=true)
 @mapdef Trigger "oshiroTrigger" OshiroTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, state::Bool=true)
 @mapdef Trigger "stopBoostTrigger" StopBoostTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)

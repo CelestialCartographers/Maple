@@ -162,7 +162,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 # Is actually not resizable, but still has a width for collision purposes
 @pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=32, height=32, strawberries=strawberries)
 
-@mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0)
+@mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0, tempo::Number=1)
 @mapdef Entity "negaBlock" NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "moveBlock" MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false)
 @mapdef Entity "crushBlock" CrushBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, axes::String="both", chillout::Bool=false)
