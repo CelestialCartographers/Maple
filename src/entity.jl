@@ -42,7 +42,7 @@ BadelineChaserBarrier = DarkChaserEnd
 @mapdef Entity "memorialTextController" MemorialTextController(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 GoldenStrawberryNoDash = MemorialTextController
 
-@mapdef Entity "badelineBoost" BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true)
+@mapdef Entity "badelineBoost" BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true, canSkip::Bool=false, finalCh9Boost::Bool=false, finalCh9GoldenBoost::Bool=false, finalCh9Dialog::Bool=false)
 @mapdef Entity "finalBoss" BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, lockCamera::Bool=true, canChangeMusic::Bool=true)
 
 FinalBoss = BadelineBoss
@@ -305,7 +305,7 @@ Jellyfish = Glider
 @mapdef Entity "playbackTutorial" PlayerPlayback(x::Integer, y::Integer, tutorial::String="", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 @mapdef Entity "kevins_pc" KevinsPC(x::Integer, y::Integer)
-@mapdef Entity "wavedashmachine" WaveDashMachine(x::Integer, y::Integer, crashes::Bool=false)
+@mapdef Entity "wavedashmachine" WaveDashMachine(x::Integer, y::Integer)
 InternetCafe = WaveDashMachine
 
 blacklistedEntityAttrs = String["nodes"]

@@ -13,7 +13,15 @@ const intro_types = String[
 
 const color_grades = String[
     "oldsite",
-    "reflection"
+    "reflection",
+    "cold",
+    "credits",
+    "feelingdown",
+    "golden",
+    "hot",
+    "none", 
+    "panicattack",
+    "templevoid"
 ]
 
 const inventories = String[

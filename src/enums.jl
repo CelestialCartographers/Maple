@@ -446,6 +446,11 @@ const moon_glitch_background_trigger_durations = String[
     "Long"
 ]
 
+const spawn_facing_trigger_facings = String[
+    "Right",
+    "Left"
+]
+
 const zip_mover_themes = String[
     "Normal",
     "Moon"

@@ -36,6 +36,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "stopBoostTrigger" StopBoostTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
 @mapdef Trigger "windAttackTrigger" WindAttackTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight)
 @mapdef Trigger "windTrigger" WindTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, pattern::String="None")
+@mapdef Trigger "spawnFacingTrigger" SpawnFacingTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, facing::String="Right")
 
 @mapdef Trigger "cameraTargetTrigger" CameraTargetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; lerpStrength::Number=0.0, positionMode::String="NoEffect", xOnly::Bool=false, yOnly::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @mapdef Trigger "cameraAdvanceTargetTrigger" CameraAdvanceTargetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; lerpStrengthX::Number=0.0, lerpStrengthY::Number=0.0, positionModeX::String="NoEffect", positionModeY::String="NoEffect", xOnly::Bool=false, yOnly::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
