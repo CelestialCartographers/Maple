@@ -31,6 +31,9 @@ Base.@kwdef mutable struct Room
     musicLayer4::Bool = true
 
     musicProgress::String = ""
+    ambienceProgress::String = ""
+
+    delayAltMusicFade::Bool = false
 
     dark::Bool = false
     space::Bool = false
@@ -38,11 +41,14 @@ Base.@kwdef mutable struct Room
     whisper::Bool = false
 
     music::String = "music_oldsite_awake"
-    alt_music::String = ""
+    altMusic::String = ""
 
     disableDownTransition::Bool = false
 
     windPattern::String = "None"
+
+    cameraOffsetX::Number = 0
+    cameraOffsetY::Number = 0
 end
 
 # Set the fg and bg tiles to the size of the room

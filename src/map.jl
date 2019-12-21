@@ -207,6 +207,7 @@ function loadRoom(roomData::Dict{String, Any})
         musicLayer4 = get(roomData, "musicLayer4", true),
 
         musicProgress = string(get(roomData, "musicProgress", "")),
+        ambienceProgress = string(get(roomData, "ambienceProgress", "")),
 
         dark = get(roomData, "dark", false),
         space = get(roomData, "space", false),
@@ -214,12 +215,17 @@ function loadRoom(roomData::Dict{String, Any})
         whisper = get(roomData, "whisper", false),
         disableDownTransition = get(roomData, "disableDownTransition", false),
 
+        delayAltMusicFade = get(roomData, "delayAltMusicFade", false),
+
         music = get(roomData, "music", "music_oldsite_awake"),
-        alt_music = get(roomData, "alt_music", ""),
+        altMusic = get(roomData, "alt_music", ""),
         
         windPattern = get(roomData, "windPattern", "None"),
 
-        color = get(roomData, "c", 0)
+        color = get(roomData, "c", 0),
+
+        cameraOffsetX = get(roomData, "cameraOffsetX", 0),
+        cameraOffsetY = get(roomData, "cameraOffsetY", 0)
     )
 
     updateTileSize!(room, '0', '0')
