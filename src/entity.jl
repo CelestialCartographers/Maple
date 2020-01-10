@@ -178,7 +178,9 @@ MovingSpaceJam = MovingDreamBlock
 
 @mapdef Entity "starJumpBlock" StarJumpBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, sinks::Bool=true)
 @mapdef Entity "starClimbController" StarJumpController(x::Integer, y::Integer)
+@mapdef Entity "everest/starClimbGraphicsController" StarJumpClimbGraphicsController(x::Integer, y::Integer, fgColor::String="A3FFFF", bgColor::String="293E4B")
 StarClimbController = StarJumpController
+StarClimbGraphicsController = StarJumpClimbGraphicsController
 
 @mapdef Entity "blockField" BlockField(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 StrawberryBlockField = BlockField
