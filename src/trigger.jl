@@ -57,6 +57,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "everest/lavaBlockerTrigger" EverestLavaBlockerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, canReenter::Bool=false)
 @mapdef Trigger "everest/coreModeTrigger" EverestCoreModeTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="None")
 @mapdef Trigger "everest/musicLayerTrigger" EverestMusicLayerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, layers::String="", enable::Bool=false)
+@mapdef Trigger "everest/smoothCameraOffsetTrigger" EverestSmoothCameraOffsetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, offsetXFrom::Number=0.0, offsetXTo::Number=0.0, offsetYFrom::Number=0.0, offsetYTo::Number=0.0, positionMode::String="NoEffect", onlyOnce::Bool=false)
 
 blacklistedTriggerAttrs = String["nodes"]
 
