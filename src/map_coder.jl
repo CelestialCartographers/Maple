@@ -105,12 +105,12 @@ numTypes = [
   Int32
 ]
 
-function encodeValue(buffer::IOBuffer, key::String, value::Bool, lookup::Array{String, 1})
+function encodeValue(buffer::IOBuffer, key::String, value::Bool, lookup::Dict{String, Int})
   write(buffer, 0x0)
   write(buffer, value)
 end
 
-function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Array{String, 1})
+function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Dict{String, Int})
   for (i, t) in enumerate(numTypes)
     if typemin(t) <= value <= typemax(t)
       write(buffer, UInt8(i))
@@ -121,13 +121,13 @@ function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Arra
   end
 end
 
-function encodeValue(buffer::IOBuffer, key::String, value::AbstractFloat, lookup::Array{String, 1})
+function encodeValue(buffer::IOBuffer, key::String, value::AbstractFloat, lookup::Dict{String, Int})
   write(buffer, 0x4)
   write(buffer, Float32(value))
 end
 
-function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Array{String, 1})
-  index = something(findfirst(isequal(value), lookup), 0) - 1
+function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Dict{String, Int})
+  index = get(lookup, value, 0) - 1
 
   if index < 0
     encodedValue = encodeRunLength(value)
@@ -247,21 +247,21 @@ function getAttributeNames(d::Dict{String, Any})
   return attr
 end
 
-function encodeValue(buffer::IOBuffer, elements::Array{Dict{String, Any}}, lookup::Array{String})
+function encodeValue(buffer::IOBuffer, elements::Array{Dict{String, Any}}, lookup::Dict{String, Int})
   for element in elements
     encodeValue(buffer, element, lookup)
   end
 end
 
-function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Array{String})
+function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Dict{String, Int})
   attributes = getAttributeNames(element)
   children = get(Array{Dict{String, Any}, 1}, element, "__children")
 
-  write(buffer, UInt16(something(findfirst(isequal(element["__name"]), lookup), 0) - 1))
+  write(buffer, UInt16(get(lookup, element["__name"], 0) - 1))
   write(buffer, UInt8(length(keys(attributes))))
 
   for (attr, value) in attributes
-    write(buffer, UInt16(something(findfirst(isequal(attr), lookup), 0) - 1))
+    write(buffer, UInt16(get(lookup, attr, 0) - 1))
     encodeValue(buffer, attr, value, lookup)
   end
 
@@ -273,9 +273,8 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
   seen = Dict{String, Integer}()
   populateEncodeKeyNames!(map, seen)
 
-  # Store lookup table in order of occurrence
-  # It's faster to sort this array than look them up in random order
-  lookup = String[k for (k, v) in sort(collect(seen), by=v -> v[2], rev=true)]
+  lookup = String[k for (k, v) in seen]
+  lookupDict = Dict{String, Int}(s => i for (i, s) in enumerate(lookup))
   buffer = IOBuffer()
 
   writeString(buffer, "CELESTE MAP")
@@ -286,7 +285,7 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
     writeString(buffer, s)
   end
 
-  encodeValue(buffer, map, lookup)
+  encodeValue(buffer, map, lookupDict)
 
   open(outfile, "w") do fh
     write(fh, buffer.data)
