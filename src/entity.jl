@@ -102,7 +102,7 @@ Lookout = Towerviewer
 @pardef TrackSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, speed::String="Normal", startCenter::Bool=false, dust::Bool=false, star::Bool=false) = Entity("trackSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], speed=speed, startCenter=startCenter, dust=dust, star)
 @pardef RotateSpinner(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, clockwise::Bool=false, dust::Bool=false, star::Bool=false) = Entity("rotateSpinner", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], clockwise=clockwise, dust=dust, star=star)
 
-@mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood")
+@mapdef Entity "jumpThru" JumpThru(x::Integer, y::Integer, width::Integer=8, texture::String="wood", surfaceIndex::Int=-1)
 
 @mapdef Entity "wallBooster" WallBooster(x::Integer, y::Integer, height::Integer=8, left::Bool=false, notCoreMode::Bool=false)
 @mapdef Entity "booster" Booster(x::Integer, y::Integer, red::Bool=false, ch9_hub_booster::Bool=false)
@@ -264,7 +264,7 @@ OshiroBoss = FriendlyGhost
 @mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
 
-@mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onceOnly::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
+@mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onlyOnce::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
 EverestCustomNpc = EverestCustomNPC
 
 @pardef ReflectionHeartStatue(x::Integer, y::Integer, hintX1::Integer=x+32, hintY1::Integer=y, hintX2::Integer=x+64, hintY2::Integer=y, hintX3::Integer=x+96, hintY3::Integer=y, hintX4::Integer=x+128, hintY4::Integer=y, gemX::Integer=x, gemY::Integer=y-64) = Entity("reflectionHeartStatue", x=x, y=y, nodes=Tuple{Int, Int}[(hintX1, hintY1), (hintX2, hintY2), (hintX3, hintY3), (hintX4, hintY4), (gemX, gemY)])

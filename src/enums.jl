@@ -171,6 +171,45 @@ end
 ))
 end
 
+const tileset_sound_ids = Dict{String, Int}(
+    "Default" => -1,
+    "Null" => 0,
+    "Asphalt" => 1,
+    "Car" => 2,
+    "Dirt" => 3,
+    "Snow" => 4,
+    "Wood" => 5,
+    "Bridge" => 6,
+    "Girder" => 7,
+    "Brick" => 8,
+    "Zip Mover" => 9,
+    "Space Jam (Inactive)" => 11,
+    "Space Jam (Active)" => 12,
+    "Resort Wood" => 13,
+    "Resort Roof" => 14,
+    "Resort Platform" => 15,
+    "Resort Basement" => 16,
+    "Resort Laundry" => 17,
+    "Resort Boxes" => 18,
+    "Resort Books" => 19,
+    "Resort Forcefield" => 20,
+    "Resort Clutterswitch" => 21,
+    "Resort Elevator" => 22,
+    "Cliffside Snow" => 23,
+    "Cliffside Grass" => 25,
+    "Cliffside Whiteblock" => 27,
+    "Gondola" => 28,
+    "Glass" => 32,
+    "Grass" => 33,
+    "Cassette Block" => 35,
+    "Core Ice" => 36,
+    "Core Rock" => 37,
+    "Glitch" => 40,
+    "Internet Café" => 42,
+    "Cloud" => 43,
+    "Moon" => 44
+)
+
 const wind_patterns = String[
     "None",
     "Left",
