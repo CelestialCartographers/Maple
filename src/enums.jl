@@ -398,7 +398,9 @@ const npc_npcs = String[
     "theo_08_inside",
     "granny_08_inside",
     "granny_09_outside",
-    "granny_09_inside"
+    "granny_09_inside",
+    "gravestone_10",
+    "granny_10_never"
 ]
 
 const seeker_statue_hatches = String[
@@ -438,16 +440,29 @@ const trigger_position_modes = String[
 ]
 
 const event_trigger_events = String[
-    "cancel_ch5_see_theo",
+    "end_city",
+    "end_oldsite_dream",
+    "end_oldsite_awake",
+    "ch5_see_theo",
     "ch5_found_theo",
     "ch5_mirror_reflection",
+    "cancel_ch5_see_theo",
     "ch6_boss_intro",
     "ch6_reflect",
     "ch7_summit",
     "ch8_door",
-    "end_city",
-    "end_oldsite_awake",
-    "end_oldsite_dream"
+    "ch9_goto_the_future",
+    "ch9_goto_the_past",
+    "ch9_moon_intro",
+    "ch9_hub_intro",
+    "ch9_hub_transition_out",
+    "ch9_badeline_helps",
+    "ch9_farewell",
+    "ch9_ending",
+    "ch9_end_golden",
+    "ch9_final_room",
+    "ch9_ding_ding_ding",
+    "ch9_golden_snapshot"
 ]
 
 const mini_textbox_trigger_modes = String[

@@ -61,7 +61,7 @@ FinalBoss = BadelineBoss
 
 @pardef Cassette(x1::Integer, y1::Integer, x2::Integer=x1, y2::Integer=y1) = Entity("cassette", x=x1, y=y1, nodes=Tuple{Int, Int}[(0, 0), (x2, y2)])
 
-@mapdef Entity "towerviewer" Towerviewer(x::Integer, y::Integer)
+@mapdef Entity "towerviewer" Towerviewer(x::Integer, y::Integer, summit::Bool=false, onlyY::Bool=false)
 Lookout = Towerviewer
 
 @mapdef Entity "floatingDebris" FloatingDebris(x::Integer, y::Integer)
@@ -171,8 +171,8 @@ KevinBlock = CrushBlock
 @mapdef Entity "iceBlock" IceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "fireBarrier" FireBarrier(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 
-@mapdef Entity "dreamBlock" DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false)
-@mapdef false Entity "dreamBlock" MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false)
+@mapdef Entity "dreamBlock" DreamBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false, below::Bool=false)
+@mapdef false Entity "dreamBlock" MovingDreamBlock(x1::Integer, y1::Integer, x2::Integer, y2::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, fastMoving::Bool=false, oneUse::Bool=false, below::Bool=false)
 SpaceJam = DreamBlock
 MovingSpaceJam = MovingDreamBlock
 
@@ -231,8 +231,8 @@ TempleBigEye = TempleBigEyeball
 FragileCloud(x::Integer, y::Integer, small::Bool=false) = Cloud(x, y, true, small)
 
 @mapdef Entity "spring" Spring(x::Integer, y::Integer, playerCanUse::Bool=true)
-@mapdef Entity "wallSpringRight" SpringRight(x::Integer, y::Integer)
-@mapdef Entity "wallSpringLeft" SpringLeft(x::Integer, y::Integer)
+@mapdef Entity "wallSpringRight" SpringRight(x::Integer, y::Integer, playerCanUse::Bool=true)
+@mapdef Entity "wallSpringLeft" SpringLeft(x::Integer, y::Integer, playerCanUse::Bool=true)
 
 @mapdef Entity "colorSwitch" ColorSwitch(x::Integer, y::Integer, type::String="red")
 @mapdef Entity "yellowBlocks" YellowBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
@@ -259,7 +259,7 @@ OshiroBoss = FriendlyGhost
 @mapdef Entity "lockBlock" LockBlock(x::Integer, y::Integer, sprite::String="wood", unlock_sfx::String="", stepMusicProgress::Bool=false)
 
 @mapdef Entity "flutterbird" Flutterbird(x::Integer, y::Integer)
-@mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "bird" Bird(x::Integer, y::Integer, mode::String="Sleeping", onlyOnce::Bool=false, onlyIfPlayerLeft::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 @pardef Hahaha(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, ifset::String="", triggerLaughSfx::Bool=false) = Entity("hahaha", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], ifset=ifset, triggerLaughSfx=triggerLaughSfx)
 @mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
