@@ -47,7 +47,7 @@ GoldenStrawberryNoDash = MemorialTextController
 
 FinalBoss = BadelineBoss
 
-@mapdef Entity "fireBall" FireBall(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0, speed::Number=1, notCoreMode::Bool=false)
+@mapdef Entity "fireBall" FireBall(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], amount::Integer=1, offset::Number=0.0, speed::Number=1.0, notCoreMode::Bool=false)
 
 @mapdef Entity "tentacles" Tentacles(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], fear_distance::String="", slide_until::Integer=0)
 
@@ -69,7 +69,7 @@ Lookout = Towerviewer
 
 @mapdef Entity "dreammirror" DreamMirror(x::Integer, y::Integer)
 @mapdef Entity "resortmirror" ResortMirror(x::Integer, y::Integer)
-@mapdef Entity "templeMirror" TempleMirror(x::Integer, y::Integer, reflectX::Number=0, reflectY::Number=0)
+@mapdef Entity "templeMirror" TempleMirror(x::Integer, y::Integer, reflectX::Number=0.0, reflectY::Number=0.0)
 
 @mapdef Entity "refill" Refill(x::Integer, y::Integer, twoDash::Bool=false, oneUse::Bool=false)
 @mapdef Entity "infiniteStar" Feather(x::Integer, y::Integer, shielded::Bool=false, singleUse::Bool=false)
@@ -162,7 +162,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 # Is actually not resizable, but still has a width for collision purposes
 @pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=32, height=32, strawberries=strawberries)
 
-@mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0, tempo::Number=1)
+@mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0, tempo::Number=1.0)
 @mapdef Entity "negaBlock" NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 @mapdef Entity "moveBlock" MoveBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, direction::String="Up", canSteer::Bool=false, fast::Bool=false)
 @mapdef Entity "crushBlock" CrushBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, axes::String="both", chillout::Bool=false)

@@ -2,9 +2,6 @@ include("room.jl")
 include("style.jl")
 include("filler.jl")
 
-# Quirk with the "fancy" JSON converting, make sure we always have an array to work with
-packIfDict(data) = isa(data, Dict) ? Dict{String, Any}[data] : data
-
 mutable struct Map
     package::String
     rooms::Array{Room, 1}
@@ -93,33 +90,30 @@ loadMap(fn::String) = loadMap(decodeMap(fn))
 function loadBackdrops(styleData::Dict{String, Any})
     backdrops = Backdrop[]
 
-    for (styleType, data) in styleData
+    for child in children(styleData)
+        styleType = child["__name"]
+
         if styleType == "parallax"
-            for p in packIfDict(data)
-                push!(backdrops, Parallax(p))
-            end
+            push!(backdrops, Parallax(attributes(child)))
 
         elseif styleType == "apply"
-            for a in packIfDict(data)
-                applyAttr = attributes(a)
+            applyAttr = attributes(child)
+            parallax = Union{Parallax, Effect}[]
+            
+            for data in children(child)
+                typ = data["__name"]
+                if typ == "parallax"
+                    push!(parallax, Parallax(attributes(data)))
 
-                parallax = Union{Parallax, Effect}[]
-                for (typ, d) in children(a)
-                    if typ == "parallax"
-                        push!(parallax, Parallax(d))
-
-                    else
-                        push!(parallax, Effect(typ, d))
-                    end
+                else
+                    push!(parallax, Effect(typ, attributes(data)))
                 end
-
-                push!(backdrops, Apply(applyAttr, parallax))
             end
+
+            push!(backdrops, Apply(applyAttr, parallax))
 
         else
-            for e in packIfDict(data)
-                push!(backdrops, Effect(styleType, e))
-            end
+            push!(backdrops, Effect(styleType, attributes(child)))
         end
     end
 
@@ -130,26 +124,14 @@ function loadEntities(roomData::Dict{String, Any}, constructor::Union{Type{Entit
     key = constructor == Entity ? "entities" : "triggers"
     entities = constructor[]
 
-    for (entityName, entityData) in get(roomData, key, [])
-        # Special cases
-        if entityName == "offsetX" || entityName == "offsetY"
-            continue
-    
-        else
-            for data in packIfDict(entityData)
-                id = get(data, "id", -1)
-                id = isa(id, Integer) ? id : 0
-                delete!(data, "id")
+    for child in children(findChildWithName(roomData, key))
+        id = get(child, "id", -1)
+        id = isa(id, Integer) ? id : 0
+        delete!(child, "id")
 
-                if haskey(data, "node")
-                    data["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in packIfDict(data["node"])]
-                end
+        child["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in children(child)]
 
-                delete!(data, "node")
-
-                push!(entities, constructor(entityName, data, id))
-            end
-        end
+        push!(entities, constructor(child["__name"], attributes(child), id))
     end
 
     return entities
@@ -159,12 +141,8 @@ function loadDecals(roomData::Dict{String, Any}, fg::Bool=true)
     decals = Decal[]
     key = fg ? "fgdecals" : "bgdecals"
 
-    for (decalName, decalData) in get(roomData, key, [])
-        if decalName != "offsetX" && decalName != "offsetY" && decalName != "tileset" && decalName != "exportMode"
-            for data in packIfDict(decalData)
-                push!(decals, Decal(data["texture"], data["x"], data["y"], data["scaleX"], data["scaleY"]))
-            end
-        end
+    for child in children(findChildWithName(roomData, key))
+        push!(decals, Decal(child["texture"], child["x"], child["y"], child["scaleX"], child["scaleY"]))
     end
 
     return decals
@@ -177,9 +155,9 @@ function loadRoom(roomData::Dict{String, Any})
     entities = loadEntities(roomData, Entity)
     triggers = loadEntities(roomData, Trigger)
 
-    fgTilesRaw = get(roomData["solids"], "innerText", "")
-    bgTilesRaw = get(roomData["bg"], "innerText", "")
-    objTilesRaw = get(get(Dict{String, Any}, roomData, "objtiles"), "innerText", "")
+    fgTilesRaw = get(findChildWithName(Dict{String, Any}, roomData, "solids"), "innerText", "")
+    bgTilesRaw = get(findChildWithName(Dict{String, Any}, roomData, "bg"), "innerText", "")
+    objTilesRaw = get(findChildWithName(Dict{String, Any}, roomData, "objtiles"), "innerText", "")
 
     fgTiles = Tiles(fgTilesRaw)
     bgTiles = Tiles(bgTilesRaw)
@@ -236,12 +214,8 @@ end
 function loadFillerRects(fillerData::Dict{String, Any})
     fillers = Filler[]
 
-    for (type, data) in fillerData
-        if type == "rect"
-            for r in packIfDict(data)
-                push!(fillers, Filler(r["x"], r["y"], r["w"], r["h"]))
-            end
-        end
+    for child in children(fillerData)
+        push!(fillers, Filler(child["x"], child["y"], child["w"], child["h"]))
     end
 
     return fillers
@@ -249,18 +223,17 @@ end
 
 
 function loadMap(map::Dict{String, Any})
-    mapData = map["Map"]
     package = map["_package"]
-    roomsData = get(Array{Dict{String, Any}, 1}, mapData["levels"], "level")
 
-    style = get(Dict{String, Any}, mapData, "Style")
+    roomsData = findChildWithName(map, "levels")
+    style = findChildWithName(map, "Style")
     
-    fgStyle = loadBackdrops(get(Dict{String, Any}, style, "Foregrounds"))
-    bgStyle = loadBackdrops(get(Dict{String, Any}, style, "Backgrounds"))
+    fgStyle = loadBackdrops(findChildWithName(style, "Foregrounds"))
+    bgStyle = loadBackdrops(findChildWithName(style, "Backgrounds"))
 
-    fillerRects = loadFillerRects(get(Dict{String, Any}, mapData, "Filler"))
+    fillerRects = loadFillerRects(findChildWithName(map, "Filler"))
 
-    rooms = loadRoom.(packIfDict(roomsData))
+    rooms = loadRoom.(children(roomsData))
 
     return Map(package, rooms, Style(fgStyle, bgStyle), fillerRects)
 end

@@ -7,25 +7,62 @@ mutable struct Side
     Side(map::Map, data::Dict{String, Any}=Dict{String, Any}()) = new(map, data)
 end
 
+decoderBlacklist = String[
+    "Filler", "Style", "levels"
+]
+
 Base.:(==)(lhs::Side, rhs::Side) = Dict(lhs) == Dict(rhs)
 Base.hash(s::Side) = hash(Dict(s))
 
 function Base.Dict(s::Side)
     data = Dict(s.map)
-    encodeMetadata!(s.data, data)
+    encodeMetadata!(data, s.data)
 
     return data
+end
+
+function loadDataAsDict!(target::Dict{String, Any}, data::Dict{String, Any})
+    name = data["__name"]
+    target[name] = Dict{String, Any}()
+
+    for (attr, value) in attributes(data)
+        target[name][attr] = value
+    end
+
+    for child in children(data)
+        loadDataAsDict!(target[name], child)
+    end
+end
+
+function dictAsEncodedData(name::String, data::Dict{String, Any})
+    res = Dict{String, Any}(
+        "__name" => name,
+        "__children" => Dict{String, Any}[]
+    )
+
+    for (k, v) in data
+        if isa(v, Dict)
+            push!(res["__children"], dictAsEncodedData(k, v))
+
+        else
+            res[k] = v
+        end
+    end
+
+    if isempty(res["__children"])
+        delete!(res, "__children")
+    end
+
+    return res
 end
 
 function loadMetadata(data::Dict{String, Any})
     res = Dict{String, Any}()
 
-    for (attr, value) in data["Map"]
-        if attr == "levels" || attr == "Style" || attr == "Filler"
-            continue
+    for child in children(data)
+        if !(child["__name"] in decoderBlacklist)
+            loadDataAsDict!(res, child)
         end
-
-        res[attr] = value
     end
 
     return res
@@ -36,26 +73,9 @@ function loadSide(data::Dict{String, Any})
     return Side(loadMap(data), loadMetadata(data))
 end
 
-function encodeMetadata!(data::Dict{String, Any}, res::Dict{String, Any}=Dict{String, Any}())
-    for (attr, value) in data
-        if isa(value, Dict) || isa(value, Array)
-            values = packIfDict(value)
-
-            if !haskey(res, "__children")
-                res["__children"] = Dict{String, Any}[]
-            end
-
-            for v in values
-                push!(res["__children"], Dict{String, Any}(
-                    "__name" => attr
-                ))
-
-                encodeMetadata!(v, res["__children"][end])
-            end
-
-        else
-            res[attr] = value
-        end
+function encodeMetadata!(target::Dict{String, Any}, data::Dict{String, Any})
+    for (k, v) in data
+        push!(target["__children"], dictAsEncodedData(k, v))
     end
 end
 

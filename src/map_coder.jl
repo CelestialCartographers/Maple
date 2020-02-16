@@ -149,10 +149,11 @@ function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Dict{
   end
 end
 
-function decodeElement(fh::IOStream, parent::Dict{String, Any}, lookup::Array{String, 1})
-  element = Dict{String, Any}()
+function decodeElement(fh::IOStream, lookup::Array{String, 1})
   name = look(lookup, fh)
   attributeCount = read(fh, UInt8)
+
+  element = Dict{String, Any}("__name" => name)
 
   for i in 1:attributeCount
     key = look(lookup, fh)
@@ -164,20 +165,14 @@ function decodeElement(fh::IOStream, parent::Dict{String, Any}, lookup::Array{St
 
   elementCount = read(fh, UInt16)
 
-  if haskey(parent, name)
-    if !isa(parent[name], Array)
-      parent[name] = Dict{String,Any}[parent[name]]
+  if elementCount > 0
+    element["__children"] = Any[]
+    for i in 1:elementCount
+      push!(element["__children"], decodeElement(fh, lookup))
     end
-
-    push!(parent[name], element)
-
-  else
-    parent[name] = element
   end
 
-  for i in 1:elementCount
-    decodeElement(fh, element, lookup)
-  end
+  return element
 end
 
 function decodeMap(fn::String, checkHeader::Bool=true)
@@ -195,10 +190,10 @@ function decodeMap(fn::String, checkHeader::Bool=true)
     push!(lookup, readString(fh))
   end
 
-  res = Dict{String, Any}()
-  decodeElement(fh, res, lookup)
+  res = decodeElement(fh, lookup)
   res["_package"] = package
   close(fh)
+
   return res
 end
 
@@ -292,35 +287,28 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
   end
 end
 
-# Helper functions for quirks with the decoder
-# Children are stored as singular dictionaries or arrays of dics
-# Everything else are the actuall attributes of the element
-
-function attributes(data::Dict{String, Any})
-  res = Dict{String, Any}()
-
-  for (k, v) in data
-    if !isa(v, Dict) && !isa(v, Array)
-      res[k] = v
-    end
-  end
-
-  return res
+function attributes(element::Dict{String, Any})
+  return Dict{String, Any}((k, v) for (k, v) in element if !startswith(k, "__"))
 end
 
-function children(data::Dict{String, Any})
-  res = Tuple{String, Any}[]
+function children(element::Dict{String, Any})
+  return get(Array{Any, 1}, element, "__children")
+end
 
-  for (k, v) in data
-    if isa(v, Dict)
-      push!(res, (k, v))
+function children(element::Nothing)
+  return Any[]
+end
 
-    elseif isa(v, Array)
-      for d in v
-        push!(res, (k, d))
-      end
+function findChildWithName(element::Dict{String, Any}, name::String)
+  for child in get(Array{Any, 1}, element, "__children")
+    if child["__name"] == name
+      return child
     end
   end
+end
 
-  return res
+function findChildWithName(default::Union{Function, Type}, element::Dict{String, Any}, name::String)
+  res = findChildWithName(element, name)
+
+  return res === nothing ? default() : res
 end
