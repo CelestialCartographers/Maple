@@ -129,7 +129,11 @@ function loadEntities(roomData::Dict{String, Any}, constructor::Union{Type{Entit
         id = isa(id, Integer) ? id : 0
         delete!(child, "id")
 
-        child["nodes"] = Tuple{Integer, Integer}[(node["x"], node["y"]) for node in children(child)]
+        nodesRaw = children(child)
+
+        if !isempty(nodesRaw)
+            child["nodes"] = Tuple{Integer, Integer}[(Int(node["x"]), Int(node["y"])) for node in nodesRaw]
+        end
 
         push!(entities, constructor(child["__name"], attributes(child), id))
     end
