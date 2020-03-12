@@ -124,7 +124,7 @@ function loadEntities(roomData::Dict{String, Any}, constructor::Union{Type{Entit
     key = constructor == Entity ? "entities" : "triggers"
     entities = constructor[]
 
-    for child in children(findChildWithName(roomData, key))
+    for child in children(findChildWithName(Dict{String, Any}, roomData, key))
         id = get(child, "id", -1)
         id = isa(id, Integer) ? id : 0
         delete!(child, "id")
@@ -145,7 +145,7 @@ function loadDecals(roomData::Dict{String, Any}, fg::Bool=true)
     decals = Decal[]
     key = fg ? "fgdecals" : "bgdecals"
 
-    for child in children(findChildWithName(roomData, key))
+    for child in children(findChildWithName(Dict{String, Any}, roomData, key))
         push!(decals, Decal(child["texture"], child["x"], child["y"], child["scaleX"], child["scaleY"]))
     end
 
@@ -229,13 +229,13 @@ end
 function loadMap(map::Dict{String, Any})
     package = map["_package"]
 
-    roomsData = findChildWithName(map, "levels")
-    style = findChildWithName(map, "Style")
+    roomsData = findChildWithName(Dict{String, Any}, map, "levels")
+    style = findChildWithName(Dict{String, Any}, map, "Style")
     
-    fgStyle = loadBackdrops(findChildWithName(style, "Foregrounds"))
-    bgStyle = loadBackdrops(findChildWithName(style, "Backgrounds"))
+    fgStyle = loadBackdrops(findChildWithName(Dict{String, Any}, style, "Foregrounds"))
+    bgStyle = loadBackdrops(findChildWithName(Dict{String, Any}, style, "Backgrounds"))
 
-    fillerRects = loadFillerRects(findChildWithName(map, "Filler"))
+    fillerRects = loadFillerRects(findChildWithName(Dict{String, Any}, map, "Filler"))
 
     rooms = loadRoom.(children(roomsData))
 
