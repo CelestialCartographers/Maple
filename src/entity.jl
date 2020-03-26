@@ -43,7 +43,7 @@ BadelineChaserBarrier = DarkChaserEnd
 GoldenStrawberryNoDash = MemorialTextController
 
 @mapdef Entity "badelineBoost" BadelineBoost(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], lockCamera::Bool=true, canSkip::Bool=false, finalCh9Boost::Bool=false, finalCh9GoldenBoost::Bool=false, finalCh9Dialog::Bool=false)
-@mapdef Entity "finalBoss" BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, lockCamera::Bool=true, canChangeMusic::Bool=true)
+@mapdef Entity "finalBoss" BadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, startHit::Bool=false, cameraPastY::Number=120.0, cameraLockY::Bool=true, canChangeMusic::Bool=true)
 
 FinalBoss = BadelineBoss
 
