@@ -47,8 +47,8 @@ Base.@kwdef mutable struct Room
 
     windPattern::String = "None"
 
-    cameraOffsetX::Number = 0
-    cameraOffsetY::Number = 0
+    cameraOffsetX::Number = 0.0
+    cameraOffsetY::Number = 0.0
 end
 
 # Set the fg and bg tiles to the size of the room

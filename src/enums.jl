@@ -482,6 +482,13 @@ const everest_crystal_shatter_trigger_modes = String[
     "Contained"
 ]
 
+const everest_fake_heart_colors = String[
+    "Normal",
+    "BSide",
+    "CSide",
+    "Random"
+]
+
 const music_fade_trigger_directions = String[
     "leftToRight",
     "topToBottom"

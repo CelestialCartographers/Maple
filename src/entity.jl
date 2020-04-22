@@ -137,7 +137,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 @mapdef Entity "slider" Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor")
 
 @mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer, fake::Bool=false, removeCameraTriggers::Bool=false)
-@mapdef Entity "fakeHeart" FakeCrystalHeart(x::Integer, y::Integer)
+@mapdef Entity "fakeHeart" FakeCrystalHeart(x::Integer, y::Integer, color::String="Random")
 @mapdef Entity "dreamHeartGem" DreamCrystalHeart(x::Integer, y::Integer)
 @mapdef Entity "heartGemDoor" HeartDoor(x::Integer, y::Integer, width::Integer=40, requires::Integer=0, startHidden::Bool=false)
 
@@ -146,10 +146,10 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 
 # CrumbleBlock texture exposed by Everest
 @mapdef Entity "crumbleBlock" CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
-@mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
 @mapdef Entity "floatySpaceBlock" FloatySpaceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", disableSpawnOffset::Bool=false)
 @mapdef Entity "crumbleWallOnRumble" CrumbleWallOnRumble(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="m", blendin::Bool=true, persistent::Bool=false)
-@mapdef Entity "fakeBlock" FakeBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
+@mapdef Entity "fakeBlock" FakeBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
 @mapdef Entity "exitBlock" ExitBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tileType::String="3", playTransitionReveal::Bool=false)
 @mapdef Entity "conditionBlock" ConditionBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tileType::String="3", condition::String="Key", conditionID::String="1:1")
 @mapdef Entity "coverupWall" CoverupWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
@@ -160,7 +160,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 @mapdef Entity "introCrusher" IntroCrusher(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", flags::String="1,0b")
 
 # Is actually not resizable, but still has a width for collision purposes
-@pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="1:1,2:2") = Entity("ridgeGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=32, height=32, strawberries=strawberries)
+@pardef RidgeGate(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, strawberries::String="", keys::String="", texture::String="objects/ridgeGate") = Entity("ridgeGate", x=x1, y=y1, nodes=Tuple{Int, Int}[(x2, y2)], width=32, height=32, strawberries=strawberries, keys=keys, texture=texture)
 
 @mapdef Entity "cassetteBlock" CassetteBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, index::Integer=0, tempo::Number=1.0)
 @mapdef Entity "negaBlock" NegaBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)

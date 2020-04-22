@@ -180,6 +180,8 @@ function decodeMap(fn::String, checkHeader::Bool=true)
   if checkHeader
     if readString(fh) != "CELESTE MAP"
       println("Invalid Celeste map file.")
+      close(fh)
+
       return false
     end
   end
