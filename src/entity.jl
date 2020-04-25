@@ -310,6 +310,8 @@ Jellyfish = Glider
 @mapdef Entity "wavedashmachine" WaveDashMachine(x::Integer, y::Integer)
 InternetCafe = WaveDashMachine
 
+@mapdef Entity "everest/customBirdTutorial" EverestCustomBird(x::Integer, y::Integer, birdId::String="", onlyOnce::Bool=false, caw::Bool=true, faceLeft::Bool=true, info::String="TUTORIAL_DREAMJUMP", controls::String="DownRight,+,Dash,tinyarrow,Jump")
+
 blacklistedEntityAttrs = String["nodes"]
 
 function Base.Dict(e::Entity)

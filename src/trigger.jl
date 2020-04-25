@@ -49,6 +49,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "moonGlitchBackgroundTrigger" MoonGlitchBackgroundTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; duration::String="Short", stay::Bool=false, glitch::Bool=true)
 @mapdef Trigger "rumbleTrigger" RumbleTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; manualTrigger::Bool=false, persistent::Bool=false)
 
+@mapdef Trigger "everest/customBirdTutorialTrigger" EverestCustomBirdTutorialTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, birdId::String="", showTutorial::Bool=true)
 @mapdef Trigger "everest/flagTrigger" EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, flag::String="", state::Bool=false, mode::String="OnPlayerEnter", only_once::Bool=false, death_count::Integer=-1)
 @mapdef Trigger "everest/dialogTrigger" EverestDialogTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, endLevel::Bool=false, onlyOnce::Bool=true, dialogId::String="", deathCount::Int=-1)
 @mapdef Trigger "everest/crystalShatterTrigger" EverestCrystalShatterTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="All")

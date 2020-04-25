@@ -250,6 +250,16 @@ const bird_npc_modes = String[
     "None"
 ]
 
+const everest_bird_tutorial_tutorials = String[
+    "TUTORIAL_CLIMB",
+    "TUTORIAL_HOLD",
+    "TUTORIAL_DASH",
+    "TUTORIAL_DREAMJUMP",
+    "TUTORIAL_CARRY",
+    "hyperjump/tutorial00",
+    "hyperjump/tutorial01"
+]
+
 const bonfire_modes = String[
     "Unlit",
     "Lit",
