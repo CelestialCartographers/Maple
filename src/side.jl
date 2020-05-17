@@ -7,7 +7,7 @@ mutable struct Side
     Side(map::Map, data::Dict{String, Any}=Dict{String, Any}()) = new(map, data)
 end
 
-decoderBlacklist = String[
+const decoderBlacklist = String[
     "Filler", "Style", "levels"
 ]
 

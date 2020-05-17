@@ -56,7 +56,7 @@ end
 
 look(lookup, fh) = lookup[read(fh, UInt16) + 1]
 
-decodeTypes = Dict{Integer, Type}(
+const decodeTypes = Dict{Integer, Type}(
   0 => Bool,
   1 => UInt8,
   2 => Int16,
@@ -99,7 +99,7 @@ function encodeRunLength(s::String)
   return res
 end
 
-numTypes = [
+const numTypes = [
   UInt8,
   Int16,
   Int32

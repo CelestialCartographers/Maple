@@ -62,7 +62,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "everest/activateDreamBlocksTrigger" ActivateDreamBlocks(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, fullRoutine::Bool=false)
 ActivateSpaceJams = ActivateDreamBlocks
 
-blacklistedTriggerAttrs = String["nodes"]
+const blacklistedTriggerAttrs = String["nodes"]
 
 function Base.Dict(t::Trigger)
     res = Dict{String, Any}()

@@ -74,7 +74,7 @@ function updateTileSize!(room::Room, center::Char='0', border::Char='0')
     room.objTiles = ObjectTiles(objTiles)
 end
 
-blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "objTiles", "entities", "triggers"]
+const blacklistedRoomAttrs = String["position", "size", "color", "fgDecals", "bgDecals", "fgTiles", "bgTiles", "objTiles", "entities", "triggers"]
 
 function Base.Dict(r::Room)
     res = Dict{String, Any}()

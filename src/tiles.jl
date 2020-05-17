@@ -1,4 +1,4 @@
-tile_fg_names = Dict{Any, Any}(
+const tile_fg_names = Dict{Any, Any}(
     '0' => "Air",
     '1' => "Dirt",
     '3' => "Snow",
@@ -52,7 +52,7 @@ tile_fg_names = Dict{Any, Any}(
     "Template" => 'z'    
 )
 
-tile_bg_names = Dict{Any, Any}(
+const tile_bg_names = Dict{Any, Any}(
     '0' => "Air",
     '1' => "Dirt",
     '2' => "Brick",
@@ -88,14 +88,14 @@ tile_bg_names = Dict{Any, Any}(
     "Template" => 'z'
 )
 
-valid_fg_tiles = Char[
+const valid_fg_tiles = Char[
     '0', '1', '3', '4', '5', '6', '7',
     '8', '9', 'a', 'b', 'c', 'd', 'e',
     'f', 'g', 'G', 'h', 'i', 'j', 'k',
     'l'
 ]
 
-valid_bg_tiles = Char[
+const valid_bg_tiles = Char[
     '0', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', 'a', 'b', 'c', 'd'
 ]
