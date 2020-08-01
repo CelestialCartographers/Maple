@@ -47,7 +47,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "blackholeStrength" BlackHoleStrengthTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; strength::String="Mild")
 @mapdef Trigger "detachFollowersTrigger" DetachFollowersTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; @kwesc(:global)::Bool=true)
 @mapdef Trigger "moonGlitchBackgroundTrigger" MoonGlitchBackgroundTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; duration::String="Short", stay::Bool=false, glitch::Bool=true)
-@mapdef Trigger "rumbleTrigger" RumbleTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; manualTrigger::Bool=false, persistent::Bool=false)
+@mapdef Trigger "rumbleTrigger" RumbleTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; manualTrigger::Bool=false, persistent::Bool=false, constrainHeight::Bool=false)
 
 @mapdef Trigger "everest/customBirdTutorialTrigger" EverestCustomBirdTutorialTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, birdId::String="", showTutorial::Bool=true)
 @mapdef Trigger "everest/flagTrigger" EverestFlagTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, flag::String="", state::Bool=false, mode::String="OnPlayerEnter", only_once::Bool=false, death_count::Integer=-1)
@@ -59,7 +59,7 @@ Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 @mapdef Trigger "everest/coreModeTrigger" EverestCoreModeTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="None")
 @mapdef Trigger "everest/musicLayerTrigger" EverestMusicLayerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, layers::String="", enable::Bool=false)
 @mapdef Trigger "everest/smoothCameraOffsetTrigger" EverestSmoothCameraOffsetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, offsetXFrom::Number=0.0, offsetXTo::Number=0.0, offsetYFrom::Number=0.0, offsetYTo::Number=0.0, positionMode::String="NoEffect", onlyOnce::Bool=false, xOnly::Bool=false, yOnly::Bool=false)
-@mapdef Trigger "everest/activateDreamBlocksTrigger" ActivateDreamBlocks(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, fullRoutine::Bool=false)
+@mapdef Trigger "everest/activateDreamBlocksTrigger" ActivateDreamBlocks(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, fullRoutine::Bool=false, activate::Bool=true, fastAnimation::Bool=false)
 ActivateSpaceJams = ActivateDreamBlocks
 
 const blacklistedTriggerAttrs = String["nodes"]

@@ -136,7 +136,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 
 @mapdef Entity "slider" Slider(x::Integer, y::Integer, clockwise::Bool=true, surface::String="Floor")
 
-@mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer, fake::Bool=false, removeCameraTriggers::Bool=false)
+@mapdef Entity "blackGem" CrystalHeart(x::Integer, y::Integer, fake::Bool=false, removeCameraTriggers::Bool=false, fakeHeartDialog::String="CH9_FAKE_HEART", keepGoingDialog::String="CH9_KEEP_GOING")
 @mapdef Entity "fakeHeart" FakeCrystalHeart(x::Integer, y::Integer, color::String="Random")
 @mapdef Entity "dreamHeartGem" DreamCrystalHeart(x::Integer, y::Integer)
 @mapdef Entity "heartGemDoor" HeartDoor(x::Integer, y::Integer, width::Integer=40, requires::Integer=0, startHidden::Bool=false)
@@ -185,7 +185,7 @@ StarClimbGraphicsController = StarJumpClimbGraphicsController
 @mapdef Entity "blockField" BlockField(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
 StrawberryBlockField = BlockField
 
-@mapdef Entity "bounceBlock" BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
+@mapdef Entity "bounceBlock" BounceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, notCoreMode::Bool=false)
 
 @mapdef Entity "whiteblock" WhiteBlock(x::Integer, y::Integer)
 @mapdef Entity "goldenBlock" GoldenBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight)
@@ -264,6 +264,8 @@ OshiroBoss = FriendlyGhost
 @mapdef Entity "npc" NPC(x::Integer, y::Integer, npc::String="granny_00_house")
 Npc = NPC
 
+@mapdef Entity "SummitBackgroundManager" SummitBackgroundManager(x::Integer, y::Integer, index::Integer=0, cutscene::String="", intro_launch::Bool=false, dark::Bool=false, ambience::String="")
+
 @mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onlyOnce::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
 EverestCustomNpc = EverestCustomNPC
 
@@ -272,7 +274,7 @@ EverestCustomNpc = EverestCustomNPC
 ForsakenCitySatellite = BirdForsakenCityGem
 
 @mapdef Entity "coreMessage" CoreMessage(x::Integer, y::Integer, line::Integer=0)
-@mapdef Entity "everest/coreMessage" EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending")
+@mapdef Entity "everest/coreMessage" EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending", outline::Bool=false)
 @mapdef Entity "memorial" Memorial(x::Integer, y::Integer, dreaming::Bool=false)
 @mapdef Entity "everest/memorial" EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="scenery/memorial/memorial", spacing::Integer=16)
 
