@@ -1,4 +1,4 @@
-mutable struct ObjectTiles
+@valueequals mutable struct ObjectTiles
     data::Array{Integer, 2}
 
     ObjectTiles() = new(fill(-1, (40, 23)))

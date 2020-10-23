@@ -100,7 +100,7 @@ const valid_bg_tiles = Char[
     '7', '8', '9', 'a', 'b', 'c', 'd'
 ]
 
-mutable struct Tiles
+@valueequals mutable struct Tiles
     data::Array{Char, 2}
 
     Tiles() = new(fill('0', (40, 23)))

@@ -2,7 +2,7 @@ include("room.jl")
 include("style.jl")
 include("filler.jl")
 
-mutable struct Map
+@valueequals mutable struct Map
     package::String
     rooms::Array{Room, 1}
     style::Style
@@ -13,8 +13,6 @@ mutable struct Map
     Map(package::String, rooms::Room...) = new(package, rooms, Style(), Filler[])
     Map(package::String, rooms::Array{Room, 1}, style::Style, filler::Array{Filler, 1}=Filler[]) = new(package, rooms, style, filler)
 end
-
-Base.:(==)(lhs::Map, rhs::Map) = Dict(lhs) == Dict(rhs)
 
 function Base.Dict(m::Map)
     return Dict{String, Any}(

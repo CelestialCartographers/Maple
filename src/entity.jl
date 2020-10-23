@@ -1,4 +1,5 @@
-@fieldproxy mutable struct Entity{T}
+# Don't care about the ID when comparing
+@valueequals [id] @fieldproxy mutable struct Entity{T}
     name::String
     data::Dict{String, Any}
 
@@ -10,9 +11,6 @@
     Entity(name::String, data::Dict{String, Any}, id::Integer=nextEntityId()) = new{Symbol(name)}(name, data, id)
     Entity(name::String, id::Integer=nextEntityId(); kwargs...) = new{Symbol(name)}(name, Dict{String, Any}(String(k) => v for (k, v) in kwargs), id)
 end
-
-# Don't care about the ID
-Base.:(==)(lhs::Entity{T}, rhs::Entity{T}) where T = lhs.data == rhs.data
 
 entityIdSerial = 0
 
@@ -265,6 +263,8 @@ OshiroBoss = FriendlyGhost
 Npc = NPC
 
 @mapdef Entity "SummitBackgroundManager" SummitBackgroundManager(x::Integer, y::Integer, index::Integer=0, cutscene::String="", intro_launch::Bool=false, dark::Bool=false, ambience::String="")
+
+@mapdef Entity "cutsceneNode" CutsceneNode(x::Integer, y::Integer, nodeName::String="")
 
 @mapdef Entity "everest/npc" EverestCustomNPC(x::Integer, y::Integer, sprite::String="player/idle", spriteRate::Int=1, dialogId::String="", onlyOnce::Bool=true, endLevel::Bool=false, flipX::Bool=false, flipY::Bool=false, approachWhenTalking::Bool=false, approachDistance::Int=16, indicatorOffsetX::Int=0, indicatorOffsetY::Int=0)
 EverestCustomNpc = EverestCustomNPC

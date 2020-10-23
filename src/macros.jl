@@ -9,6 +9,8 @@ end
 
 unwrapType(s::Symbol)::Symbol = s
 
+# Macro to proxy indexing of a type to one of its fields
+
 macro fieldproxy(expr, field::Symbol=:data)
     while expr.head == :macrocall
         expr = length(expr.args) >= 3 ? expr.args[3] : expr.args[2]
@@ -38,6 +40,8 @@ macro fieldproxy(expr, field::Symbol=:data)
         Base.length(t::$T) = length(getfield(t, $qf))
     end |> esc
 end
+
+# Macro to make generating entities and triggers easier
 
 firstchild(expr::Expr) = expr.args[findfirst(a -> !isa(a, LineNumberNode), expr.args)]
 unwrapBlock(expr::Expr) = expr.head == :block ? unwrapBlock(firstchild(expr)) : expr
@@ -108,4 +112,85 @@ end
 # Used to escape normally illegal keywords like 'global'.
 macro kwesc(n::QuoteNode)
     return n.value |> esc
+end
+
+# Macro to automatically generate == and hash() comparing all fields in a type
+
+function addValid(fields, f, filter)
+    if f ∉ filter
+        push!(fields, f)
+    end
+end
+
+function getFields(args, filter)
+    fields = Symbol[]
+    for f in args
+        if f isa Symbol
+            addValid(fields, f, filter)
+        elseif f isa Expr && f.head == :(::)
+            addValid(fields, f.args[1], filter)
+        end
+    end
+    return fields
+end
+
+function equals(fields::Array{Symbol}, i=length(fields))
+    if i == 1
+        :(lhs.$(fields[i]) == rhs.$(fields[i]))
+    else
+        :($(equals(fields, i - 1)) && lhs.$(fields[i]) == rhs.$(fields[i]))
+    end
+end
+
+function hashes(fields::Array{Symbol}, i=length(fields))
+    if i == 1
+        :(hash(s.$(fields[i]), h))
+    else
+        :(hash(s.$(fields[i]), $(hashes(fields, i - 1))))
+    end
+end
+
+function unwrapTypeBlock(expr)
+    if expr.head == :struct
+        return expr
+    elseif expr.head == :block
+        for ex in expr.args
+            if ex isa Expr
+                ex_u = unwrapTypeBlock(ex)
+                if ex_u !== nothing
+                    return ex_u
+                end
+            end
+        end
+    end
+    return nothing
+end
+
+macro valueequals(filter, expr)
+    expr = macroexpand(__module__, expr)
+    orig_expr = expr
+    expr = unwrapTypeBlock(expr)
+    @assert expr !== nothing
+
+    @assert filter.head == :vect
+    filter_arr = filter.args
+
+    @assert expr.head == :struct
+    T = unwrapType(expr.args[2])
+    fields = getFields(expr.args[3].args, filter_arr)
+
+    if length(fields) == 0
+        orig_expr |> esc
+    else
+        quote
+            $orig_expr
+
+            @inline Base.:(==)(lhs::$T, rhs::$T) = $(equals(fields))
+            @inline Base.hash(s::$T, h::UInt) = $(hashes(fields))
+        end |> esc
+    end
+end
+
+macro valueequals(expr)
+    :(@valueequals [] $expr) |> esc
 end

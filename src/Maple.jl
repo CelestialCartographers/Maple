@@ -11,6 +11,6 @@ include("map_coder.jl")
 
 # export functions manually
 export encodeMap, loadMap, encodeSide, loadSide, entityMap, getRoomByName, getSideName
-export @pardef, @kwproxy, @mapdef
+export @pardef, @kwproxy, @mapdef, @valueequals
 
 end

@@ -1,6 +1,6 @@
 include("map.jl")
 
-mutable struct Side
+@valueequals mutable struct Side
     map::Map
     data::Dict{String, Any}
 
@@ -10,9 +10,6 @@ end
 const decoderBlacklist = String[
     "Filler", "Style", "levels"
 ]
-
-Base.:(==)(lhs::Side, rhs::Side) = Dict(lhs) == Dict(rhs)
-Base.hash(s::Side) = hash(Dict(s))
 
 function Base.Dict(s::Side)
     data = Dict(s.map)

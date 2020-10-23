@@ -7,7 +7,7 @@ include("nodes.jl")
 include("entity_map.jl")
 include("enums.jl")
 
-Base.@kwdef mutable struct Room
+@valueequals Base.@kwdef mutable struct Room
     fgDecals::Array{Decal, 1} = Decal[]
     bgDecals::Array{Decal, 1} = Decal[]
 

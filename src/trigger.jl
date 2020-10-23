@@ -1,4 +1,5 @@
-@fieldproxy mutable struct Trigger{T}
+# Don't care about the ID when comparing
+@valueequals [id] @fieldproxy mutable struct Trigger{T}
     name::String
     data::Dict{String, Any}
 
@@ -13,9 +14,6 @@ end
 
 const defaultTriggerWidth = 16
 const defaultTriggerHeight = 16
-
-# Don't care about the ID
-Base.:(==)(lhs::Trigger{T}, rhs::Trigger{T}) where T = lhs.data == rhs.data
 
 
 @mapdef Trigger "altMusicTrigger" AltMusicTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight; track::String="", resetOnLeave::Bool=true)

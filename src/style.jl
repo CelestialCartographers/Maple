@@ -2,14 +2,14 @@ abstract type Backdrop
 
 end
 
-@fieldproxy mutable struct Parallax <: Backdrop
+@valueequals @fieldproxy mutable struct Parallax <: Backdrop
     data::Dict{String, Any}
 
     Parallax(data::Dict{String, Any}) = new(data)
     Parallax(; kwargs...) = new(Dict(string(a) => b for (a, b) in kwargs))
 end
 
-@fieldproxy mutable struct Effect{T} <: Backdrop
+@valueequals @fieldproxy mutable struct Effect{T} <: Backdrop
     name::String
     data::Dict{String, Any}
 
@@ -38,7 +38,7 @@ end
 @mapdef Effect "corestarsfg" CoreStarFg(only::String="*", exclude::String="")
 @mapdef Effect "godrays" GodRays(only::String="*", exclude::String="")
 @mapdef Effect "bossStarField" BossStarField(only::String="*", exclude::String="")
-@mapdef Effect "windsnow" Wind(only::String="*", exclude::String="")
+@mapdef Effect "windsnow" Wind(only::String="*", exclude::String="", color::String="")
 @mapdef Effect "planets" Planets(only::String="*", exclude::String="", count::Number=32, size::String="small", color::String="", scrollx::Number=1.0, scrolly::Number=1.0)
 @mapdef Effect "starfield" Starfield(only::String="*", exclude::String="", color::String="", scrollx::Number=1.0, scrolly::Number=1.0, speed::Number=1.0)
 @mapdef Effect "petals" Petals(only::String="*", exclude::String="")
@@ -47,9 +47,6 @@ end
 @mapdef Effect "stardust" StarDust(only::String="*", exclude::String="")
 @mapdef Effect "rain" Rain(only::String="*", exclude::String="", color::String="161933") # Color added by Everest
 @mapdef Effect "blackhole" BlackHole(only::String="*", exclude::String="")
-
-Base.:(==)(lhs::Parallax, rhs::Parallax) = lhs.data == rhs.data
-Base.:(==)(lhs::Effect, rhs::Effect) = lhs.name == rhs.name && lhs.data == rhs.data
 
 mutable struct Style
     foregrounds::Array{Backdrop, 1}
