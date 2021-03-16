@@ -3,9 +3,9 @@ __precompile__()
 module Maple
 
 include("macros.jl")
+include("map_coder.jl")
 include("metadata.jl")
 include("side.jl")
-include("map_coder.jl")
 
 @exportalltypes
 

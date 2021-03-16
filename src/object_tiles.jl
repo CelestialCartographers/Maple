@@ -1,5 +1,5 @@
 @valueequals mutable struct ObjectTiles
-    data::Array{Integer, 2}
+    data::Array{Int, 2}
 
     ObjectTiles() = new(fill(-1, (40, 23)))
 

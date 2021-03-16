@@ -1,6 +1,15 @@
 using JSON
 
-function getVarLength(fh::IOStream)
+@fieldproxy struct DecodedElement
+  name::String
+  attributes::Dict{String, Any}
+  children::Array{DecodedElement, 1}
+
+  DecodedElement() = new("", Dict{String, Any}(), DecodedElement[])
+  DecodedElement(name::String, attributes::Dict{String, Any}, children::Array{DecodedElement, 1}) = new(name, attributes, children)
+end attributes
+
+function getVarLength(fh::IOBuffer)
   res = 0
   count = 0
   while true
@@ -23,7 +32,7 @@ function writeVarLength(fh::IOBuffer, n::Integer)
   write(fh, res)
 end
 
-function readString(fh::IOStream)
+function readString(fh::IOBuffer)
   length = getVarLength(fh)
   res = ""
 
@@ -40,38 +49,38 @@ function writeString(fh::IOBuffer, s::String)
   write(fh, s)
 end
 
-function readRunLengthEncoded(fh::IOStream)
+function readRunLengthEncoded(fh::IOBuffer)
   byteCount = read(fh, Int16)
-  data = UInt8[]
-  res = ""
-  for i = 1:byteCount
-    append!(data, read(fh, UInt8))
-  end
-  for i = 1:2:length(data)
+  data = Array{UInt8, 1}(undef, byteCount)
+  parts = Array{String, 1}(undef, div(byteCount, 2))
+  partIndex = 1
+  readbytes!(fh, data, byteCount)
+  for i = 1:2:byteCount
     times, char = data[i], data[i + 1]
-    res *= string(Char(char)) ^ times
+    parts[partIndex] = string(Char(char)) ^ times
+    partIndex += 1
   end
-  return res
+  return join(parts)
 end
 
 look(lookup, fh) = lookup[read(fh, UInt16) + 1]
 
-const decodeTypes = Dict{Integer, Type}(
-  0 => Bool,
-  1 => UInt8,
-  2 => Int16,
-  3 => Int32,
-  4 => Float32
-)
-
-function decodeValue(typ::Any, lookup::Array{String, 1}, fh::IOStream)
-  if 0 <= typ <= 4
-    return read(fh, decodeTypes[typ])
-  elseif typ == 5
+function decodeValue(type::UInt8, lookup::Array{String, 1}, fh::IOBuffer)
+  if type == 0
+    return read(fh, Bool)
+  elseif type == 1
+    return read(fh, UInt8)
+  elseif type == 2
+    return read(fh, Int16)
+  elseif type == 3
+    return read(fh, Int32)
+  elseif type == 4
+    return read(fh, Float32)
+  elseif type == 5
     return look(lookup, fh)
-  elseif typ == 6
+  elseif type == 6
     return readString(fh)
-  elseif typ == 7
+  elseif type == 7
     return readRunLengthEncoded(fh)
   end
 end
@@ -99,26 +108,23 @@ function encodeRunLength(s::String)
   return res
 end
 
-const numTypes = [
-  UInt8,
-  Int16,
-  Int32
-]
-
 function encodeValue(buffer::IOBuffer, key::String, value::Bool, lookup::Dict{String, Int})
   write(buffer, 0x0)
   write(buffer, value)
 end
 
+# Number types are UInt8, Int16, Int32, prefered in that order
 function encodeValue(buffer::IOBuffer, key::String, value::Integer, lookup::Dict{String, Int})
-  for (i, t) in enumerate(numTypes)
-    if typemin(t) <= value <= typemax(t)
-      write(buffer, UInt8(i))
-      write(buffer, t(value))
-     
-      break
+    if typemin(UInt8) <= value <= typemax(UInt8)
+      write(buffer, UInt8(1))
+      write(buffer, UInt8(value))
+    elseif typemin(Int16) <= value <= typemax(Int16)
+      write(buffer, UInt8(2))
+      write(buffer, Int16(value))
+    elseif typemin(Int32) <= value <= typemax(Int32)
+      write(buffer, UInt8(3))
+      write(buffer, Int32(value))
     end
-  end
 end
 
 function encodeValue(buffer::IOBuffer, key::String, value::AbstractFloat, lookup::Dict{String, Int})
@@ -149,52 +155,51 @@ function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Dict{
   end
 end
 
-function decodeElement(fh::IOStream, lookup::Array{String, 1})
+function decodeElement(fh::IOBuffer, lookup::Array{String, 1})
   name = look(lookup, fh)
-  attributeCount = read(fh, UInt8)
 
-  element = Dict{String, Any}("__name" => name)
+  attributeCount = read(fh, UInt8)
+  attributes = Dict{String, Any}()
 
   for i in 1:attributeCount
     key = look(lookup, fh)
-    typ = read(fh, UInt8)
+    type = read(fh, UInt8)
 
-    value = decodeValue(typ, lookup, fh)
-    element[key] = value
+    value = decodeValue(type, lookup, fh)
+    attributes[key] = value
   end
 
-  elementCount = read(fh, UInt16)
+  childCount = read(fh, UInt16)
+  children = Array{DecodedElement, 1}(undef, childCount)
 
-  if elementCount > 0
-    element["__children"] = Any[]
-    for i in 1:elementCount
-      push!(element["__children"], decodeElement(fh, lookup))
-    end
+  for i in 1:childCount
+    children[i] = decodeElement(fh, lookup)
   end
+
+  element = DecodedElement(name, attributes, children)
 
   return element
 end
 
 function decodeMap(fn::String, checkHeader::Bool=true)
-  fh = open(fn, "r")
+  buffer = IOBuffer(open(read, fn))
   if checkHeader
-    if readString(fh) != "CELESTE MAP"
+    if readString(buffer) != "CELESTE MAP"
       println("Invalid Celeste map file.")
-      close(fh)
+      close(buffer)
 
       return false
     end
   end
-  package = readString(fh)
-  lookupLength = read(fh, Int16)
+  package = readString(buffer)
+  lookupLength = read(buffer, Int16)
   lookup = String[]
   for i = 1:lookupLength
-    push!(lookup, readString(fh))
+    push!(lookup, readString(buffer))
   end
 
-  res = decodeElement(fh, lookup)
-  res["_package"] = package
-  close(fh)
+  res = decodeElement(buffer, lookup)
+  res.attributes["package"] = package
 
   return res
 end
@@ -209,24 +214,26 @@ function decodeAllMaps(maps::String, output::String)
   end
 end
 
-function populateEncodeKeyNames!(d::Dict{String, Any}, seen::Dict{String, Integer})
+function populateEncodeKeyNames!(d::Dict{String, Any}, seen::Set{String})
   name = d["__name"]
-  seen[name] = get(seen, name, 0) + 1
-
-  children = get(Array{Dict{String, Any}, 1}, d, "__children")
+  push!(seen, name)
 
   for (k, v) in d
     if !startswith(k, "__")
-      seen[k] = get(seen, k, 0) + 1
+      push!(seen, k)
     end
 
     if isa(v, String) && k != "innerText"
-      seen[v] = get(seen, v, 0) + 1
+      push!(seen, v)
     end
   end
 
-  for child in children
-    populateEncodeKeyNames!(child, seen)
+  children = get(d, "__children", nothing)
+
+  if children !== nothing
+    for child in children
+      populateEncodeKeyNames!(child, seen)
+    end
   end
 end
 
@@ -267,10 +274,10 @@ function encodeValue(buffer::IOBuffer, element::Dict{String, Any}, lookup::Dict{
 end
 
 function encodeMap(map::Dict{String, Any}, outfile::String)
-  seen = Dict{String, Integer}()
+  seen = Set{String}()
   populateEncodeKeyNames!(map, seen)
 
-  lookup = String[k for (k, v) in seen]
+  lookup = collect(seen)
   lookupDict = Dict{String, Int}(s => i for (i, s) in enumerate(lookup))
   buffer = IOBuffer()
 
@@ -289,27 +296,27 @@ function encodeMap(map::Dict{String, Any}, outfile::String)
   end
 end
 
-function attributes(element::Dict{String, Any})
-  return Dict{String, Any}((k, v) for (k, v) in element if !startswith(k, "__"))
+function attributes(element::DecodedElement)
+  return element.attributes
 end
 
-function children(element::Dict{String, Any})
-  return get(Array{Any, 1}, element, "__children")
+function children(element::DecodedElement)
+  return element.children
 end
 
 function children(element::Nothing)
-  return Any[]
+  return DecodedElement[]
 end
 
-function findChildWithName(element::Dict{String, Any}, name::String)
-  for child in get(Array{Any, 1}, element, "__children")
-    if child["__name"] == name
+function findChildWithName(element::DecodedElement, name::String)
+  for child in element.children
+    if child.name == name
       return child
     end
   end
 end
 
-function findChildWithName(default::Union{Function, Type}, element::Dict{String, Any}, name::String)
+function findChildWithName(default::Union{Function, Type}, element::DecodedElement, name::String)
   res = findChildWithName(element, name)
 
   return res === nothing ? default() : res

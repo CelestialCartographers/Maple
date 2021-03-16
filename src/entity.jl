@@ -144,7 +144,7 @@ MoonZipMover(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, widt
 
 # CrumbleBlock texture exposed by Everest
 @mapdef Entity "crumbleBlock" CrumbleBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, texture::String="default")
-@mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
+@mapdef Entity "fakeWall" FakeWall(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3")
 @mapdef Entity "floatySpaceBlock" FloatySpaceBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", disableSpawnOffset::Bool=false)
 @mapdef Entity "crumbleWallOnRumble" CrumbleWallOnRumble(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="m", blendin::Bool=true, persistent::Bool=false)
 @mapdef Entity "fakeBlock" FakeBlock(x::Integer, y::Integer, width::Integer=defaultBlockWidth, height::Integer=defaultBlockHeight, tiletype::String="3", playTransitionReveal::Bool=false)
@@ -275,8 +275,8 @@ ForsakenCitySatellite = BirdForsakenCityGem
 
 @mapdef Entity "coreMessage" CoreMessage(x::Integer, y::Integer, line::Integer=0)
 @mapdef Entity "everest/coreMessage" EverestCoreMessage(x::Integer, y::Integer, line::Integer=0, dialog::String="app_ending", outline::Bool=false)
-@mapdef Entity "memorial" Memorial(x::Integer, y::Integer, dreaming::Bool=false)
-@mapdef Entity "everest/memorial" EverestMemorial(x::Integer, y::Integer, dreaming::Bool=false, dialog::String="MEMORIAL", sprite::String="scenery/memorial/memorial", spacing::Integer=16)
+@mapdef Entity "memorial" Memorial(x::Integer, y::Integer)
+@mapdef Entity "everest/memorial" EverestMemorial(x::Integer, y::Integer, dialog::String="MEMORIAL", sprite::String="scenery/memorial/memorial", spacing::Integer=16)
 
 @mapdef Entity "payphone" Payphone(x::Integer, y::Integer)
 

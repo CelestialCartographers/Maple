@@ -139,38 +139,40 @@ BgTiles(tiles::Tiles, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(tiles, val
 BgTiles(tiles::Array{Char, 2}, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(tiles), valid)
 BgTiles(s::String, valid::Array{Char, 1}=valid_bg_tiles) = FgTiles(Tiles(s), valid)
 
+function getRelevantColumnCount(data::Matrix{T}, emptyValue::T) where T
+    rows, cols = size(data)
+    columns = fill(0, rows)
+
+    for y in 1:rows
+        columns[y] = something(findlast(n -> n != emptyValue, view(data, y, 1:cols)), 0)
+    end
+
+    return columns
+end
+
+function getRelevantRowCount(columnLengths::Array{Int, 1})
+    return something(findlast(n -> n > 0, columnLengths), 0)
+end
+
 # All trailing '0's don't need to be written to be loadable
 # We can also stop when all remaining rows are '0's
-function minimizeTilesString(data::Matrix{T}, emptyValue::T='0', separator::Union{Char, String}=',') where T
-    res = String[]
+function minimizeTilesString(data::Matrix{T}, emptyValue::T, separator::Union{Char, String}=',') where T
+    columnLengths = getRelevantColumnCount(data, emptyValue)
+    relevantRows = getRelevantRowCount(columnLengths)
 
-    rows, cols = size(data)
-    relevantRowsCount = 0
+    lines = Array{String, 1}(undef, relevantRows)
 
-    for i in rows:-1:1
-        relevantRowsCount = i
+    for row in 1:relevantRows
+        # String on Char[] is faster than joining with empty string
+        if separator == ""
+            lines[row] = String(view(data, row, 1:columnLengths[row]))
 
-        if !all(data[i, :] .== emptyValue)
-            break
-        end 
-    end
-
-    for i in 1:relevantRowsCount
-        row = data[i, :]
-        relevantCols = cols
-        
-        for j in cols:-1:1            
-            if row[j] != emptyValue
-                break
-            end
-
-            relevantCols -= 1
+        else
+            lines[row] = join(view(data, row, 1:columnLengths[row]), separator)
         end
-
-        push!(res, join(row[1:relevantCols], separator))
     end
 
-    return join(res, '\n')
+    return join(lines, '\n')
 end
 
 function Base.string(t::Tiles)

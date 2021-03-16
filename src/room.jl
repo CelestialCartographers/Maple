@@ -51,26 +51,36 @@ include("enums.jl")
     cameraOffsetY::Number = 0.0
 end
 
+function tileDataCopy!(to::Matrix, from::Matrix, width::Int, height::Int)
+    indices = CartesianIndices((1:height, 1:width))
+
+    copyto!(to, indices, from, indices)
+end
+
+function getCopySize(data::Matrix, width::Int, height::Int)
+    h, w = size(data)
+
+    return min(h, height), min(w, width)
+end
+
 # Set the fg and bg tiles to the size of the room
 function updateTileSize!(room::Room, center::Char='0', border::Char='0')
     tw, th = ceil.(Int, room.size ./ 8)
 
-    tiles = fill(center, (th, tw))
+    fgTiles = fill(center, (th, tw))
+    bgTiles = fill(center, (th, tw))
     objTiles = fill(-1, (th, tw))
 
-    fth, ftw = min.(size(room.fgTiles.data), (th, tw))
-    bth, btw = min.(size(room.bgTiles.data), (th, tw))
-    oth, otw = min.(size(room.objTiles.data), (th, tw))
+    fth, ftw = getCopySize(room.fgTiles.data, tw, th)
+    bth, btw = getCopySize(room.bgTiles.data, tw, th)
+    oth, otw = getCopySize(room.objTiles.data, tw, th)
 
-    fg = copy(tiles)
-    bg = copy(tiles)
+    tileDataCopy!(fgTiles, room.fgTiles.data, ftw, fth)
+    tileDataCopy!(bgTiles, room.bgTiles.data, btw, bth)
+    tileDataCopy!(objTiles, room.objTiles.data, otw, oth)
 
-    fg[1:fth, 1:ftw] = room.fgTiles.data[1:fth, 1:ftw]
-    bg[1:bth, 1:btw] = room.bgTiles.data[1:bth, 1:btw]
-    objTiles[1:oth, 1:otw] = room.objTiles.data[1:oth, 1:otw]
-
-    room.fgTiles = Tiles(fg)
-    room.bgTiles = Tiles(bg)
+    room.fgTiles = Tiles(fgTiles)
+    room.bgTiles = Tiles(bgTiles)
     room.objTiles = ObjectTiles(objTiles)
 end
 

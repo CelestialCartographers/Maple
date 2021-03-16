@@ -18,8 +18,8 @@ function Base.Dict(s::Side)
     return data
 end
 
-function loadDataAsDict!(target::Dict{String, Any}, data::Dict{String, Any})
-    name = data["__name"]
+function loadDataAsDict!(target::Dict{String, Any}, data::DecodedElement)
+    name = data.name
     target[name] = Dict{String, Any}()
 
     for (attr, value) in attributes(data)
@@ -53,11 +53,11 @@ function dictAsEncodedData(name::String, data::Dict{String, Any})
     return res
 end
 
-function loadMetadata(data::Dict{String, Any})
+function loadMetadata(data::DecodedElement)
     res = Dict{String, Any}()
 
     for child in children(data)
-        if !(child["__name"] in decoderBlacklist)
+        if !(child.name in decoderBlacklist)
             loadDataAsDict!(res, child)
         end
     end
@@ -66,7 +66,7 @@ function loadMetadata(data::Dict{String, Any})
 end
 
 loadSide(fn::String) = loadSide(decodeMap(fn))
-function loadSide(data::Dict{String, Any})
+function loadSide(data::DecodedElement)
     return Side(loadMap(data), loadMetadata(data))
 end
 
