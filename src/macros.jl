@@ -43,6 +43,38 @@ end
 
 # Macro to make generating entities and triggers easier
 
+# Unwrap a variable's type in a method definition
+function getType(expr::Expr)
+    if expr.head == :(::)
+        return expr.args[1], expr.args[2]
+    elseif expr.head == :kw
+        return getType(expr.args[1])
+    elseif expr.head == :parameters
+        return getType.(expr.args)
+    else
+        throw(AssertionError("Not a valid type declaration at $expr"))
+    end
+end
+
+getType(s::Symbol) = nothing
+
+# Get all preferred types of a definition
+function getPreferredTypes(T::Expr)
+    typedata = T.args[2:end]
+    attrtypes = Dict{String, Union{Symbol, Expr}}()
+    types = getType.(T.args[2:end])
+    for typ in types
+        if typ isa Array
+            for (vn, vt) in typ
+                attrtypes[String(vn)] = vt
+            end
+        elseif typ !== nothing
+            attrtypes[String(typ[1])] = typ[2]
+        end
+    end
+    return attrtypes
+end
+
 firstchild(expr::Expr) = expr.args[findfirst(a -> !isa(a, LineNumberNode), expr.args)]
 unwrapBlock(expr::Expr) = expr.head == :block ? unwrapBlock(firstchild(expr)) : expr
 
@@ -59,6 +91,10 @@ macro pardef(makeConst::Bool, expr)
     if v.head != :curly
         v.args[1] = :($V{$qT})
     end
+
+    # Add type information to index
+    attrtypes = getPreferredTypes(f)
+    preferredTypes[:($V{$qT})] = attrtypes
 
     if makeConst
         quote
