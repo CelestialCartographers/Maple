@@ -57,8 +57,9 @@ const defaultTriggerHeight = 16
 @mapdef Trigger "everest/coreModeTrigger" EverestCoreModeTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, mode::String="None")
 @mapdef Trigger "everest/musicLayerTrigger" EverestMusicLayerTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, layers::String="", enable::Bool=false)
 @mapdef Trigger "everest/smoothCameraOffsetTrigger" EverestSmoothCameraOffsetTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, offsetXFrom::Number=0.0, offsetXTo::Number=0.0, offsetYFrom::Number=0.0, offsetYTo::Number=0.0, positionMode::String="NoEffect", onlyOnce::Bool=false, xOnly::Bool=false, yOnly::Bool=false)
-@mapdef Trigger "everest/activateDreamBlocksTrigger" ActivateDreamBlocks(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, fullRoutine::Bool=false, activate::Bool=true, fastAnimation::Bool=false)
-ActivateSpaceJams = ActivateDreamBlocks
+@mapdef Trigger "everest/activateDreamBlocksTrigger" ActivateDreamBlocksTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, fullRoutine::Bool=false, activate::Bool=true, fastAnimation::Bool=false)
+@mapdef Trigger "everest/CustomHeightDisplayTrigger" CustomHeightDisplayTrigger(x::Integer, y::Integer, width::Integer=defaultTriggerWidth, height::Integer=defaultTriggerHeight, vanilla::Bool=false, target::Int=0, from::Int=0, text::String="{x}m", progressAudio::Bool=false, displayOnTransition::Bool=false)
+ActivateSpaceJamsTrigger = ActivateDreamBlocksTrigger
 
 const blacklistedTriggerAttrs = String["nodes"]
 
