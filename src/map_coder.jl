@@ -34,19 +34,14 @@ end
 
 function readString(fh::IOBuffer)
   length = getVarLength(fh)
-  res = ""
-
-  for i in 1:length
-    b = read(fh, UInt8)
-    res *= string(Char(b))
-  end
-  return res
+  bytes = read(fh, length)
+  return String(bytes)
 end
 
 function writeString(fh::IOBuffer, s::String)
-  s = [UInt8(c) for c in s]
-  writeVarLength(fh, length(s))
-  write(fh, s)
+  bytes = codeunits(s)
+  writeVarLength(fh, length(bytes))
+  write(fh, bytes)
 end
 
 function readRunLengthEncoded(fh::IOBuffer)
@@ -91,6 +86,9 @@ function encodeRunLength(s::String)
   current::Char = s[1]
 
   for (i, c) in enumerate(s[2:end])
+    if codepoint(c) > 0xff
+      return nothing
+    end
     if c != current || count == 255
       push!(res, count)
       push!(res, current)
@@ -137,9 +135,14 @@ function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Dict{
 
   if index < 0
     encodedValue = encodeRunLength(value)
-    encodedLength = length(encodedValue)
+    encodedLength = encodedValue !== nothing ? length(encodedValue) : typemax(Int32)
+    byteCount = length(codeunits(value))
+    stringLength = length(value)
 
-    if encodedLength < length(value) && encodedLength <= typemax(Int16)
+    # Only allow run length encoding if the string contains only 1 byte characters
+    # Celeste does not read it as expected otherwise, this is mainly a tile issue
+    # Run length encoding has a hardcoded max length, make sure we don't exceed the limit
+    if stringLength == byteCount && encodedLength < stringLength && encodedLength <= typemax(Int16)
       write(buffer, 0x7)
       write(buffer, Int16(encodedLength))
       write(buffer, encodedValue)
