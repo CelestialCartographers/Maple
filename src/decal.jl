@@ -4,14 +4,16 @@
     x::Number
     y::Number
 
-    scaleX::Integer
-    scaleY::Integer
+    scaleX::Number
+    scaleY::Number
 
-    Decal(texture::String, x::Number, y::Number, scaleX::Integer=1, scaleY::Integer=1) = new(texture, x, y, scaleX, scaleY)
+    rotation::Number
+
+    Decal(texture::String, x::Number, y::Number, scaleX::Number=1, scaleY::Number=1, rotation::Number=0) = new(texture, x, y, scaleX, scaleY, rotation)
 end
 
 function Base.Dict(d::Decal)
-    return Dict{String, Any}(
+    res = Dict{String, Any}(
         "texture" => d.texture,
 
         "x" => d.x,
@@ -22,4 +24,10 @@ function Base.Dict(d::Decal)
 
         "__name" => "decal",
     )
+
+    if d.rotation != 0
+        res["rotation"] = d.rotation
+    end
+
+    return res
 end

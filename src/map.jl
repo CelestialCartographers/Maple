@@ -146,8 +146,9 @@ function loadDecals(roomData::DecodedElement, fg::Bool=true)
 
     for child in children(findChildWithName(DecodedElement, roomData, key))
         attributes = child.attributes
+        rotation = get(attributes, "rotation", 0)
 
-        push!(decals, Decal(attributes["texture"], attributes["x"], attributes["y"], attributes["scaleX"], attributes["scaleY"]))
+        push!(decals, Decal(attributes["texture"], attributes["x"], attributes["y"], attributes["scaleX"], attributes["scaleY"], rotation))
     end
 
     return decals

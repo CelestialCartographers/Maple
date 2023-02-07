@@ -81,14 +81,17 @@ function decodeValue(type::UInt8, lookup::Array{String, 1}, fh::IOBuffer)
 end
 
 function encodeRunLength(s::String)
+  # Only allow run length encoding if the string contains only 1 byte characters
+  # Celeste does not read it as expected otherwise, this is mainly a tile issue
+  if length(s) != ncodeunits(s)
+    return nothing
+  end
+
   count::UInt8 = 1
   res = UInt8[]
   current::Char = s[1]
 
   for (i, c) in enumerate(s[2:end])
-    if codepoint(c) > 0xff
-      return nothing
-    end
     if c != current || count == 255
       push!(res, count)
       push!(res, current)
@@ -136,13 +139,9 @@ function encodeValue(buffer::IOBuffer, key::String, value::String, lookup::Dict{
   if index < 0
     encodedValue = encodeRunLength(value)
     encodedLength = encodedValue !== nothing ? length(encodedValue) : typemax(Int32)
-    byteCount = length(codeunits(value))
-    stringLength = length(value)
 
-    # Only allow run length encoding if the string contains only 1 byte characters
-    # Celeste does not read it as expected otherwise, this is mainly a tile issue
     # Run length encoding has a hardcoded max length, make sure we don't exceed the limit
-    if stringLength == byteCount && encodedLength < stringLength && encodedLength <= typemax(Int16)
+    if encodedLength < ncodeunits(value) && encodedLength <= typemax(Int16)
       write(buffer, 0x7)
       write(buffer, Int16(encodedLength))
       write(buffer, encodedValue)
